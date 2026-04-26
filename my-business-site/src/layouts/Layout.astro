@@ -1,0 +1,77 @@
+---
+// src/layouts/Layout.astro
+import Base from './Base.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Base>
+  <Navbar />
+  <main>
+    <slot />
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Tin Học Sao Việt</h4>
+          <p>145 Lê Duẩn, Quận 1, TP.HCM</p>
+          <p>Hotline: 1900 6369</p>
+        </div>
+        <div class="footer-col">
+          <h4>Liên kết</h4>
+          <a href="/khoa-hoc">Khóa học</a>
+          <a href="/lien-he">Liên hệ</a>
+        </div>
+        <div class="footer-col">
+          <h4>Kết nối</h4>
+          <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
+        </div>
+      </div>
+      <div class="copyright">
+        © 2025 Trung tâm Tin học Sao Việt
+      </div>
+    </div>
+  </footer>
+</Base>
+
+<style is:global>
+  .site-footer {
+    background: var(--primary-dark);
+    color: #BDC3C7;
+    padding: 50px 0 25px;
+    margin-top: 60px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .footer-col h4 {
+    color: white;
+    margin-bottom: 20px;
+  }
+  .footer-col a {
+    color: #BDC3C7;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 12px;
+    transition: 0.2s;
+  }
+  .footer-col a:hover {
+    color: var(--primary-blue);
+    padding-left: 4px;
+  }
+  .copyright {
+    text-align: center;
+    border-top: 1px solid #2d3e55;
+    padding-top: 25px;
+    font-size: 0.85rem;
+  }
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  }
+</style>

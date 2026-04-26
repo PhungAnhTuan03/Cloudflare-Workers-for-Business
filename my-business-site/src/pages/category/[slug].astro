@@ -1,0 +1,47 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Định nghĩa các danh mục có sẵn (hoặc bạn có thể quét từ frontmatter)
+export async function getStaticPaths() {
+  const categories = ['tin-hoc-van-phong', 'lap-trinh', 'do-hoa', 'mang', 'khoa-hoc-moi'];
+  return categories.map(cat => ({ params: { slug: cat } }));
+}
+
+const { slug } = Astro.params;
+// Lấy bài viết từ thư mục posts, lọc theo category (cần cài đặt frontmatter)
+const allPosts = await Astro.glob('../posts/*.astro');
+const posts = allPosts.filter(p => p.frontmatter?.category === slug);
+const categoryName = slug.replace(/-/g, ' ');
+---
+
+<Layout>
+  <section class="page-header">
+    <div class="container">
+      <h1>Chủ đề: {categoryName}</h1>
+      <p class="section-subhead">Có {posts.length} bài viết trong chủ đề này</p>
+    </div>
+  </section>
+
+  <section class="category-posts">
+    <div class="container">
+      {posts.length === 0 ? (
+        <p class="text-center">Chưa có bài viết nào cho chủ đề này.</p>
+      ) : (
+        <div class="grid-auto">
+          {posts.map(post => (
+            <a href={post.url} class="card">
+              <h3>{post.frontmatter?.title}</h3>
+              <p>{post.frontmatter?.description}</p>
+              <span class="read-more">Xem chi tiết →</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+  .category-posts { padding: 60px 0; }
+  .text-center { text-align: center; }
+</style>

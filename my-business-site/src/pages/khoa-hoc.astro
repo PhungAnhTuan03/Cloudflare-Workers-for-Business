@@ -1,0 +1,170 @@
+---
+// src/pages/khoa-hoc.astro
+import Layout from '../layouts/Layout.astro';
+
+// Dữ liệu khóa học mẫu
+const courses = [
+  { slug: "tin-hoc-van-phong", title: "Tin học văn phòng", icon: "fas fa-file-excel", desc: "Word, Excel, PowerPoint chuyên sâu. Luyện thi MOS quốc tế.", tag: "Chứng chỉ MOS", price: "2.890.000đ", duration: "3 tháng" },
+  { slug: "lap-trinh-python", title: "Lập trình Python", icon: "fab fa-python", desc: "Từ cơ bản đến nâng cao, xử lý dữ liệu & AI cơ bản.", tag: "Python Core", price: "3.490.000đ", duration: "4 tháng" },
+  { slug: "thiet-ke-do-hoa", title: "Thiết kế đồ họa", icon: "fas fa-paintbrush", desc: "Photoshop, Illustrator, dự án thực tế.", tag: "Creative Cloud", price: "3.290.000đ", duration: "3 tháng" },
+  { slug: "quan-tri-mang-ccna", title: "Quản trị mạng CCNA", icon: "fas fa-network-wired", desc: "Cấu hình router, switch, bảo mật cơ bản.", tag: "Chứng chỉ Cisco", price: "4.190.000đ", duration: "4 tháng" },
+  { slug: "web-fullstack", title: "Lập trình Web Fullstack", icon: "fas fa-code", desc: "React, NodeJS, MongoDB, triển khai dự án.", tag: "Hot nhất 2025", price: "5.490.000đ", duration: "6 tháng" },
+  { slug: "ke-toan-tin-hoc", title: "Kế toán tin học", icon: "fas fa-calculator", desc: "Excel kế toán, MISA, nghiệp vụ thực tế.", tag: "Hỗ trợ việc làm", price: "2.690.000đ", duration: "2.5 tháng" }
+];
+---
+
+<Layout>
+  <section class="page-header">
+    <div class="container">
+      <h1>Khóa học</h1>
+      <p class="section-subhead">Chương trình thực chiến, giảng viên giàu kinh nghiệm, cam kết đầu ra</p>
+    </div>
+  </section>
+
+  <section class="courses-section">
+    <div class="container">
+      <div class="course-filters">
+        <button class="filter-btn active" data-filter="all">Tất cả</button>
+        <button class="filter-btn" data-filter="van-phong">Văn phòng</button>
+        <button class="filter-btn" data-filter="lap-trinh">Lập trình</button>
+        <button class="filter-btn" data-filter="do-hoa">Đồ họa</button>
+        <button class="filter-btn" data-filter="mang">Mạng</button>
+      </div>
+      <div class="course-grid" id="courseGrid">
+        {courses.map(course => (
+          <div class="course-card lazy" data-category={
+            course.title.includes("văn phòng") ? "van-phong" :
+            course.title.includes("Python") || course.title.includes("Web") ? "lap-trinh" :
+            course.title.includes("đồ họa") ? "do-hoa" :
+            course.title.includes("mạng") ? "mang" : "all"
+          }>
+            <div class="course-icon"><i class={course.icon}></i></div>
+            <h3>{course.title}</h3>
+            <div class="course-tag">{course.tag}</div>
+            <p>{course.desc}</p>
+            <div class="course-meta">
+              <span><i class="far fa-clock"></i> {course.duration}</span>
+              <span class="course-price">{course.price}</span>
+            </div>
+            <a href={`/khoa-hoc/${course.slug}`} class="btn btn-primary btn-sm">Chi tiết</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+  .page-header {
+    background: linear-gradient(120deg, var(--primary-dark) 0%, #1a3b4e 100%);
+    color: white;
+    text-align: center;
+    padding: 60px 0 40px;
+  }
+  .page-header h1 {
+    margin-bottom: 0.5rem;
+  }
+  .page-header .section-subhead {
+    color: rgba(255,255,255,0.85);
+    margin-top: 0;
+  }
+  .courses-section {
+    padding: 60px 0;
+  }
+  .course-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .filter-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 8px 20px;
+    border-radius: 40px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    color: var(--text-main);
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+  }
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 32px;
+  }
+  .course-card {
+    background: var(--card-bg);
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+  }
+  .course-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-md);
+  }
+  .course-icon {
+    font-size: 2.5rem;
+    color: var(--primary-blue);
+    margin-bottom: 16px;
+  }
+  .course-tag {
+    background: #E67E2210;
+    color: var(--warning-orange);
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    margin: 12px 0 8px;
+  }
+  .course-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  .course-price {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--warning-orange);
+  }
+  .btn-sm {
+    padding: 8px 20px;
+    font-size: 0.85rem;
+  }
+  @media (max-width: 768px) {
+    .course-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Filter courses
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const courses = document.querySelectorAll('.course-card');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.getAttribute('data-filter');
+      courses.forEach(course => {
+        if (filter === 'all' || course.getAttribute('data-category') === filter) {
+          course.style.display = 'block';
+        } else {
+          course.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
