@@ -32,9 +32,4 @@
 			"bucket_name": "my-emdash-media"
 		}
 	],
-	"worker_loaders": [
-		{
-			"binding": "LOADER"
-		}
-	]
 }

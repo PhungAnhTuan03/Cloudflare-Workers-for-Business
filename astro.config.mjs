@@ -20,14 +20,13 @@ export default defineConfig({
 	integrations: [
 		react(),
 		emdash({
-			database: d1({ binding: "DB", session: "auto" }),
+			database: d1({
+				binding: "DB", session: {
+					binding: "SESSION"
+				}
+			}),
 			storage: r2({ binding: "MEDIA" }),
 		}),
 	],
-
 	devToolbar: { enabled: false },
-
-	//   vite: {
-	//     plugins: [tailwindcss()],
-	//   },
 });
