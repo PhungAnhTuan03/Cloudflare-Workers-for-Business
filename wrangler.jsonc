@@ -1,12 +1,10 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	// my-business-site/wrangler.jsonc
 	"name": "my-business-site",
-	//"main": "./dist/worker.js",
 	"compatibility_date": "2026-02-24",
 	"assets": {
 		"binding": "ASSETS",
-		"directory": "./dist"
+		"directory": "./dist/client"
 	},
 	"compatibility_flags": [
 		"nodejs_compat"
