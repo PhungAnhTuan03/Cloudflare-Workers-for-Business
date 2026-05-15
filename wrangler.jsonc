@@ -1,3 +1,4 @@
+// wrangler.jsonc
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "my-business-site",
@@ -31,5 +32,5 @@
 			"binding": "MEDIA",
 			"bucket_name": "my-emdash-media"
 		}
-	],
+	]
 }
