@@ -1,0 +1,129 @@
+---
+// src/components/Navbar.astro
+// Không cần logic phức tạp, chỉ giao diện + dark mode toggle
+let mobileMenuOpen = false;
+---
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="logo"><i class="fas fa-laptop-code"></i> SaoViệt</a>
+    <div class="mobile-menu" id="mobileMenuBtn"><i class="fas fa-bars"></i></div>
+    <div class="nav-links" id="navLinks">
+      <a href="/">Trang chủ</a>
+      <a href="/khoa-hoc">Khóa học</a>
+      <a href="/linh-vuc">Lĩnh vực</a>
+      <a href="/hoc-vien">Học viên</a>
+      <a href="/about">Giới thiệu</a>
+      <a href="/services">Dịch vụ</a>
+      <a href="/lien-he">Blog</a>
+      <a href="/contact">Liên hệ</a>
+      <button class="dark-toggle" id="darkModeToggle" aria-label="Chế độ tối"><i class="fas fa-moon"></i></button>
+    </div>
+  </div>
+</nav>
+
+<style is:global>
+  /* Các style này sẽ được global hóa, nhưng đặt trong component cho gọn */
+  .navbar {
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.2s;
+  }
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+  .logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-blue) 30%, #2C3E50 80%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+  .nav-links a {
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--text-main);
+    transition: 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--primary-blue);
+  }
+  .dark-toggle {
+    background: var(--border-color);
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 40px;
+    color: var(--text-main);
+    transition: 0.2s;
+  }
+  .mobile-menu {
+    display: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      background: var(--card-bg);
+      position: absolute;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      padding: 24px;
+      gap: 20px;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+      z-index: 999;
+    }
+    .nav-links.open {
+      display: flex;
+    }
+    .mobile-menu {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  // Xử lý mobile menu & dark mode
+  document.addEventListener('DOMContentLoaded', () => {
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+    if (mobileBtn && navLinks) {
+      mobileBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => navLinks.classList.remove('open'));
+      });
+    }
+    // Dark mode
+    const toggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+    if (localStorage.getItem('dark-mode') === 'enabled') {
+      body.classList.add('dark');
+    }
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        body.classList.toggle('dark');
+        localStorage.setItem('dark-mode', body.classList.contains('dark') ? 'enabled' : 'disabled');
+      });
+    }
+  });
+</script>

@@ -1,0 +1,145 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout>
+  <section class="page-header">
+    <div class="container">
+      <h1>Liên hệ</h1>
+      <p class="section-subhead">Chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc</p>
+    </div>
+  </section>
+
+  <section class="contact-section">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h2>Thông tin liên hệ</h2>
+          <div class="info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <strong>Địa chỉ:</strong>
+              <p>145 Lê Duẩn, phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-phone-alt"></i>
+            <div>
+              <strong>Điện thoại:</strong>
+              <p>1900 6369 (8h00 - 21h00)</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <strong>Email:</strong>
+              <p>info@saoviet.edu.vn</p>
+              <p>tuyensinh@saoviet.edu.vn</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-clock"></i>
+            <div>
+              <strong>Giờ làm việc:</strong>
+              <p>Thứ 2 - Thứ 6: 8h00 - 20h00</p>
+              <p>Thứ 7 - Chủ nhật: 8h00 - 17h00</p>
+            </div>
+          </div>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="#" aria-label="Zalo"><i class="fab fa-superpowers"></i></a>
+          </div>
+        </div>
+
+        <div class="contact-form-wrapper">
+          <h2>Gửi tin nhắn</h2>
+          <form id="contactForm" action="/api/contact" method="POST">
+            <div class="form-group">
+              <label for="name">Họ và tên *</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="phone">Số điện thoại</label>
+              <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+              <label for="subject">Chủ đề *</label>
+              <select id="subject" name="subject" required>
+                <option value="">-- Chọn --</option>
+                <option value="tu-van">Tư vấn khóa học</option>
+                <option value="hoc-phi">Học phí</option>
+                <option value="hop-tac">Hợp tác doanh nghiệp</option>
+                <option value="khac">Khác</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Nội dung *</label>
+              <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Gửi liên hệ</button>
+            <p id="formStatus" class="form-status"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="map-section">
+    <div class="container">
+      <h2>Bản đồ đến trung tâm</h2>
+      <div class="map-wrapper">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.123456!2d106.700000!3d10.780000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzQ4LjAiTiAxMDbCsDQyJzAwLjAiRQ!5e0!3m2!1svi!2s!4v1234567890" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+  /* CSS tương tự như trong lien-he.astro đã viết – copy từ câu trước */
+  .contact-section { padding: 60px 0; }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .info-item { display: flex; gap: 16px; margin-bottom: 24px; }
+  .info-item i { font-size: 1.4rem; color: var(--primary-blue); }
+  .social-links { display: flex; gap: 16px; margin-top: 32px; }
+  .social-links a { background: var(--border-color); width: 42px; height: 42px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; }
+  .social-links a:hover { background: var(--primary-blue); color: white; transform: translateY(-3px); }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); }
+  .btn-block { width: 100%; justify-content: center; }
+  .map-section { padding: 0 0 60px; }
+  .map-wrapper { border-radius: 28px; overflow: hidden; box-shadow: var(--shadow-md); }
+  .map-wrapper iframe { width: 100%; height: 400px; border: 0; }
+  @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } .map-wrapper iframe { height: 300px; } }
+</style>
+
+<script>
+  document.getElementById('contactForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const status = document.getElementById('formStatus');
+    status.innerHTML = 'Đang gửi...';
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(formData)),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response.ok) {
+        status.innerHTML = '✅ Gửi thành công! Chúng tôi sẽ liên hệ lại sớm.';
+        form.reset();
+      } else {
+        status.innerHTML = '❌ Có lỗi xảy ra, vui lòng thử lại.';
+      }
+    } catch (err) {
+      status.innerHTML = '❌ Lỗi kết nối, vui lòng thử lại.';
+    }
+  });
+</script>

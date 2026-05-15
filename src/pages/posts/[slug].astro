@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await Astro.glob('./*.astro');
+  return posts.filter(p => p.url !== '/posts/').map(post => ({
+    params: { slug: post.url.split('/').pop() },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+const { frontmatter } = post;
+---
+
+<Layout>
+  <article class="post-container">
+    <div class="container">
+      <div class="post-header">
+        <h1>{frontmatter?.title || 'Bài viết'}</h1>
+        <div class="post-meta">
+          <time>{frontmatter?.date || 'Chưa có ngày'}</time>
+          {frontmatter?.category && <span class="post-category">Chủ đề: {frontmatter.category}</span>}
+          <div class="post-tags">
+            {frontmatter?.tags?.map(tag => <span class="tag">#{tag}</span>)}
+          </div>
+        </div>
+      </div>
+      <div class="post-content">
+        <post.Content />
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  .post-container {
+    padding: 60px 0;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .post-header {
+    margin-bottom: 2rem;
+  }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    color: var(--text-muted);
+    margin: 1rem 0;
+  }
+  .post-category, .tag {
+    background: var(--border-color);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+  }
+  .post-content {
+    line-height: 1.8;
+  }
+  .post-content h2 {
+    text-align: left;
+    margin: 2rem 0 1rem;
+  }
+  .post-content h2:after {
+    margin-left: 0;
+  }
+</style>

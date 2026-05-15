@@ -1,0 +1,137 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const services = [
+  {
+    title: "Đào tạo tin học văn phòng",
+    icon: "fas fa-file-alt",
+    desc: "Khóa học từ cơ bản đến nâng cao, luyện thi MOS chứng chỉ quốc tế.",
+    price: "Liên hệ"
+  },
+  {
+    title: "Đào tạo lập trình",
+    icon: "fas fa-code",
+    desc: "Python, Java, Web Fullstack, lập trình ứng dụng – học xong có việc ngay.",
+    price: "Liên hệ"
+  },
+  {
+    title: "Tổ chức thi chứng chỉ",
+    icon: "fas fa-certificate",
+    desc: "MOS, IC3, CCNA, khảo thí tại trung tâm uy tín.",
+    price: "Theo yêu cầu"
+  },
+  {
+    title: "Đào tạo doanh nghiệp",
+    icon: "fas fa-building",
+    desc: "Thiết kế khóa học riêng cho công ty, đào tạo tại chỗ hoặc online.",
+    price: "Báo giá theo nhu cầu"
+  },
+  {
+    title: "Cho thuê phòng máy",
+    icon: "fas fa-laptop",
+    desc: "Phòng máy lạnh, cấu hình cao, hỗ trợ tổ chức sự kiện, thi cử.",
+    price: "200.000đ/giờ"
+  },
+  {
+    title: "Tư vấn giải pháp CNTT",
+    icon: "fas fa-microchip",
+    desc: "Triển khai phần mềm quản lý, bảo mật mạng, website doanh nghiệp.",
+    price: "Báo giá"
+  }
+];
+---
+
+<Layout>
+  <section class="page-header">
+    <div class="container">
+      <h1>Dịch vụ của chúng tôi</h1>
+      <p class="section-subhead">Giải pháp công nghệ toàn diện – Đồng hành cùng doanh nghiệp</p>
+    </div>
+  </section>
+
+  <section class="services-list">
+    <div class="container">
+      <div class="services-grid">
+        {services.map(service => (
+          <div class="service-card">
+            <div class="service-icon"><i class={service.icon}></i></div>
+            <h3>{service.title}</h3>
+            <p>{service.desc}</p>
+            <div class="service-price">{service.price === "Liên hệ" ? 
+              '<a href="/contact" class="btn btn-outline btn-sm">Liên hệ ngay</a>' : 
+              `<span class="price-tag">${service.price}</span>`
+            }</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Bạn cần tư vấn dịch vụ?</h2>
+        <p>Liên hệ ngay để được hỗ trợ báo giá và lộ trình phù hợp.</p>
+        <a href="/contact" class="btn btn-cta">Yêu cầu tư vấn</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+  .services-list {
+    padding: 60px 0;
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 32px;
+  }
+  .service-card {
+    background: var(--card-bg);
+    border-radius: 28px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+  }
+  .service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-md);
+  }
+  .service-icon {
+    font-size: 2.8rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+  }
+  .service-price {
+    margin-top: 20px;
+  }
+  .price-tag {
+    font-weight: 800;
+    color: var(--warning-orange);
+    font-size: 1.2rem;
+  }
+  .btn-sm {
+    padding: 8px 20px;
+    font-size: 0.85rem;
+  }
+  .cta-section {
+    padding: 40px 0 80px;
+  }
+  .cta-box {
+    background: linear-gradient(135deg, var(--primary-dark), #1a3b4e);
+    border-radius: 40px;
+    padding: 60px 40px;
+    text-align: center;
+    color: white;
+  }
+  .cta-box h2 {
+    color: white;
+    margin-bottom: 1rem;
+  }
+  .cta-box h2:after {
+    background: var(--warning-orange);
+  }
+</style>

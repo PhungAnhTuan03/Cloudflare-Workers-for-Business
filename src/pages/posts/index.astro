@@ -1,0 +1,60 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Lấy tất cả bài viết dạng .astro hoặc .md trong thư mục posts (ngoại trừ index)
+// Nếu dùng .md thì dùng Astro.glob('**/*.md'), ở đây giả sử dùng .astro
+const posts = await Astro.glob('./*.astro');
+const blogPosts = posts.filter(p => p.url !== '/posts/'); // bỏ index
+---
+
+<Layout>
+  <section class="page-header">
+    <div class="container">
+      <h1>Blog & Tin tức</h1>
+      <p class="section-subhead">Cập nhật kiến thức, xu hướng công nghệ mới nhất</p>
+    </div>
+  </section>
+
+  <section class="blog-list">
+    <div class="container">
+      {blogPosts.length === 0 ? (
+        <p class="text-center">Chưa có bài viết nào. Hãy tạo bài viết đầu tiên trong thư mục <code>src/pages/posts/</code></p>
+      ) : (
+        <div class="grid-auto">
+          {blogPosts.map(post => (
+            <a href={post.url} class="card blog-card">
+              <div class="blog-date">{post.frontmatter?.date || 'Sắp ra mắt'}</div>
+              <h3>{post.frontmatter?.title || 'Bài viết mới'}</h3>
+              <p>{post.frontmatter?.description || 'Nội dung đang cập nhật...'}</p>
+              <div class="read-more">Đọc tiếp →</div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+  .blog-list {
+    padding: 60px 0;
+  }
+  .blog-card {
+    display: block;
+    text-decoration: none;
+  }
+  .blog-date {
+    font-size: 0.85rem;
+    color: var(--primary-blue);
+    margin-bottom: 12px;
+  }
+  .read-more {
+    margin-top: 16px;
+    font-weight: 600;
+    color: var(--primary-blue);
+  }
+  .text-center {
+    text-align: center;
+    padding: 40px;
+  }
+</style>

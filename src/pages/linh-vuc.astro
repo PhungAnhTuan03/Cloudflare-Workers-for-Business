@@ -1,0 +1,136 @@
+---
+// src/pages/linh-vuc.astro
+import Layout from '../layouts/Layout.astro';
+
+const categories = [
+  { name: "Tin học văn phòng", icon: "fas fa-laptop", desc: "Thành thạo Word, Excel, PowerPoint, Outlook. Luyện thi chứng chỉ MOS.", link: "/khoa-hoc?field=van-phong" },
+  { name: "Lập trình & CSDL", icon: "fas fa-database", desc: "Python, Java, C#, SQL, PHP, lập trình web, ứng dụng.", link: "/khoa-hoc?field=lap-trinh" },
+  { name: "Đồ họa & Multimedia", icon: "fas fa-palette", desc: "Photoshop, Illustrator, Premiere, After Effects, 3Ds Max.", link: "/khoa-hoc?field=do-hoa" },
+  { name: "Mạng & Bảo mật", icon: "fas fa-shield-alt", desc: "CCNA, MCSA, an ninh mạng, quản trị hệ thống.", link: "/khoa-hoc?field=mang" },
+  { name: "Kế toán & Tài chính", icon: "fas fa-chart-line", desc: "Excel kế toán, MISA, nghiệp vụ thuế, kế toán tổng hợp.", link: "/khoa-hoc?field=ke-toan" },
+  { name: "Kỹ năng số", icon: "fas fa-microchip", desc: "AI cơ bản, IoT, tin học ứng dụng trong kinh doanh.", link: "/khoa-hoc?field=so" }
+];
+---
+
+<Layout>
+  <section class="page-header">
+    <div class="container">
+      <h1>Lĩnh vực đào tạo</h1>
+      <p class="section-subhead">Đa dạng chuyên ngành, bám sát nhu cầu doanh nghiệp</p>
+    </div>
+  </section>
+
+  <section class="categories-section">
+    <div class="container">
+      <div class="categories-grid">
+        {categories.map(cat => (
+          <a href={cat.link} class="category-card lazy">
+            <div class="category-icon"><i class={cat.icon}></i></div>
+            <h3>{cat.name}</h3>
+            <p>{cat.desc}</p>
+            <span class="category-link">Tìm hiểu thêm <i class="fas fa-arrow-right"></i></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number">10,000+</span>
+          <span class="stat-label">Học viên</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">Giảng viên</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">98%</span>
+          <span class="stat-label">Hài lòng</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">100+</span>
+          <span class="stat-label">Đối tác</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+  .categories-section {
+    padding: 60px 0;
+  }
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px;
+  }
+  .category-card {
+    background: var(--card-bg);
+    border-radius: 28px;
+    padding: 32px 24px;
+    text-align: center;
+    text-decoration: none;
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+    display: block;
+  }
+  .category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-blue);
+  }
+  .category-icon {
+    font-size: 3rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+  }
+  .category-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: var(--text-main);
+  }
+  .category-card p {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .category-link {
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .stats-section {
+    background: var(--card-bg);
+    padding: 60px 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 40px;
+    text-align: center;
+  }
+  .stat-number {
+    display: block;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin-bottom: 8px;
+  }
+  .stat-label {
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  @media (max-width: 768px) {
+    .stat-number {
+      font-size: 2rem;
+    }
+  }
+</style>

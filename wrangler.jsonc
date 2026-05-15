@@ -1,0 +1,32 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	// my-business-site/wrangler.jsonc
+	"name": "my-business-site",
+	//"main": "./dist/worker.js",
+	"compatibility_date": "2026-02-24",
+	"assets": {
+		"binding": "ASSETS",
+		"directory": "./dist"
+	},
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "my-emdash-site",
+			"database_id": "35062e3d-280e-4a26-a1dc-1e437667e002"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "my-emdash-media"
+		}
+	],
+	"worker_loaders": [
+		{
+			"binding": "LOADER"
+		}
+	]
+}
