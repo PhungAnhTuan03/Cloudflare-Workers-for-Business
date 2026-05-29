@@ -1,0 +1,45 @@
+---
+// src/components/ContactForm.astro
+---
+
+<form id="contact-form">
+  <input type="text" name="name" placeholder="Họ tên" />
+  <input type="email" name="email" placeholder="Email *" required />
+  <textarea name="message" placeholder="Tin nhắn *" required></textarea>
+  <button type="submit">Gửi tin nhắn</button>
+  <p id="msg"></p>
+</form>
+
+<script>
+  const form = document.getElementById("contact-form");
+  const msg = document.getElementById("msg");
+
+  if (form instanceof HTMLFormElement && msg) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const json = await res.json();
+
+      if (typeof json === "object" && json !== null) {
+        const message =
+          "message" in json
+            ? json.message
+            : "error" in json
+              ? json.error
+              : "Đã gửi";
+
+        msg.textContent = String(message);
+      }
+    });
+  }
+</script>

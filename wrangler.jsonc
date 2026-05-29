@@ -1,0 +1,46 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "my-business",
+	"main": "./src/worker.ts",
+	"compatibility_date": "2026-02-24",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "emdash-db",
+			"database_id": "c91a9b21-0b27-4b5d-b02f-b5f9d35379a8",
+			"migrations_dir": "migrations"
+		},
+		{
+			"binding": "emdash_db",
+			"database_name": "emdash-db",
+			"database_id": "c91a9b21-0b27-4b5d-b02f-b5f9d35379a8",
+			"remote": true
+		},
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "my-emdash-media",
+		},
+	],
+	// Worker Loader for plugin sandboxing
+	"worker_loaders": [
+		{
+			"binding": "LOADER",
+		},
+	],
+	"kv_namespaces": [
+		{
+			"binding": "CACHE",
+			"id": "1a2a9637493a4bdb83305e580e0f803f",
+			"remote": true
+		}
+	],
+	"vars": {
+		"SITE_URL": "",
+		"ADMIN_EMAIL": "phungtuan23122003@gmail.com"
+	}
+}

@@ -1,0 +1,42 @@
+{
+  "name": "my-business",
+  "version": "0.0.3",
+  "private": true,
+  "type": "module",
+  "emdash": {
+    "label": "Starter",
+    "seed": "seed/seed.json"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "astro build && wrangler deploy",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^13.5.3",
+    "@astrojs/react": "^5.0.0",
+    "@emdash-cms/cloudflare": "^0.15.0",
+    "@tailwindcss/vite": "^4.3.0",
+    "@tiptap/core": "^3.23.6",
+    "@tiptap/extension-collaboration": "^3.23.6",
+    "@tiptap/pm": "^3.23.6",
+    "@tiptap/react": "^3.23.6",
+    "@tiptap/starter-kit": "^3.23.6",
+    "@tiptap/y-tiptap": "^3.0.4",
+    "astro": "^6.3.0",
+    "emdash": "^0.15.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "resend": "^6.12.4",
+    "tailwindcss": "^4.3.0",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.31"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.2",
+    "@cloudflare/workers-types": "^4.20260305.1",
+    "wrangler": "^4.83.0"
+  }
+}
