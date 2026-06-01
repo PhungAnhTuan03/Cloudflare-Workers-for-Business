@@ -5,13 +5,50 @@ import { defineConfig } from "astro/config";
 import emdash from "emdash/astro";
 import tailwindcss from "@tailwindcss/vite";
 
-const isDevCommand = process.argv.includes("dev");
+const workerOptimizerExcludes = ["emdash/media/local-runtime"];
+const workerOptimizerIncludes = ["resend"];
+
+function syncWorkerOptimizeDeps() {
+	return {
+		name: "sync-worker-optimize-deps",
+		configResolved(config) {
+			if (config.command !== "serve") {
+				return;
+			}
+
+			const ssrOptimizeDeps = config.ssr.optimizeDeps ?? {};
+
+			for (const [name, environment] of Object.entries(config.environments ?? {})) {
+				if (name === "client") {
+					continue;
+				}
+
+				environment.optimizeDeps.include = Array.from(
+					new Set([
+						...(environment.optimizeDeps.include ?? []),
+						...(ssrOptimizeDeps.include ?? []),
+						...workerOptimizerIncludes,
+					]),
+				);
+				environment.optimizeDeps.exclude = Array.from(
+					new Set([
+						...(environment.optimizeDeps.exclude ?? []),
+						...(ssrOptimizeDeps.exclude ?? []),
+						...workerOptimizerExcludes,
+					]),
+				);
+				environment.optimizeDeps.ignoreOutdatedRequests = true;
+			}
+		},
+	};
+}
 
 export default defineConfig({
 	output: "server",
 	adapter: cloudflare({
 		sessionKVBindingName: "SESSION",
 		imageService: "cloudflare-binding",
+		inspectorPort: false,
 	}),
 	image: {
 		layout: "constrained",
@@ -25,7 +62,18 @@ export default defineConfig({
 		}),
 	],
 	vite: {
-		plugins: [tailwindcss()],
+		plugins: [tailwindcss(), syncWorkerOptimizeDeps()],
+		server: {
+			hmr: false,
+			watch: {
+				ignored: [
+					"**/.wrangler/**",
+					"**/.astro/**",
+					"**/dist/**",
+					"**/node_modules/**",
+				],
+			},
+		},
 		build: {
 			chunkSizeWarningLimit: 8000,
 			rollupOptions: {
@@ -41,13 +89,6 @@ export default defineConfig({
 				},
 			},
 		},
-		...(isDevCommand
-			? {
-					optimizeDeps: {
-						ignoreOutdatedRequests: true,
-					},
-				}
-			: {}),
 	},
 	devToolbar: { enabled: false },
 });
