@@ -35,11 +35,11 @@
 		},
 		{
 			"binding": "SESSION",
-			"id": "your-session-kv-id"
+			"id": "a22fa50148874453b65504572062810d"
 		}
 	],
 	"vars": {
-		"SITE_URL": "https://your-domain.com",
+		"SITE_URL": "https://my-business.phungtuan23122003.workers.dev",
 		"ADMIN_EMAIL": "phungtuan23122003@gmail.com"
 	}
 }
