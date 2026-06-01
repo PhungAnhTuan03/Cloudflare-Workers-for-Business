@@ -7,8 +7,14 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
 	output: "server",
-	adapter: cloudflare(),
-
+	adapter: cloudflare({
+		sessionKVBindingName: "SESSION",
+		imageService: "cloudflare-binding",
+	}),
+	image: {
+		layout: "constrained",
+		responsiveStyles: true,
+	},
 	integrations: [
 		react(),
 		emdash({
@@ -16,19 +22,8 @@ export default defineConfig({
 			storage: r2({ binding: "MEDIA" }),
 		}),
 	],
-
 	vite: {
 		plugins: [tailwindcss()],
-		server: {
-			fs: {
-				strict: false,
-			},
-		},
-
-		optimizeDeps: {},
-
-		ssr: {
-			noExternal: true,
-		},
 	},
+	devToolbar: { enabled: false },
 });
