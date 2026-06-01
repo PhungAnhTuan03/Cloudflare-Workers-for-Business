@@ -1,40 +1,30 @@
 ---
+import { decodeSlug, getEmDashCollection, getTerm } from "emdash";
 import Layout from "../../layouts/Layout.astro";
 
-export async function getStaticPaths() {
-  const categories = [
-    "tin-hoc-van-phong",
-    "lap-trinh",
-    "do-hoa",
-    "mang",
-    "khoa-hoc-moi",
-  ];
+const slug = decodeSlug(Astro.params.slug);
+const term = slug ? await getTerm("category", slug) : null;
 
-  return categories.map((cat) => ({
-    params: { slug: cat },
-  }));
+if (!term) {
+  return Astro.redirect("/404");
 }
 
-const { slug } = Astro.params;
+const { entries: posts, cacheHint } = await getEmDashCollection("posts", {
+  status: "published",
+  where: { category: term.slug },
+  orderBy: { published_at: "desc" },
+});
 
-const allPosts = Object.values(
-  import.meta.glob("../posts/*.astro", {
-    eager: true,
-  }),
-);
-
-const posts = allPosts.filter((p: any) => p.frontmatter?.category === slug);
-
-const categoryName = slug?.replace(/-/g, " ");
+Astro.cache.set(cacheHint);
 ---
 
 <Layout>
   <section class="page-header">
     <div class="container">
-      <h1>Chủ đề: {categoryName}</h1>
+      <h1>Chu de: {term.label}</h1>
 
       <p class="section-subhead">
-        Có {posts.length} bài viết trong chủ đề này
+        Co {posts.length} bai viet trong chu de nay
       </p>
     </div>
   </section>
@@ -43,16 +33,16 @@ const categoryName = slug?.replace(/-/g, " ");
     <div class="container">
       {
         posts.length === 0 ? (
-          <p class="text-center">Chưa có bài viết nào cho chủ đề này.</p>
+          <p class="text-center">Chua co bai viet nao cho chu de nay.</p>
         ) : (
           <div class="grid-auto">
-            {posts.map((post: any) => (
-              <a href={post.url} class="card">
-                <h3>{post.frontmatter?.title}</h3>
+            {posts.map((post) => (
+              <a href={`/posts/${post.id}`} class="card">
+                <h3 {...post.edit.title}>{post.data.title}</h3>
 
-                <p>{post.frontmatter?.description}</p>
+                {post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
 
-                <span class="read-more">Xem chi tiết →</span>
+                <span class="read-more">Xem chi tiet</span>
               </a>
             ))}
           </div>

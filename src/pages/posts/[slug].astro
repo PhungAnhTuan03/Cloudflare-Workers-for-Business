@@ -1,50 +1,62 @@
 ---
+import { decodeSlug, getEmDashEntry, getEntryTerms } from "emdash";
+import { Image, PortableText } from "emdash/ui";
 import Layout from "../../layouts/Layout.astro";
 
-export async function getStaticPaths(): Promise<any[]> {
-  const posts: any[] = Object.values(
-    import.meta.glob("./*.astro", {
-      eager: true,
-    }),
-  );
+const slug = decodeSlug(Astro.params.slug);
 
-  return posts
-    .filter((p: any) => p.url !== "/posts/")
-    .map((post: any) => ({
-      params: {
-        slug: post.url.split("/").pop(),
-      },
-      props: { post },
-    }));
+if (!slug) {
+  return Astro.redirect("/404");
 }
 
-const { post } = Astro.props;
-const { frontmatter } = post;
+const { entry: post, cacheHint } = await getEmDashEntry("posts", slug);
+
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+Astro.cache.set(cacheHint);
+
+const [categories, tags] = await Promise.all([
+  getEntryTerms("posts", post.data.id, "category"),
+  getEntryTerms("posts", post.data.id, "tag"),
+]);
+
+const formattedDate = post.data.publishedAt
+  ? new Intl.DateTimeFormat("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(post.data.publishedAt)
+  : "Chua co ngay";
 ---
 
 <Layout>
   <article class="post-container">
     <div class="container">
       <div class="post-header">
-        <h1>{frontmatter?.title || "Bài viết"}</h1>
+        {post.data.featured_image && (
+          <div class="post-image" {...post.edit.featured_image}>
+            <Image image={post.data.featured_image} />
+          </div>
+        )}
+        <h1 {...post.edit.title}>{post.data.title}</h1>
         <div class="post-meta">
-          <time>{frontmatter?.date || "Chưa có ngày"}</time>
+          <time datetime={post.data.publishedAt?.toISOString()}>{formattedDate}</time>
           {
-            frontmatter?.category && (
-              <span class="post-category">Chủ đề: {frontmatter.category}</span>
-            )
+            categories.map((category) => (
+              <a href={`/category/${category.slug}`} class="post-category">
+                {category.label}
+              </a>
+            ))
           }
           <div class="post-tags">
-            {
-              frontmatter?.tags?.map((tag: string) => (
-                <span class="tag">#{tag}</span>
-              ))
-            }
+            {tags.map((tag) => <a href={`/tag/${tag.slug}`} class="tag">#{tag.label}</a>)}
           </div>
         </div>
       </div>
-      <div class="post-content">
-        <post.Content />
+      <div class="post-content" {...post.edit.content}>
+        <PortableText value={post.data.content ?? []} />
       </div>
     </div>
   </article>
@@ -55,6 +67,11 @@ const { frontmatter } = post;
     padding: 60px 0;
     max-width: 800px;
     margin: 0 auto;
+  }
+  .post-image {
+    margin-bottom: 28px;
+    overflow: hidden;
+    border-radius: 8px;
   }
   .post-header {
     margin-bottom: 2rem;
@@ -72,6 +89,8 @@ const { frontmatter } = post;
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
+    color: inherit;
+    text-decoration: none;
   }
   .post-content {
     line-height: 1.8;

@@ -1,21 +1,31 @@
 ---
+import { getEmDashCollection } from "emdash";
+import { Image } from "emdash/ui";
 import Layout from "../../layouts/Layout.astro";
 
-const posts: any[] = Object.values(
-  import.meta.glob("./*.astro", {
-    eager: true,
-  }),
-);
+const { entries: posts, cacheHint } = await getEmDashCollection("posts", {
+	status: "published",
+	orderBy: { published_at: "desc" },
+});
 
-const blogPosts = posts.filter((p: any) => p.url !== "/posts/");
+Astro.cache.set(cacheHint);
+
+const formatDate = (date?: Date | null) =>
+	date
+		? new Intl.DateTimeFormat("vi-VN", {
+				day: "2-digit",
+				month: "2-digit",
+				year: "numeric",
+			}).format(date)
+		: "Chua co ngay";
 ---
 
 <Layout>
   <section class="page-header">
     <div class="container">
-      <h1>Blog & Tin tức</h1>
+      <h1>Blog & Tin tuc</h1>
       <p class="section-subhead">
-        Cập nhật kiến thức, xu hướng công nghệ mới nhất
+        Cap nhat kien thuc, xu huong cong nghe moi nhat
       </p>
     </div>
   </section>
@@ -23,23 +33,23 @@ const blogPosts = posts.filter((p: any) => p.url !== "/posts/");
   <section class="blog-list">
     <div class="container">
       {
-        blogPosts.length === 0 ? (
+        posts.length === 0 ? (
           <p class="text-center">
-            Chưa có bài viết nào. Hãy tạo bài viết đầu tiên trong thư mục{" "}
-            <code>src/pages/posts/</code>
+            Chua co bai viet nao. Hay tao bai viet trong EmDash Admin.
           </p>
         ) : (
           <div class="grid-auto">
-            {blogPosts.map((post) => (
-              <a href={post.url} class="card blog-card">
-                <div class="blog-date">
-                  {post.frontmatter?.date || "Sắp ra mắt"}
-                </div>
-                <h3>{post.frontmatter?.title || "Bài viết mới"}</h3>
-                <p>
-                  {post.frontmatter?.description || "Nội dung đang cập nhật..."}
-                </p>
-                <div class="read-more">Đọc tiếp →</div>
+            {posts.map((post) => (
+              <a href={`/posts/${post.id}`} class="card blog-card">
+                {post.data.featured_image && (
+                  <div class="blog-image" {...post.edit.featured_image}>
+                    <Image image={post.data.featured_image} />
+                  </div>
+                )}
+                <div class="blog-date">{formatDate(post.data.publishedAt)}</div>
+                <h3 {...post.edit.title}>{post.data.title}</h3>
+                {post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
+                <div class="read-more">Doc tiep</div>
               </a>
             ))}
           </div>
@@ -56,6 +66,11 @@ const blogPosts = posts.filter((p: any) => p.url !== "/posts/");
   .blog-card {
     display: block;
     text-decoration: none;
+  }
+  .blog-image {
+    margin-bottom: 16px;
+    overflow: hidden;
+    border-radius: 8px;
   }
   .blog-date {
     font-size: 0.85rem;

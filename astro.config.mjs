@@ -5,6 +5,8 @@ import { defineConfig } from "astro/config";
 import emdash from "emdash/astro";
 import tailwindcss from "@tailwindcss/vite";
 
+const isDevCommand = process.argv.includes("dev");
+
 export default defineConfig({
 	output: "server",
 	adapter: cloudflare({
@@ -24,6 +26,28 @@ export default defineConfig({
 	],
 	vite: {
 		plugins: [tailwindcss()],
+		build: {
+			chunkSizeWarningLimit: 8000,
+			rollupOptions: {
+				onwarn(warning, defaultHandler) {
+					if (
+						warning.message.includes("createRequire") &&
+						warning.message.includes("emdash/dist/runner")
+					) {
+						return;
+					}
+
+					defaultHandler(warning);
+				},
+			},
+		},
+		...(isDevCommand
+			? {
+					optimizeDeps: {
+						ignoreOutdatedRequests: true,
+					},
+				}
+			: {}),
 	},
 	devToolbar: { enabled: false },
 });
