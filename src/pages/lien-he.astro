@@ -1,281 +1,194 @@
 ---
+import ContactForm from "../components/ContactForm.astro";
 import Layout from "../layouts/Layout.astro";
+import { site } from "../lib/site-data";
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "ContactPage",
+	name: `Liên hệ ${site.name}`,
+	url: `${site.url}/lien-he`,
+	mainEntity: {
+		"@type": "EducationalOrganization",
+		name: site.name,
+		email: site.email,
+		telephone: site.phone,
+		address: site.address,
+	},
+};
 ---
 
-<Layout>
-	<section class="page-header contact-hero">
-		<div class="container">
-			<h1>Liên hệ</h1>
-			<p class="section-subhead">
-				Gửi thông tin tư vấn, chúng tôi sẽ phản hồi trong thời gian sớm nhất.
-			</p>
+<Layout
+	title={`Liên hệ ${site.name}`}
+	description="Gửi thông tin tư vấn khóa học, lịch học, học phí hoặc hợp tác đào tạo doanh nghiệp."
+	canonical={`${site.url}/lien-he`}
+	schema={schema}
+>
+	<section class="page-hero contact-hero">
+		<div class="container page-hero-grid">
+			<div>
+				<span class="page-kicker">
+					<i class="fa-solid fa-headset" aria-hidden="true"></i>
+					Liên hệ trung tâm
+				</span>
+				<h1 class="page-title">Đội tư vấn luôn sẵn sàng giúp bạn chọn đúng lộ trình.</h1>
+				<p class="page-lead">
+					Gửi thông tin bên dưới, trung tâm sẽ phản hồi qua email hoặc điện thoại. Mọi liên hệ
+					được lưu vào hệ thống D1 và gửi thông báo qua Resend về email quản trị.
+				</p>
+			</div>
+			<div class="contact-card card">
+				<h2>Thông tin nhanh</h2>
+				<ul>
+					<li>
+						<i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+						<span>{site.address}</span>
+					</li>
+					<li>
+						<i class="fa-solid fa-phone" aria-hidden="true"></i>
+						<a href={`tel:${site.phone.replaceAll(" ", "")}`}>{site.phone}</a>
+					</li>
+					<li>
+						<i class="fa-solid fa-envelope" aria-hidden="true"></i>
+						<a href={`mailto:${site.email}`}>{site.email}</a>
+					</li>
+					<li>
+						<i class="fa-solid fa-clock" aria-hidden="true"></i>
+						<span>Thứ 2 - Chủ nhật, 8:00 - 21:00</span>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</section>
 
-	<section class="contact-section">
-		<div class="container">
-			<div class="contact-grid">
-				<aside class="contact-info">
-					<h2>Thông tin liên hệ</h2>
-					<div class="info-item">
-						<i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-						<div>
-							<strong>Địa chỉ</strong>
-							<p>145 Lê Duẩn, phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
-						</div>
-					</div>
-					<div class="info-item">
-						<i class="fas fa-phone-alt" aria-hidden="true"></i>
-						<div>
-							<strong>Điện thoại</strong>
-							<p>1900 6369 (8h00 - 21h00)</p>
-						</div>
-					</div>
-					<div class="info-item">
-						<i class="fas fa-envelope" aria-hidden="true"></i>
-						<div>
-							<strong>Email</strong>
-							<p>info@saoviet.edu.vn</p>
-							<p>tuyensinh@saoviet.edu.vn</p>
-						</div>
-					</div>
-					<div class="info-item">
-						<i class="fas fa-clock" aria-hidden="true"></i>
-						<div>
-							<strong>Giờ làm việc</strong>
-							<p>Thứ 2 - Thứ 6: 8h00 - 20h00</p>
-							<p>Thứ 7 - Chủ nhật: 8h00 - 17h00</p>
-						</div>
-					</div>
-					<a
-						class="map-link"
-						href="https://www.google.com/maps/search/?api=1&query=145%20Le%20Duan%20Quan%201%20TP%20Ho%20Chi%20Minh"
-						target="_blank"
-						rel="noreferrer"
-					>
-						Xem bản đồ
-					</a>
-				</aside>
+	<section class="section contact-section">
+		<div class="container contact-grid">
+			<div class="contact-copy">
+				<p class="section-eyebrow">Tư vấn cá nhân hóa</p>
+				<h2 class="section-title">Bạn đang cần học gì?</h2>
+				<p class="section-lead">
+					Chọn khóa học quan tâm hoặc ghi rõ mục tiêu của bạn. Mentor sẽ gợi ý lộ trình, lịch
+					học, học phí và đầu ra phù hợp.
+				</p>
 
-				<div class="contact-form-wrapper">
-					<h2>Gửi tin nhắn</h2>
-					<form id="contactForm" action="/api/contact" method="POST">
-						<div class="form-honeypot" aria-hidden="true">
-							<label for="website">Website</label>
-							<input
-								type="text"
-								id="website"
-								name="website"
-								tabindex="-1"
-								autocomplete="off"
-							/>
-						</div>
-						<div class="form-group">
-							<label for="name">Họ và tên</label>
-							<input type="text" id="name" name="name" autocomplete="name" />
-						</div>
-						<div class="form-group">
-							<label for="email">Email *</label>
-							<input type="email" id="email" name="email" autocomplete="email" required />
-						</div>
-						<div class="form-group">
-							<label for="phone">Số điện thoại</label>
-							<input type="tel" id="phone" name="phone" autocomplete="tel" />
-						</div>
-						<div class="form-group">
-							<label for="subject">Chủ đề</label>
-							<select id="subject" name="subject">
-								<option value="">-- Chọn --</option>
-								<option value="tu-van">Tư vấn khóa học</option>
-								<option value="hoc-phi">Học phí</option>
-								<option value="hop-tac">Hợp tác doanh nghiệp</option>
-								<option value="khac">Khác</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="message">Nội dung *</label>
-							<textarea id="message" name="message" rows="5" required></textarea>
-						</div>
-						<button type="submit" class="btn btn-primary btn-block">Gửi liên hệ</button>
-						<p id="formStatus" class="form-status" aria-live="polite"></p>
-					</form>
+				<div class="support-grid">
+					<div class="support-item">
+						<i class="fa-solid fa-route" aria-hidden="true"></i>
+						<strong>Lộ trình rõ ràng</strong>
+						<span>Tư vấn theo mục tiêu và thời gian học thực tế.</span>
+					</div>
+					<div class="support-item">
+						<i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+						<strong>Dữ liệu an toàn</strong>
+						<span>Không công khai thông tin liên hệ của học viên.</span>
+					</div>
+					<div class="support-item">
+						<i class="fa-solid fa-reply" aria-hidden="true"></i>
+						<strong>Phản hồi nhanh</strong>
+						<span>Ưu tiên phản hồi trong ngày làm việc.</span>
+					</div>
 				</div>
+			</div>
+
+			<div class="contact-form-panel card">
+				<h2>Gửi yêu cầu tư vấn</h2>
+				<ContactForm
+					formId="contact-page-form"
+					submitLabel="Gửi liên hệ"
+					defaultMessage="Tôi muốn được tư vấn khóa học phù hợp với mục tiêu hiện tại."
+				/>
 			</div>
 		</div>
 	</section>
 </Layout>
 
-<style is:global>
-	.contact-hero {
-		padding-bottom: 32px;
+<style>
+	.contact-card {
+		padding: 26px;
 	}
-	.contact-section {
-		padding: 48px 0 72px;
+
+	.contact-card h2,
+	.contact-form-panel h2 {
+		margin: 0 0 18px;
+		font-size: 1.35rem;
 	}
-	.contact-grid {
+
+	.contact-card ul {
 		display: grid;
-		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-		gap: 40px;
-		align-items: start;
-	}
-	.contact-info,
-	.contact-form-wrapper {
-		background: var(--card-bg);
-		border: 1px solid var(--border-color);
-		border-radius: 16px;
-		box-shadow: var(--shadow-sm);
-		padding: 28px;
-	}
-	.contact-info h2,
-	.contact-form-wrapper h2 {
-		font-size: 1.45rem;
-		text-align: left;
-		margin-bottom: 24px;
-	}
-	.contact-info h2::after,
-	.contact-form-wrapper h2::after {
-		margin-left: 0;
-		margin-right: auto;
-	}
-	.info-item {
-		display: flex;
-		gap: 14px;
-		margin-bottom: 22px;
-	}
-	.info-item i {
-		color: var(--primary-blue);
-		font-size: 1.15rem;
-		margin-top: 4px;
-		width: 22px;
-		text-align: center;
-	}
-	.info-item strong {
-		display: block;
-		margin-bottom: 4px;
-	}
-	.info-item p {
-		color: var(--text-muted);
+		gap: 16px;
 		margin: 0;
+		padding: 0;
+		list-style: none;
 	}
-	.map-link {
-		color: var(--primary-blue);
-		font-weight: 700;
+
+	.contact-card li {
+		display: grid;
+		grid-template-columns: 28px 1fr;
+		gap: 10px;
+		color: var(--muted);
+	}
+
+	.contact-card i {
+		color: var(--primary);
+		margin-top: 4px;
+	}
+
+	.contact-card a {
+		color: var(--ink);
+		font-weight: 800;
 		text-decoration: none;
 	}
-	.map-link:hover {
-		text-decoration: underline;
+
+	.contact-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+		gap: 34px;
+		align-items: start;
 	}
-	.form-group {
-		margin-bottom: 18px;
+
+	.support-grid {
+		display: grid;
+		gap: 14px;
+		margin-top: 30px;
 	}
-	.form-honeypot {
-		position: absolute;
-		left: -10000px;
-		width: 1px;
-		height: 1px;
-		overflow: hidden;
+
+	.support-item {
+		display: grid;
+		grid-template-columns: 42px 1fr;
+		gap: 8px 14px;
+		align-items: start;
+		padding: 16px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: #fff;
 	}
-	.form-group label {
-		display: block;
-		margin-bottom: 8px;
-		font-weight: 600;
+
+	.support-item i {
+		grid-row: span 2;
+		width: 42px;
+		height: 42px;
+		display: inline-grid;
+		place-items: center;
+		border-radius: var(--radius);
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
 	}
-	.form-group input,
-	.form-group select,
-	.form-group textarea {
-		width: 100%;
-		padding: 12px 14px;
-		border-radius: 10px;
-		border: 1px solid var(--border-color);
-		background: var(--card-bg);
-		color: var(--text-main);
-		font: inherit;
+
+	.support-item strong {
+		line-height: 1.2;
 	}
-	.form-group input:focus,
-	.form-group select:focus,
-	.form-group textarea:focus {
-		outline: none;
-		border-color: var(--primary-blue);
-		box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
+
+	.support-item span {
+		color: var(--muted);
 	}
-	.btn-block {
-		width: 100%;
-		justify-content: center;
+
+	.contact-form-panel {
+		padding: 28px;
 	}
-	.form-status {
-		margin-top: 14px;
-		text-align: center;
-		font-weight: 600;
-		min-height: 1.5em;
-	}
-	.form-status[data-state="error"] {
-		color: #c0392b;
-	}
-	.form-status[data-state="success"] {
-		color: var(--success-green);
-	}
-	@media (max-width: 800px) {
+
+	@media (max-width: 860px) {
 		.contact-grid {
 			grid-template-columns: 1fr;
 		}
-		.contact-info,
-		.contact-form-wrapper {
-			padding: 22px;
-		}
 	}
 </style>
-
-<script>
-	const form = document.getElementById("contactForm");
-	const status = document.getElementById("formStatus");
-
-	if (form instanceof HTMLFormElement && status instanceof HTMLElement) {
-		form.addEventListener("submit", async (event) => {
-			event.preventDefault();
-
-			const submitButton = form.querySelector("button[type='submit']");
-			if (submitButton instanceof HTMLButtonElement) {
-				submitButton.disabled = true;
-			}
-			status.dataset.state = "";
-			status.textContent = "Đang gửi...";
-
-			try {
-				const body = new URLSearchParams();
-				for (const [key, value] of new FormData(form).entries()) {
-					if (typeof value === "string") {
-						body.append(key, value);
-					}
-				}
-
-				const response = await fetch("/api/contact", {
-					method: "POST",
-					body,
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-					},
-				});
-				const result = (await response.json().catch(() => ({}))) as {
-					ok?: boolean;
-					message?: string;
-				};
-
-				if (!response.ok) {
-					throw new Error(result.message || "Không gửi được liên hệ.");
-				}
-
-				status.dataset.state = "success";
-				status.textContent = result.message || "Gửi thành công. Chúng tôi sẽ liên hệ lại sớm.";
-				form.reset();
-			} catch (error) {
-				status.dataset.state = "error";
-				status.textContent =
-					error instanceof Error ? error.message : "Lỗi kết nối, vui lòng thử lại.";
-			} finally {
-				if (submitButton instanceof HTMLButtonElement) {
-					submitButton.disabled = false;
-				}
-			}
-		});
-	}
-</script>

@@ -1,0 +1,650 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import {
+	courses,
+	getCategoryById,
+	getCourseBySlug,
+	getInstructorById,
+	site,
+	testimonials,
+} from "../../lib/site-data";
+
+const course = getCourseBySlug(Astro.params.slug);
+
+if (!course) {
+	return Astro.redirect("/404");
+}
+
+const category = getCategoryById(course.categoryId);
+const instructor = getInstructorById(course.instructorId);
+const relatedCourses = courses
+	.filter((item) => item.categoryId === course.categoryId && item.slug !== course.slug)
+	.slice(0, 3);
+
+const courseSchema = {
+	"@context": "https://schema.org",
+	"@type": "Course",
+	name: course.title,
+	description: course.description,
+	provider: {
+		"@type": "EducationalOrganization",
+		name: site.name,
+		url: Astro.url.origin,
+	},
+};
+
+const breadcrumbSchema = {
+	"@context": "https://schema.org",
+	"@type": "BreadcrumbList",
+	itemListElement: [
+		{ "@type": "ListItem", position: 1, name: "Trang chủ", item: Astro.url.origin },
+		{ "@type": "ListItem", position: 2, name: "Khóa học", item: `${Astro.url.origin}/khoa-hoc` },
+		{ "@type": "ListItem", position: 3, name: course.title, item: Astro.url.href },
+	],
+};
+---
+
+<Layout
+	title={`${course.title} - ${site.name}`}
+	description={course.description}
+	image={course.image}
+	schema={[courseSchema, breadcrumbSchema]}
+>
+	<section class="course-hero">
+		<div class="container course-hero-grid">
+			<div>
+				<nav class="breadcrumb" aria-label="Breadcrumb">
+					<a href="/">Trang chủ</a>
+					<span>/</span>
+					<a href="/khoa-hoc">Khóa học</a>
+					<span>/</span>
+					<strong>{course.shortTitle}</strong>
+				</nav>
+				<p class="page-kicker">
+					<i class={category?.icon ?? "fa-solid fa-layer-group"}></i>
+					{category?.title}
+				</p>
+				<h1 class="page-title">{course.title}</h1>
+				<p class="page-lead">{course.description}</p>
+				<div class="course-hero-actions">
+					<a href="#dang-ky" class="btn btn-primary">Đăng ký tư vấn</a>
+					<a href="#noi-dung" class="btn btn-secondary">Xem nội dung học</a>
+				</div>
+			</div>
+			<aside class="enroll-card card">
+				<img src={course.image} alt={course.title} loading="eager" />
+				<div class="enroll-card-body">
+					<strong>{course.price}</strong>
+					<div class="enroll-meta">
+						<span><i class="fa-regular fa-clock"></i> {course.duration}</span>
+						<span><i class="fa-solid fa-book-open"></i> {course.lessons} bài học</span>
+						<span><i class="fa-solid fa-star"></i> {course.rating}/5</span>
+						<span><i class="fa-solid fa-users"></i> {course.students} học viên</span>
+					</div>
+					<a href="#dang-ky" class="btn btn-accent">Nhận tư vấn lộ trình</a>
+				</div>
+			</aside>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container detail-grid">
+			<main class="detail-main">
+				<section class="detail-block">
+					<p class="section-eyebrow">Mục tiêu khóa học</p>
+					<h2>Bạn sẽ làm được gì sau khóa học?</h2>
+					<div class="check-grid">
+						{course.outcomes.map((item) => (
+							<div class="check-item"><i class="fa-solid fa-circle-check"></i><span>{item}</span></div>
+						))}
+					</div>
+				</section>
+
+				<section class="detail-block">
+					<p class="section-eyebrow">Đối tượng phù hợp</p>
+					<h2>Khóa học này dành cho ai?</h2>
+					<div class="pill-list">
+						{course.audience.map((item) => <span>{item}</span>)}
+					</div>
+				</section>
+
+				<section id="noi-dung" class="detail-block">
+					<p class="section-eyebrow">Nội dung học</p>
+					<h2>Lộ trình chi tiết</h2>
+					<div class="curriculum">
+						{course.curriculum.map((section, index) => (
+							<details open={index === 0}>
+								<summary>
+									<span>{String(index + 1).padStart(2, "0")}</span>
+									<strong>{section.title}</strong>
+								</summary>
+								<ul>
+									{section.lessons.map((lesson) => <li>{lesson}</li>)}
+								</ul>
+							</details>
+						))}
+					</div>
+				</section>
+
+				{instructor && (
+					<section class="detail-block">
+						<p class="section-eyebrow">Giảng viên</p>
+						<h2>Mentor đồng hành</h2>
+						<div class="instructor-card">
+							<img src={instructor.image} alt={instructor.name} loading="lazy" />
+							<div>
+								<h3>{instructor.name}</h3>
+								<p class="muted">{instructor.role} · {instructor.experience}</p>
+								<p>{instructor.bio}</p>
+								<div class="pill-list small">
+									{instructor.skills.map((skill) => <span>{skill}</span>)}
+								</div>
+							</div>
+						</div>
+					</section>
+				)}
+
+				<section class="detail-block">
+					<p class="section-eyebrow">Dự án thực tế</p>
+					<h2>Sản phẩm cuối khóa</h2>
+					<div class="project-grid">
+						{course.projects.map((project) => (
+							<div class="project-card">
+								<i class="fa-solid fa-folder-open"></i>
+								<strong>{project}</strong>
+							</div>
+						))}
+					</div>
+				</section>
+
+				<section class="detail-block certificate-block">
+					<div>
+						<p class="section-eyebrow">Chứng chỉ</p>
+						<h2>Nhận chứng nhận hoàn thành sau đồ án.</h2>
+						<p>
+							Học viên hoàn thành bài tập, dự án cuối khóa và tham gia đầy đủ sẽ nhận chứng nhận
+							để bổ sung vào CV, portfolio hoặc hồ sơ nội bộ doanh nghiệp.
+						</p>
+					</div>
+					<div class="certificate-preview">
+						<span>Certificate</span>
+						<strong>{course.shortTitle}</strong>
+						<small>{site.name}</small>
+					</div>
+				</section>
+
+				<section class="detail-block">
+					<p class="section-eyebrow">Feedback</p>
+					<h2>Học viên nói gì?</h2>
+					<div class="testimonial-mini-grid">
+						{testimonials.slice(0, 2).map((item) => (
+							<figure>
+								<div><i class="fa-solid fa-star"></i> {item.rating}</div>
+								<blockquote>{item.content}</blockquote>
+								<figcaption>{item.name} · {item.role}</figcaption>
+							</figure>
+						))}
+					</div>
+				</section>
+
+				<section class="detail-block">
+					<p class="section-eyebrow">FAQ</p>
+					<h2>Câu hỏi thường gặp</h2>
+					<div class="faq-list">
+						{course.faqs.map((faq) => (
+							<details>
+								<summary>{faq.question}</summary>
+								<p>{faq.answer}</p>
+							</details>
+						))}
+					</div>
+				</section>
+			</main>
+
+			<aside id="dang-ky" class="sticky-form">
+				<form class="card lead-form" action="/api/contact" method="POST" data-contact-form>
+					<h2>Đăng ký tư vấn</h2>
+					<p>Nhận lộ trình, lịch khai giảng và ưu đãi mới nhất cho khóa {course.shortTitle}.</p>
+					<div class="form-honeypot" aria-hidden="true">
+						<label for="course-website">Website</label>
+						<input id="course-website" name="website" tabindex="-1" autocomplete="off" />
+					</div>
+					<div class="field">
+						<label for="course-name">Họ tên</label>
+						<input id="course-name" name="name" required autocomplete="name" />
+					</div>
+					<div class="field">
+						<label for="course-phone">Số điện thoại</label>
+						<input id="course-phone" name="phone" required autocomplete="tel" />
+					</div>
+					<div class="field">
+						<label for="course-email">Email</label>
+						<input id="course-email" type="email" name="email" required autocomplete="email" />
+					</div>
+					<input type="hidden" name="subject" value={course.title} />
+					<div class="field">
+						<label for="course-message">Ghi chú</label>
+						<textarea id="course-message" name="message" rows="4" required>{`Tôi muốn được tư vấn khóa ${course.title}.`}</textarea>
+					</div>
+					<button class="btn btn-primary" type="submit">Gửi thông tin</button>
+					<p class="form-status" aria-live="polite"></p>
+				</form>
+			</aside>
+		</div>
+	</section>
+
+	{relatedCourses.length > 0 && (
+		<section class="section related-section">
+			<div class="container">
+				<div class="section-head">
+					<div>
+						<p class="section-eyebrow">Khóa học liên quan</p>
+						<h2 class="section-title">Có thể bạn cũng quan tâm.</h2>
+					</div>
+					<a href="/khoa-hoc" class="btn btn-ghost">Xem tất cả</a>
+				</div>
+				<div class="related-grid">
+					{relatedCourses.map((item) => (
+						<a href={`/khoa-hoc/${item.slug}`} class="related-card">
+							<img src={item.image} alt={item.title} loading="lazy" />
+							<h3>{item.title}</h3>
+							<p>{item.description}</p>
+						</a>
+					))}
+				</div>
+			</div>
+		</section>
+	)}
+</Layout>
+
+<script>
+	document.querySelectorAll("[data-contact-form]").forEach((formElement) => {
+		if (!(formElement instanceof HTMLFormElement)) return;
+		const status = formElement.querySelector(".form-status");
+
+		formElement.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const button = formElement.querySelector("button[type='submit']");
+			if (button instanceof HTMLButtonElement) button.disabled = true;
+			if (status instanceof HTMLElement) {
+				status.dataset.state = "";
+				status.textContent = "Đang gửi thông tin...";
+			}
+
+			try {
+				const body = new URLSearchParams();
+				for (const [key, value] of new FormData(formElement).entries()) {
+					if (typeof value === "string") body.append(key, value);
+				}
+				const response = await fetch("/api/contact", {
+					method: "POST",
+					body,
+					headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+				});
+				const result = (await response.json().catch(() => ({}))) as { message?: string };
+				if (!response.ok) throw new Error(result.message || "Không gửi được thông tin.");
+				if (status instanceof HTMLElement) {
+					status.dataset.state = "success";
+					status.textContent = result.message || "Gửi thành công. Chúng tôi sẽ liên hệ lại sớm.";
+				}
+				formElement.reset();
+			} catch (error) {
+				if (status instanceof HTMLElement) {
+					status.dataset.state = "error";
+					status.textContent = error instanceof Error ? error.message : "Lỗi kết nối, vui lòng thử lại.";
+				}
+			} finally {
+				if (button instanceof HTMLButtonElement) button.disabled = false;
+			}
+		});
+	});
+</script>
+
+<style>
+	.course-hero {
+		padding: 50px 0 70px;
+		background: linear-gradient(135deg, rgb(37 99 235 / 0.12), rgb(14 165 233 / 0.08));
+		border-bottom: 1px solid var(--line);
+	}
+
+	.course-hero-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 380px;
+		gap: 42px;
+		align-items: center;
+	}
+
+	.breadcrumb {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 18px;
+		color: var(--muted);
+		font-size: 0.9rem;
+		font-weight: 800;
+	}
+
+	.breadcrumb a {
+		color: var(--primary);
+		text-decoration: none;
+	}
+
+	.course-hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 26px;
+	}
+
+	.enroll-card {
+		overflow: hidden;
+	}
+
+	.enroll-card img {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+	}
+
+	.enroll-card-body,
+	.lead-form {
+		padding: 22px;
+	}
+
+	.enroll-card-body > strong {
+		color: var(--primary);
+		font-size: 2rem;
+	}
+
+	.enroll-meta {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+		margin: 16px 0 18px;
+		color: var(--muted);
+		font-size: 0.9rem;
+		font-weight: 800;
+	}
+
+	.detail-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 360px;
+		gap: 34px;
+		align-items: start;
+	}
+
+	.detail-main {
+		display: grid;
+		gap: 24px;
+	}
+
+	.detail-block {
+		padding: 28px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.detail-block h2 {
+		margin: 0 0 18px;
+		font-size: clamp(1.55rem, 3vw, 2.15rem);
+	}
+
+	.check-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.check-item {
+		display: flex;
+		gap: 10px;
+		color: #334155;
+		font-weight: 700;
+	}
+
+	.check-item i {
+		margin-top: 4px;
+		color: var(--success);
+	}
+
+	.pill-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.pill-list span {
+		padding: 8px 11px;
+		border-radius: 999px;
+		background: rgb(37 99 235 / 0.08);
+		color: var(--primary);
+		font-weight: 800;
+	}
+
+	.pill-list.small span {
+		background: var(--soft);
+		color: #334155;
+	}
+
+	.curriculum {
+		display: grid;
+		gap: 12px;
+	}
+
+	.curriculum details,
+	.faq-list details {
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: var(--soft);
+	}
+
+	.curriculum summary,
+	.faq-list summary {
+		cursor: pointer;
+		padding: 16px;
+		font-weight: 900;
+	}
+
+	.curriculum summary {
+		display: flex;
+		gap: 12px;
+	}
+
+	.curriculum summary span {
+		color: var(--primary);
+	}
+
+	.curriculum ul {
+		margin: 0;
+		padding: 0 18px 18px 48px;
+		color: var(--muted);
+	}
+
+	.instructor-card {
+		display: grid;
+		grid-template-columns: 150px minmax(0, 1fr);
+		gap: 22px;
+		align-items: center;
+	}
+
+	.instructor-card img {
+		aspect-ratio: 1;
+		width: 150px;
+		border-radius: 8px;
+		object-fit: cover;
+	}
+
+	.muted,
+	.detail-block p,
+	.faq-list p {
+		color: var(--muted);
+	}
+
+	.project-grid,
+	.testimonial-mini-grid,
+	.related-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.project-card {
+		display: grid;
+		gap: 12px;
+		padding: 18px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: var(--soft);
+	}
+
+	.project-card i {
+		color: var(--accent);
+		font-size: 1.5rem;
+	}
+
+	.certificate-block {
+		display: grid;
+		grid-template-columns: 1fr 260px;
+		gap: 24px;
+		align-items: center;
+	}
+
+	.certificate-preview {
+		min-height: 170px;
+		display: grid;
+		align-content: center;
+		gap: 8px;
+		padding: 20px;
+		border: 1px solid rgb(37 99 235 / 0.25);
+		border-radius: 8px;
+		background: linear-gradient(135deg, #fff, #eaf5ff);
+		text-align: center;
+	}
+
+	.certificate-preview span,
+	.certificate-preview small {
+		color: var(--muted);
+		font-weight: 800;
+		text-transform: uppercase;
+	}
+
+	.certificate-preview strong {
+		color: var(--primary);
+		font-size: 1.5rem;
+	}
+
+	.testimonial-mini-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.testimonial-mini-grid figure {
+		margin: 0;
+		padding: 18px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: var(--soft);
+	}
+
+	.testimonial-mini-grid div {
+		color: var(--accent);
+		font-weight: 900;
+	}
+
+	.testimonial-mini-grid blockquote {
+		margin: 12px 0;
+		color: #334155;
+	}
+
+	.testimonial-mini-grid figcaption {
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.faq-list {
+		display: grid;
+		gap: 12px;
+	}
+
+	.faq-list p {
+		margin: 0;
+		padding: 0 16px 16px;
+	}
+
+	.sticky-form {
+		position: sticky;
+		top: 96px;
+	}
+
+	.lead-form h2 {
+		margin: 0 0 6px;
+	}
+
+	.lead-form .field {
+		margin-top: 12px;
+	}
+
+	.lead-form .btn {
+		width: 100%;
+		margin-top: 16px;
+	}
+
+	.related-section {
+		background: var(--surface-2);
+	}
+
+	.related-card {
+		display: block;
+		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff;
+		text-decoration: none;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.related-card img {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+	}
+
+	.related-card h3,
+	.related-card p {
+		margin-left: 18px;
+		margin-right: 18px;
+	}
+
+	.related-card p {
+		margin-bottom: 18px;
+		color: var(--muted);
+	}
+
+	@media (max-width: 980px) {
+		.course-hero-grid,
+		.detail-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.sticky-form {
+			position: static;
+		}
+	}
+
+	@media (max-width: 720px) {
+		.check-grid,
+		.project-grid,
+		.testimonial-mini-grid,
+		.related-grid,
+		.certificate-block,
+		.instructor-card {
+			grid-template-columns: 1fr;
+		}
+
+		.instructor-card img {
+			width: 100%;
+			max-width: 220px;
+		}
+	}
+</style>

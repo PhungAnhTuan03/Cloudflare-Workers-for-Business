@@ -1,0 +1,103 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { instructors, site } from "../../lib/site-data";
+---
+
+<Layout
+	title={`Giảng viên - ${site.name}`}
+	description="Đội ngũ giảng viên và mentor thực chiến tại Sao Việt Tech Academy."
+>
+	<section class="page-hero">
+		<div class="container">
+			<p class="page-kicker"><i class="fa-solid fa-chalkboard-user"></i> Đội ngũ mentor</p>
+			<h1 class="page-title">Học cùng người đã làm thật, triển khai thật.</h1>
+			<p class="page-lead">
+				Giảng viên không chỉ dạy công cụ. Họ hướng dẫn quy trình, review sản phẩm và giúp học viên
+				hiểu tiêu chuẩn đầu ra trong môi trường doanh nghiệp.
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container instructor-grid">
+			{instructors.map((instructor) => (
+				<article class="mentor-card">
+					<img src={instructor.image} alt={instructor.name} loading="lazy" />
+					<div class="mentor-body">
+						<span>{instructor.experience}</span>
+						<h2>{instructor.name}</h2>
+						<p class="role">{instructor.role}</p>
+						<p>{instructor.bio}</p>
+						<div class="skill-list">
+							{instructor.skills.map((skill) => <small>{skill}</small>)}
+						</div>
+					</div>
+				</article>
+			))}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.instructor-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 22px;
+	}
+
+	.mentor-card {
+		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.mentor-card img {
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		object-fit: cover;
+	}
+
+	.mentor-body {
+		padding: 22px;
+	}
+
+	.mentor-body span {
+		color: var(--primary);
+		font-size: 0.84rem;
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+
+	.mentor-body h2 {
+		margin: 8px 0 4px;
+		font-size: 1.5rem;
+	}
+
+	.role,
+	.mentor-body p {
+		color: var(--muted);
+	}
+
+	.skill-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 16px;
+	}
+
+	.skill-list small {
+		padding: 7px 10px;
+		border-radius: 999px;
+		background: rgb(37 99 235 / 0.08);
+		color: var(--primary);
+		font-weight: 800;
+	}
+
+	@media (max-width: 860px) {
+		.instructor-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

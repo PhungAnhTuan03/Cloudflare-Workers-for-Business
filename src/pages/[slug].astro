@@ -34,8 +34,8 @@ const seo = getSeoMeta(page, {
 <Base
 	title={seo.title}
 	pageTitle={seo.ogTitle}
-	description={seo.description}
-	canonical={seo.canonical}
+	description={seo.description ?? undefined}
+	canonical={seo.canonical ?? undefined}
 	content={{ collection: "pages", id: page.data.id, slug }}
 >
 	<article>

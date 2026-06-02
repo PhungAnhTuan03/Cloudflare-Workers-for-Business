@@ -1,36 +1,138 @@
-<form id="contact-form" class="contact-form" action="/api/contact" method="POST">
+---
+import { courses } from "../lib/site-data";
+
+type SubjectOption = {
+	value: string;
+	label: string;
+};
+
+interface Props {
+	formId?: string;
+	defaultSubject?: string;
+	defaultMessage?: string;
+	submitLabel?: string;
+	showCourseOptions?: boolean;
+	compact?: boolean;
+}
+
+const {
+	formId = "contact-form",
+	defaultSubject = "",
+	defaultMessage = "",
+	submitLabel = "Gửi thông tin",
+	showCourseOptions = true,
+	compact = false,
+} = Astro.props;
+
+const baseSubjects: SubjectOption[] = [
+	{ value: "Tư vấn khóa học", label: "Tư vấn khóa học" },
+	{ value: "Học phí và lịch học", label: "Học phí và lịch học" },
+	{ value: "Đào tạo doanh nghiệp", label: "Đào tạo doanh nghiệp" },
+	{ value: "Hợp tác tuyển dụng", label: "Hợp tác tuyển dụng" },
+];
+
+const subjectOptions = showCourseOptions
+	? [
+			...baseSubjects,
+			...courses.map((course) => ({
+				value: `Tư vấn khóa học: ${course.title}`,
+				label: course.title,
+			})),
+		]
+	: baseSubjects;
+---
+
+<form
+	id={formId}
+	class:list={["lead-form", { "lead-form-compact": compact }]}
+	action="/api/contact"
+	method="POST"
+	data-contact-form
+>
 	<div class="form-honeypot" aria-hidden="true">
-		<label for="contact-website">Website</label>
+		<label for={`${formId}-website`}>Website</label>
 		<input
 			type="text"
-			id="contact-website"
+			id={`${formId}-website`}
 			name="website"
 			tabindex="-1"
 			autocomplete="off"
 		/>
 	</div>
-	<input type="text" name="name" placeholder="Họ tên" autocomplete="name" />
-	<input type="email" name="email" placeholder="Email *" autocomplete="email" required />
-	<textarea name="message" placeholder="Tin nhắn *" rows="5" required></textarea>
-	<button type="submit">Gửi tin nhắn</button>
-	<p id="contact-form-message" aria-live="polite"></p>
+
+	<div class="form-grid">
+		<div class="field">
+			<label for={`${formId}-name`}>Họ và tên</label>
+			<input id={`${formId}-name`} type="text" name="name" autocomplete="name" required />
+		</div>
+
+		<div class="field">
+			<label for={`${formId}-phone`}>Số điện thoại</label>
+			<input id={`${formId}-phone`} type="tel" name="phone" autocomplete="tel" />
+		</div>
+
+		<div class="field">
+			<label for={`${formId}-email`}>Email</label>
+			<input id={`${formId}-email`} type="email" name="email" autocomplete="email" required />
+		</div>
+
+		<div class="field">
+			<label for={`${formId}-subject`}>Nhu cầu tư vấn</label>
+			<select id={`${formId}-subject`} name="subject">
+				<option value="">Chọn nội dung</option>
+				{
+					subjectOptions.map((option) => (
+						<option value={option.value} selected={option.value === defaultSubject}>
+							{option.label}
+						</option>
+					))
+				}
+			</select>
+		</div>
+
+		<div class="field full">
+			<label for={`${formId}-message`}>Nội dung</label>
+			<textarea id={`${formId}-message`} name="message" rows={compact ? 4 : 5} required>{defaultMessage}</textarea>
+		</div>
+	</div>
+
+	<button type="submit" class="btn btn-primary lead-form-submit">
+		<i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+		{submitLabel}
+	</button>
+	<p class="form-status" aria-live="polite" data-form-status></p>
 </form>
 
 <style>
-	.form-honeypot {
-		position: absolute;
-		left: -10000px;
-		width: 1px;
-		height: 1px;
-		overflow: hidden;
+	.lead-form {
+		display: grid;
+		gap: 16px;
+	}
+
+	.lead-form-submit {
+		width: fit-content;
+	}
+
+	.lead-form-compact .lead-form-submit {
+		width: 100%;
+	}
+
+	@media (max-width: 640px) {
+		.lead-form-submit {
+			width: 100%;
+		}
 	}
 </style>
 
 <script>
-	const form = document.getElementById("contact-form");
-	const message = document.getElementById("contact-form-message");
+	for (const form of document.querySelectorAll("[data-contact-form]")) {
+		if (!(form instanceof HTMLFormElement) || form.dataset.bound === "true") {
+			continue;
+		}
 
-	if (form instanceof HTMLFormElement && message instanceof HTMLElement) {
+		form.dataset.bound = "true";
+		const status = form.querySelector("[data-form-status]");
+
 		form.addEventListener("submit", async (event) => {
 			event.preventDefault();
 
@@ -39,7 +141,10 @@
 				submitButton.disabled = true;
 			}
 
-			message.textContent = "Đang gửi...";
+			if (status instanceof HTMLElement) {
+				status.dataset.state = "";
+				status.textContent = "Đang gửi thông tin...";
+			}
 
 			try {
 				const body = new URLSearchParams();
@@ -57,19 +162,26 @@
 					},
 				});
 				const result = (await response.json().catch(() => ({}))) as {
+					ok?: boolean;
 					message?: string;
 				};
 
-				if (!response.ok) {
-					throw new Error(result.message || "Không gửi được liên hệ.");
+				if (!response.ok || result.ok === false) {
+					throw new Error(result.message || "Không gửi được liên hệ. Vui lòng thử lại.");
 				}
 
-				message.textContent =
-					result.message || "Gửi thành công. Chúng tôi sẽ liên hệ lại sớm.";
+				if (status instanceof HTMLElement) {
+					status.dataset.state = "success";
+					status.textContent =
+						result.message || "Gửi thành công. Trung tâm sẽ phản hồi trong thời gian sớm nhất.";
+				}
 				form.reset();
 			} catch (error) {
-				message.textContent =
-					error instanceof Error ? error.message : "Lỗi kết nối, vui lòng thử lại.";
+				if (status instanceof HTMLElement) {
+					status.dataset.state = "error";
+					status.textContent =
+						error instanceof Error ? error.message : "Lỗi kết nối. Vui lòng thử lại.";
+				}
 			} finally {
 				if (submitButton instanceof HTMLButtonElement) {
 					submitButton.disabled = false;

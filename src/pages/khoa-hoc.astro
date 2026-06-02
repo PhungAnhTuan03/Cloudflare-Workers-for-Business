@@ -1,249 +1,226 @@
 ---
-// src/pages/khoa-hoc.astro
 import Layout from "../layouts/Layout.astro";
+import { courseCategories, courses, site } from "../lib/site-data";
 
-// Dữ liệu khóa học mẫu
-const courses = [
-  {
-    slug: "tin-hoc-van-phong",
-    title: "Tin học văn phòng",
-    icon: "fas fa-file-excel",
-    desc: "Word, Excel, PowerPoint chuyên sâu. Luyện thi MOS quốc tế.",
-    tag: "Chứng chỉ MOS",
-    price: "2.890.000đ",
-    duration: "3 tháng",
-  },
-  {
-    slug: "lap-trinh-python",
-    title: "Lập trình Python",
-    icon: "fab fa-python",
-    desc: "Từ cơ bản đến nâng cao, xử lý dữ liệu & AI cơ bản.",
-    tag: "Python Core",
-    price: "3.490.000đ",
-    duration: "4 tháng",
-  },
-  {
-    slug: "thiet-ke-do-hoa",
-    title: "Thiết kế đồ họa",
-    icon: "fas fa-paintbrush",
-    desc: "Photoshop, Illustrator, dự án thực tế.",
-    tag: "Creative Cloud",
-    price: "3.290.000đ",
-    duration: "3 tháng",
-  },
-  {
-    slug: "quan-tri-mang-ccna",
-    title: "Quản trị mạng CCNA",
-    icon: "fas fa-network-wired",
-    desc: "Cấu hình router, switch, bảo mật cơ bản.",
-    tag: "Chứng chỉ Cisco",
-    price: "4.190.000đ",
-    duration: "4 tháng",
-  },
-  {
-    slug: "web-fullstack",
-    title: "Lập trình Web Fullstack",
-    icon: "fas fa-code",
-    desc: "React, NodeJS, MongoDB, triển khai dự án.",
-    tag: "Hot nhất 2025",
-    price: "5.490.000đ",
-    duration: "6 tháng",
-  },
-  {
-    slug: "ke-toan-tin-hoc",
-    title: "Kế toán tin học",
-    icon: "fas fa-calculator",
-    desc: "Excel kế toán, MISA, nghiệp vụ thực tế.",
-    tag: "Hỗ trợ việc làm",
-    price: "2.690.000đ",
-    duration: "2.5 tháng",
-  },
-];
+const selectedField = Astro.url.searchParams.get("field") ?? "all";
+const visibleCourses =
+	selectedField === "all"
+		? courses
+		: courses.filter((course) => course.categoryId === selectedField);
 ---
 
-<Layout>
-  <section class="page-header">
-    <div class="container">
-      <h1>Khóa học</h1>
-      <p class="section-subhead">
-        Chương trình thực chiến, giảng viên giàu kinh nghiệm, cam kết đầu ra
-      </p>
-    </div>
-  </section>
+<Layout
+	title={`Khóa học công nghệ - ${site.name}`}
+	description="Danh sách khóa học tin học văn phòng, AI, lập trình, thiết kế đồ họa, AutoCAD và Digital Marketing. Học thực chiến, mentor theo sát, có dự án cuối khóa."
+>
+	<section class="page-hero">
+		<div class="container page-hero-grid">
+			<div>
+				<p class="page-kicker"><i class="fa-solid fa-layer-group"></i> Danh mục khóa học</p>
+				<h1 class="page-title">Khóa học công nghệ cho từng mục tiêu nghề nghiệp.</h1>
+				<p class="page-lead">
+					Chọn khóa học theo năng lực hiện tại, lịch học và outcome mong muốn. Mỗi khóa đều có
+					lộ trình, mentor, bài tập thực tế và chứng nhận hoàn thành.
+				</p>
+			</div>
+			<div class="hero-summary card">
+				<strong>{courses.length}</strong>
+				<span>khóa học đang mở lớp</span>
+				<p>Khai giảng linh hoạt hằng tuần, có lớp online, offline và đào tạo theo nhóm doanh nghiệp.</p>
+			</div>
+		</div>
+	</section>
 
-  <section class="courses-section">
-    <div class="container">
-      <div class="course-filters">
-        <button class="filter-btn active" data-filter="all">Tất cả</button>
-        <button class="filter-btn" data-filter="van-phong">Văn phòng</button>
-        <button class="filter-btn" data-filter="lap-trinh">Lập trình</button>
-        <button class="filter-btn" data-filter="do-hoa">Đồ họa</button>
-        <button class="filter-btn" data-filter="mang">Mạng</button>
-      </div>
-      <div class="course-grid" id="courseGrid">
-        {
-          courses.map((course) => (
-            <div
-              class="course-card lazy"
-              data-category={
-                course.title.includes("văn phòng")
-                  ? "van-phong"
-                  : course.title.includes("Python") ||
-                      course.title.includes("Web")
-                    ? "lap-trinh"
-                    : course.title.includes("đồ họa")
-                      ? "do-hoa"
-                      : course.title.includes("mạng")
-                        ? "mang"
-                        : "all"
-              }
-            >
-              <div class="course-icon">
-                <i class={course.icon} />
-              </div>
-              <h3>{course.title}</h3>
-              <div class="course-tag">{course.tag}</div>
-              <p>{course.desc}</p>
-              <div class="course-meta">
-                <span>
-                  <i class="far fa-clock" /> {course.duration}
-                </span>
-                <span class="course-price">{course.price}</span>
-              </div>
-              <a
-                href={`/khoa-hoc/${course.slug}`}
-                class="btn btn-primary btn-sm"
-              >
-                Chi tiết
-              </a>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+	<section class="section tight">
+		<div class="container">
+			<div class="filter-bar" aria-label="Lọc khóa học">
+				<a class:list={["filter-chip", selectedField === "all" && "is-active"]} href="/khoa-hoc">
+					Tất cả
+				</a>
+				{courseCategories.map((category) => (
+					<a
+						class:list={["filter-chip", selectedField === category.id && "is-active"]}
+						href={`/khoa-hoc?field=${category.id}`}
+					>
+						<i class={category.icon}></i>
+						{category.title}
+					</a>
+				))}
+			</div>
+
+			<div class="course-list-grid">
+				{visibleCourses.map((course) => {
+					const category = courseCategories.find((item) => item.id === course.categoryId);
+					return (
+						<a href={`/khoa-hoc/${course.slug}`} class="course-list-card">
+							<img src={course.image} alt={course.title} loading="lazy" />
+							<div class="course-list-content">
+								<div class="course-tags">
+									<span>{category?.title}</span>
+									<span><i class="fa-solid fa-star"></i> {course.rating}</span>
+								</div>
+								<h2>{course.title}</h2>
+								<p>{course.description}</p>
+								<div class="course-facts">
+									<span><i class="fa-regular fa-clock"></i> {course.duration}</span>
+									<span><i class="fa-solid fa-users"></i> {course.students}</span>
+									<span><i class="fa-solid fa-signal"></i> {course.level}</span>
+								</div>
+								<div class="course-action">
+									<strong>{course.price}</strong>
+									<span class="btn btn-primary">Xem chi tiết</span>
+								</div>
+							</div>
+						</a>
+					);
+				})}
+			</div>
+		</div>
+	</section>
 </Layout>
 
-<style is:global>
-  .page-header {
-    background: linear-gradient(120deg, var(--primary-dark) 0%, #1a3b4e 100%);
-    color: white;
-    text-align: center;
-    padding: 60px 0 40px;
-  }
-  .page-header h1 {
-    margin-bottom: 0.5rem;
-  }
-  .page-header .section-subhead {
-    color: rgba(255, 255, 255, 0.85);
-    margin-top: 0;
-  }
-  .courses-section {
-    padding: 60px 0;
-  }
-  .course-filters {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 40px;
-  }
-  .filter-btn {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    padding: 8px 20px;
-    border-radius: 40px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s;
-    color: var(--text-main);
-  }
-  .filter-btn.active,
-  .filter-btn:hover {
-    background: var(--primary-blue);
-    color: white;
-    border-color: var(--primary-blue);
-  }
-  .course-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 32px;
-  }
-  .course-card {
-    background: var(--card-bg);
-    border-radius: 28px;
-    padding: 24px;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    border: 1px solid var(--border-color);
-  }
-  .course-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-md);
-  }
-  .course-icon {
-    font-size: 2.5rem;
-    color: var(--primary-blue);
-    margin-bottom: 16px;
-  }
-  .course-tag {
-    background: #e67e2210;
-    color: var(--warning-orange);
-    padding: 4px 12px;
-    border-radius: 30px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-block;
-    margin: 12px 0 8px;
-  }
-  .course-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 16px 0;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-  }
-  .course-price {
-    font-weight: 800;
-    font-size: 1.2rem;
-    color: var(--warning-orange);
-  }
-  .btn-sm {
-    padding: 8px 20px;
-    font-size: 0.85rem;
-  }
-  @media (max-width: 768px) {
-    .course-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+<style>
+	.hero-summary {
+		padding: 26px;
+	}
+
+	.hero-summary strong,
+	.hero-summary span {
+		display: block;
+	}
+
+	.hero-summary strong {
+		color: var(--primary);
+		font-size: 4rem;
+		line-height: 1;
+	}
+
+	.hero-summary span {
+		margin-top: 8px;
+		font-size: 1.2rem;
+		font-weight: 900;
+	}
+
+	.hero-summary p {
+		color: var(--muted);
+	}
+
+	.filter-bar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-bottom: 28px;
+	}
+
+	.filter-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 13px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: #fff;
+		color: #334155;
+		font-weight: 800;
+		text-decoration: none;
+	}
+
+	.filter-chip:hover,
+	.filter-chip.is-active {
+		border-color: rgb(37 99 235 / 0.3);
+		background: rgb(37 99 235 / 0.08);
+		color: var(--primary);
+	}
+
+	.course-list-grid {
+		display: grid;
+		gap: 20px;
+	}
+
+	.course-list-card {
+		display: grid;
+		grid-template-columns: 320px minmax(0, 1fr);
+		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff;
+		color: inherit;
+		text-decoration: none;
+		box-shadow: var(--shadow-sm);
+		transition: transform 180ms ease, box-shadow 180ms ease;
+	}
+
+	.course-list-card:hover {
+		transform: translateY(-3px);
+		box-shadow: var(--shadow-md);
+	}
+
+	.course-list-card img {
+		width: 100%;
+		height: 100%;
+		min-height: 260px;
+		object-fit: cover;
+	}
+
+	.course-list-content {
+		padding: 24px;
+	}
+
+	.course-list-content h2 {
+		margin: 14px 0 8px;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+		line-height: 1.15;
+	}
+
+	.course-list-content p {
+		color: var(--muted);
+	}
+
+	.course-tags,
+	.course-facts,
+	.course-action {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.course-tags span,
+	.course-facts span {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		color: var(--muted);
+		font-size: 0.9rem;
+		font-weight: 800;
+	}
+
+	.course-tags span:first-child {
+		color: var(--primary);
+	}
+
+	.course-tags i {
+		color: var(--accent);
+	}
+
+	.course-action {
+		justify-content: space-between;
+		margin-top: 22px;
+	}
+
+	.course-action strong {
+		color: var(--primary);
+		font-size: 1.45rem;
+	}
+
+	@media (max-width: 760px) {
+		.course-list-card {
+			grid-template-columns: 1fr;
+		}
+
+		.course-list-card img {
+			min-height: 220px;
+			aspect-ratio: 16 / 9;
+		}
+	}
 </style>
-
-<script>
-  const filterBtns = document.querySelectorAll(".filter-btn");
-  const courses = document.querySelectorAll(".course-card");
-
-  filterBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      filterBtns.forEach((b) => b.classList.remove("active"));
-
-      btn.classList.add("active");
-
-      const filter = btn.getAttribute("data-filter");
-
-      courses.forEach((course) => {
-        if (course instanceof HTMLElement) {
-          if (
-            filter === "all" ||
-            course.getAttribute("data-category") === filter
-          ) {
-            course.style.display = "block";
-          } else {
-            course.style.display = "none";
-          }
-        }
-      });
-    });
-  });
-</script>

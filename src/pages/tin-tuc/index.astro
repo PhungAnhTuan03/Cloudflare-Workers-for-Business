@@ -1,0 +1,166 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { articles, courseCategories, site } from "../../lib/site-data";
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "Blog",
+	name: "Tin tức đào tạo công nghệ",
+	url: `${site.url}/tin-tuc`,
+	description: "Bài viết về AI, lập trình, thiết kế, tin học văn phòng và định hướng nghề nghiệp.",
+};
+---
+
+<Layout
+	title="Tin tức đào tạo công nghệ"
+	description="Cập nhật kinh nghiệm học AI, lập trình, thiết kế, tin học văn phòng và Digital Marketing."
+	canonical={`${site.url}/tin-tuc`}
+	schema={schema}
+>
+	<section class="page-hero">
+		<div class="container">
+			<span class="page-kicker">
+				<i class="fa-solid fa-newspaper" aria-hidden="true"></i>
+				Tin tức & cẩm nang
+			</span>
+			<h1 class="page-title">Góc học tập cho người muốn nâng cấp kỹ năng số.</h1>
+			<p class="page-lead">
+				Nội dung ngắn gọn, thực tế, tập trung vào cách học hiệu quả và cách áp dụng kỹ năng vào
+				công việc.
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container news-layout">
+			<div class="news-grid">
+				{articles.map((article) => (
+					<article class="news-card card" id={article.slug}>
+						<a href={`/tin-tuc/${article.slug}`}>
+							<img src={article.image} alt={article.title} loading="lazy" />
+						</a>
+						<div class="news-card-body">
+							<div class="news-meta">
+								<span>{article.category}</span>
+								<span>{article.date}</span>
+							</div>
+							<h2><a href={`/tin-tuc/${article.slug}`}>{article.title}</a></h2>
+							<p>{article.description}</p>
+							<a class="read-link" href={`/tin-tuc/${article.slug}`}>
+								Đọc bài viết
+								<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+							</a>
+						</div>
+					</article>
+				))}
+			</div>
+
+			<aside class="news-sidebar card">
+				<h2>Chủ đề nổi bật</h2>
+				{courseCategories.map((category) => (
+					<a href={category.href}>
+						<i class={category.icon} aria-hidden="true" style={`color: ${category.accent}`}></i>
+						<span>{category.title}</span>
+					</a>
+				))}
+			</aside>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.news-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: 28px;
+		align-items: start;
+	}
+
+	.news-grid {
+		display: grid;
+		gap: 22px;
+	}
+
+	.news-card {
+		display: grid;
+		grid-template-columns: 280px minmax(0, 1fr);
+		overflow: hidden;
+	}
+
+	.news-card img {
+		width: 100%;
+		height: 100%;
+		min-height: 230px;
+		object-fit: cover;
+	}
+
+	.news-card-body {
+		padding: 24px;
+	}
+
+	.news-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		color: var(--primary);
+		font-size: 0.86rem;
+		font-weight: 800;
+	}
+
+	.news-card h2 {
+		margin: 10px 0;
+		font-size: 1.45rem;
+		line-height: 1.25;
+	}
+
+	.news-card h2 a,
+	.read-link,
+	.news-sidebar a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.news-card p {
+		margin: 0 0 16px;
+		color: var(--muted);
+	}
+
+	.read-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--primary);
+		font-weight: 900;
+	}
+
+	.news-sidebar {
+		position: sticky;
+		top: 92px;
+		padding: 22px;
+	}
+
+	.news-sidebar h2 {
+		margin: 0 0 14px;
+		font-size: 1.15rem;
+	}
+
+	.news-sidebar a {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 0;
+		border-top: 1px solid var(--line);
+		font-weight: 800;
+	}
+
+	@media (max-width: 900px) {
+		.news-layout,
+		.news-card {
+			grid-template-columns: 1fr;
+		}
+
+		.news-sidebar {
+			position: static;
+		}
+	}
+</style>

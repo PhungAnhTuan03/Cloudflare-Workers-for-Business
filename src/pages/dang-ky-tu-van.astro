@@ -1,0 +1,176 @@
+---
+import ContactForm from "../components/ContactForm.astro";
+import Layout from "../layouts/Layout.astro";
+import { courses, site, stats } from "../lib/site-data";
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "WebPage",
+	name: "Đăng ký tư vấn khóa học",
+	url: `${site.url}/dang-ky-tu-van`,
+	description: "Đăng ký tư vấn lộ trình học công nghệ tại Sao Việt Tech Academy.",
+};
+---
+
+<Layout
+	title="Đăng ký tư vấn khóa học"
+	description="Để lại thông tin để được tư vấn khóa học, lịch học, học phí và lộ trình phù hợp."
+	canonical={`${site.url}/dang-ky-tu-van`}
+	schema={schema}
+>
+	<section class="consult-hero">
+		<div class="container consult-grid">
+			<div class="consult-copy">
+				<span class="page-kicker">
+					<i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+					Đăng ký tư vấn
+				</span>
+				<h1>Chọn đúng khóa học trước khi bắt đầu.</h1>
+				<p>
+					Mỗi học viên có một mục tiêu khác nhau. Form này giúp đội tư vấn hiểu nhu cầu của bạn
+					trước khi gọi lại, nhờ vậy cuộc trao đổi sẽ ngắn hơn và đúng trọng tâm hơn.
+				</p>
+				<div class="consult-stats">
+					{stats.map((item) => (
+						<div>
+							<strong>{item.value}</strong>
+							<span>{item.label}</span>
+						</div>
+					))}
+				</div>
+			</div>
+
+			<div class="consult-form card">
+				<h2>Thông tin tư vấn</h2>
+				<ContactForm
+					formId="consult-form"
+					submitLabel="Đăng ký tư vấn"
+					defaultSubject="Tư vấn khóa học"
+					defaultMessage="Tôi muốn được tư vấn lộ trình học phù hợp."
+				/>
+			</div>
+		</div>
+	</section>
+
+	<section class="section tight">
+		<div class="container">
+			<div class="section-head">
+				<div>
+					<p class="section-eyebrow">Gợi ý lựa chọn</p>
+					<h2 class="section-title">Các khóa học thường được tư vấn nhiều</h2>
+				</div>
+				<a href="/khoa-hoc" class="btn btn-secondary">Xem tất cả khóa học</a>
+			</div>
+
+			<div class="course-strip">
+				{courses.slice(0, 4).map((course) => (
+					<a href={`/khoa-hoc/${course.slug}`} class="course-strip-card card">
+						<img src={course.image} alt={course.title} loading="lazy" />
+						<div>
+							<strong>{course.title}</strong>
+							<span>{course.duration} • {course.level}</span>
+						</div>
+					</a>
+				))}
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.consult-hero {
+		padding: 78px 0 42px;
+	}
+
+	.consult-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.95fr) minmax(340px, 1.05fr);
+		gap: 38px;
+		align-items: start;
+	}
+
+	.consult-copy h1 {
+		max-width: 720px;
+		margin: 0;
+		font-size: clamp(2.4rem, 5vw, 4.8rem);
+		line-height: 1.02;
+		letter-spacing: 0;
+	}
+
+	.consult-copy p {
+		max-width: 660px;
+		color: var(--muted);
+		font-size: 1.1rem;
+	}
+
+	.consult-stats {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
+		margin-top: 28px;
+	}
+
+	.consult-stats div {
+		padding: 18px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: #fff;
+	}
+
+	.consult-stats strong {
+		display: block;
+		color: var(--primary);
+		font-size: 1.7rem;
+		line-height: 1;
+	}
+
+	.consult-stats span {
+		color: var(--muted);
+		font-weight: 700;
+	}
+
+	.consult-form {
+		padding: 30px;
+	}
+
+	.consult-form h2 {
+		margin: 0 0 20px;
+		font-size: 1.5rem;
+	}
+
+	.course-strip {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.course-strip-card {
+		overflow: hidden;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.course-strip-card img {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+	}
+
+	.course-strip-card div {
+		display: grid;
+		gap: 6px;
+		padding: 14px;
+	}
+
+	.course-strip-card span {
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+
+	@media (max-width: 920px) {
+		.consult-grid,
+		.course-strip {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

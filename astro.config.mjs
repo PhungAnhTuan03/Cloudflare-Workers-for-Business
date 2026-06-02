@@ -6,7 +6,19 @@ import emdash from "emdash/astro";
 import tailwindcss from "@tailwindcss/vite";
 
 const workerOptimizerExcludes = ["emdash/media/local-runtime"];
-const workerOptimizerIncludes = ["resend"];
+const workerOptimizerIncludes = [
+	"resend",
+	"astro/zod",
+	"emdash/runtime",
+	"emdash/ui",
+	"emdash/middleware",
+	"emdash/middleware/auth",
+	"emdash/middleware/redirect",
+	"emdash/middleware/request-context",
+	"emdash/middleware/setup",
+	"@emdash-cms/cloudflare/db/d1",
+	"@emdash-cms/cloudflare/storage/r2",
+];
 
 function syncWorkerOptimizeDeps() {
 	return {
@@ -43,6 +55,28 @@ function syncWorkerOptimizeDeps() {
 	};
 }
 
+function suppressKnownDevWarnings() {
+	return {
+		name: "suppress-known-dev-warnings",
+		configResolved(config) {
+			const originalWarn = config.logger.warn.bind(config.logger);
+
+			config.logger.warn = (message, options) => {
+				const text = String(message);
+
+				if (
+					text.includes("emdash_middleware.js") &&
+					text.includes("dynamic import cannot be analyzed by Vite")
+				) {
+					return;
+				}
+
+				originalWarn(message, options);
+			};
+		},
+	};
+}
+
 export default defineConfig({
 	output: "server",
 	adapter: cloudflare({
@@ -62,7 +96,18 @@ export default defineConfig({
 		}),
 	],
 	vite: {
-		plugins: [tailwindcss(), syncWorkerOptimizeDeps()],
+		cacheDir: ".astro/vite-cache",
+		plugins: [tailwindcss(), syncWorkerOptimizeDeps(), suppressKnownDevWarnings()],
+		optimizeDeps: {
+			exclude: workerOptimizerExcludes,
+			include: workerOptimizerIncludes,
+		},
+		ssr: {
+			optimizeDeps: {
+				exclude: workerOptimizerExcludes,
+				include: workerOptimizerIncludes,
+			},
+		},
 		server: {
 			hmr: false,
 			watch: {

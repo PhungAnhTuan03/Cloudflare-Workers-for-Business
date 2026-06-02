@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { env, waitUntil } from "cloudflare:workers";
+import { env } from "cloudflare:workers";
 import { Resend } from "resend";
 
 export const prerender = false;
@@ -20,12 +20,22 @@ const createContactsTableSql = `CREATE TABLE IF NOT EXISTS contacts (
 	phone TEXT,
 	subject TEXT,
 	message TEXT NOT NULL,
+	status TEXT NOT NULL DEFAULT 'new',
 	ip_address TEXT,
 	created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );`;
 
 const createContactsCreatedAtIndexSql =
 	"CREATE INDEX IF NOT EXISTS idx_contacts_created_at ON contacts (created_at);";
+
+const contactColumnMigrations = [
+	{ name: "phone", sql: "ALTER TABLE contacts ADD COLUMN phone TEXT;" },
+	{ name: "subject", sql: "ALTER TABLE contacts ADD COLUMN subject TEXT;" },
+	{
+		name: "status",
+		sql: "ALTER TABLE contacts ADD COLUMN status TEXT NOT NULL DEFAULT 'new';",
+	},
+] as const;
 
 function json(data: unknown, status = 200): Response {
 	return new Response(JSON.stringify(data), {
@@ -61,6 +71,19 @@ function getClientIp(request: Request): string {
 
 async function ensureContactsTable(db: D1Database): Promise<void> {
 	await db.prepare(createContactsTableSql).run();
+
+	const { results } = await db
+		.prepare("PRAGMA table_info(contacts);")
+		.all<{ name: string }>();
+	const columns = new Set((results ?? []).map((column) => column.name));
+
+	for (const migration of contactColumnMigrations) {
+		if (!columns.has(migration.name)) {
+			await db.prepare(migration.sql).run();
+			columns.add(migration.name);
+		}
+	}
+
 	await db.prepare(createContactsCreatedAtIndexSql).run();
 }
 
@@ -88,18 +111,19 @@ async function sendContactEmail(input: {
 	phone: string;
 	subject: string;
 	message: string;
-}): Promise<void> {
+}): Promise<string | null> {
 	const { RESEND_API_KEY, ADMIN_EMAIL, CONTACT_FROM_EMAIL } = env;
 
-	if (!RESEND_API_KEY) {
-		return;
+	if (!RESEND_API_KEY || !ADMIN_EMAIL) {
+		return null;
 	}
 
 	const resend = new Resend(RESEND_API_KEY);
-	await resend.emails.send({
+	const { data, error } = await resend.emails.send({
 		from: CONTACT_FROM_EMAIL || "onboarding@resend.dev",
 		to: ADMIN_EMAIL,
 		subject: `Lien he moi tu ${input.name || input.email}`,
+		replyTo: input.email,
 		html: `<h2>Lien he moi</h2>
 			<p><strong>Ten:</strong> ${escapeHtml(input.name || "Khong cung cap")}</p>
 			<p><strong>Email:</strong> ${escapeHtml(input.email)}</p>
@@ -107,11 +131,38 @@ async function sendContactEmail(input: {
 			<p><strong>Chu de:</strong> ${escapeHtml(input.subject || "Khong cung cap")}</p>
 			<p><strong>Noi dung:</strong></p>
 			<p>${escapeHtml(input.message)}</p>`,
+		text: [
+			"Lien he moi",
+			`Ten: ${input.name || "Khong cung cap"}`,
+			`Email: ${input.email}`,
+			`Dien thoai: ${input.phone || "Khong cung cap"}`,
+			`Chu de: ${input.subject || "Khong cung cap"}`,
+			"",
+			input.message,
+		].join("\n"),
 	});
+
+	if (error) {
+		throw new Error(`Resend failed: ${error.message}`);
+	}
+
+	return data?.id ?? null;
+}
+
+async function updateContactStatus(
+	db: D1Database,
+	id: number | bigint | undefined,
+	status: string,
+): Promise<void> {
+	if (id === undefined) {
+		return;
+	}
+
+	await db.prepare("UPDATE contacts SET status = ? WHERE id = ?").bind(status, id).run();
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
-	const { DB, RESEND_API_KEY } = env;
+	const { DB } = env;
 	const ip = getClientIp(request);
 
 	let payload: ContactPayload;
@@ -164,17 +215,50 @@ export const POST: APIRoute = async ({ request, locals }) => {
 			)
 			.run();
 
-		waitUntil(
-			sendContactEmail({ name, email, phone, subject, message }).catch((error) => {
-				console.error("Failed to send contact email", error);
-			}),
-		);
+		const contactId = meta.last_row_id;
+		let resendId: string | null = null;
+
+		try {
+			resendId = await sendContactEmail({ name, email, phone, subject, message });
+		} catch (error) {
+			console.error("Failed to send contact email", error);
+			await updateContactStatus(DB, contactId, "email_failed");
+
+			return json(
+				{
+					ok: false,
+					id: contactId,
+					emailSent: false,
+					message:
+						"Da luu lien he nhung chua gui duoc email thong bao admin. Vui long kiem tra Resend API key, ADMIN_EMAIL va email gui di.",
+				},
+				502,
+			);
+		}
+
+		if (!resendId) {
+			await updateContactStatus(DB, contactId, "missing_email_config");
+
+			return json(
+				{
+					ok: false,
+					id: contactId,
+					emailSent: false,
+					message:
+						"Da luu lien he nhung chua cau hinh gui email. Thieu RESEND_API_KEY hoac ADMIN_EMAIL.",
+				},
+				500,
+			);
+		}
+
+		await updateContactStatus(DB, contactId, "email_sent");
 
 		return json({
 			ok: true,
-			id: meta.last_row_id,
-			message: "Gui lien he thanh cong. Chung toi se phan hoi som.",
-			emailQueued: Boolean(RESEND_API_KEY),
+			id: contactId,
+			emailSent: true,
+			resendId,
+			message: "Gui lien he thanh cong. Email thong bao da duoc gui den admin.",
 		});
 	} catch (error) {
 		console.error("Failed to save contact request", error);
