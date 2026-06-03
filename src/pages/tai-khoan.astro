@@ -60,6 +60,21 @@ const schema = {
 
 				<form class="profile-form" data-profile-form hidden>
 					<h2>Cap nhat ho so</h2>
+					<div class="avatar-uploader">
+						<div class="avatar-preview" data-avatar-preview>
+							<span data-avatar-preview-initial>SV</span>
+							<img data-avatar-preview-img alt="Avatar preview" hidden />
+						</div>
+						<div>
+							<label class="upload-button" for="profile-avatar-file">
+								<i class="fa-solid fa-image" aria-hidden="true"></i>
+								Chon anh avatar
+							</label>
+							<input id="profile-avatar-file" name="avatarFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-avatar-file />
+							<input name="avatarUrl" type="hidden" data-avatar-url />
+							<p>PNG, JPG, WebP hoac GIF. Nen dung anh vuong de avatar hien thi dep nhat.</p>
+						</div>
+					</div>
 					<div class="field">
 						<label for="profile-headline">Tieu de ho so</label>
 						<input id="profile-headline" name="headline" placeholder="Vi du: Mentor Excel / Hoc vien Web Fullstack" />
@@ -72,10 +87,6 @@ const schema = {
 						<div class="field">
 							<label for="profile-expertise">Chuyen mon</label>
 							<input id="profile-expertise" name="expertise" placeholder="Excel, React, AutoCAD..." />
-						</div>
-						<div class="field">
-							<label for="profile-avatar">Avatar URL</label>
-							<input id="profile-avatar" name="avatarUrl" type="url" placeholder="https://..." />
 						</div>
 					</div>
 					<div class="field">
@@ -124,6 +135,21 @@ const schema = {
 			role?: string;
 		} | null;
 	};
+	type ProfileResponse = {
+		ok?: boolean;
+		profile?: {
+			headline?: string | null;
+			bio?: string | null;
+			avatarUrl?: string | null;
+			expertise?: string | null;
+			websiteUrl?: string | null;
+		} | null;
+	};
+	type UploadResponse = {
+		success?: boolean;
+		url?: string;
+		error?: string;
+	};
 
 	const intro = document.querySelector("[data-account-intro]");
 	const userBox = document.querySelector("[data-account-user]");
@@ -137,9 +163,46 @@ const schema = {
 	const profileLink = document.querySelector("[data-profile-link]");
 	const instructorLink = document.querySelector("[data-instructor-link]");
 	const studentLink = document.querySelector("[data-student-link]");
+	const avatarFile = document.querySelector("[data-avatar-file]");
+	const avatarUrl = document.querySelector("[data-avatar-url]");
+	const avatarPreviewImg = document.querySelector("[data-avatar-preview-img]");
+	const avatarPreviewInitial = document.querySelector("[data-avatar-preview-initial]");
+	const headlineInput = document.querySelector("#profile-headline");
+	const bioInput = document.querySelector("#profile-bio");
+	const expertiseInput = document.querySelector("#profile-expertise");
+	const websiteInput = document.querySelector("#profile-website");
 
 	function setText(target: Element | null, value: string) {
 		if (target instanceof HTMLElement) target.textContent = value;
+	}
+
+	function setAvatarPreview(url?: string | null, fallback = "SV") {
+		setText(avatarPreviewInitial, fallback.slice(0, 2).toUpperCase());
+		if (avatarPreviewImg instanceof HTMLImageElement && avatarPreviewInitial instanceof HTMLElement) {
+			if (url) {
+				avatarPreviewImg.src = url;
+				avatarPreviewImg.hidden = false;
+				avatarPreviewInitial.hidden = true;
+			} else {
+				avatarPreviewImg.hidden = true;
+				avatarPreviewInitial.hidden = false;
+			}
+		}
+		if (avatarUrl instanceof HTMLInputElement) avatarUrl.value = url || "";
+	}
+
+	async function loadProfile(fullName: string) {
+		const response = await fetch("/api/profile");
+		if (!response.ok) return;
+		const result = (await response.json()) as ProfileResponse;
+		const profile = result.profile;
+		if (!profile) return;
+
+		if (headlineInput instanceof HTMLInputElement) headlineInput.value = profile.headline || "";
+		if (bioInput instanceof HTMLTextAreaElement) bioInput.value = profile.bio || "";
+		if (expertiseInput instanceof HTMLInputElement) expertiseInput.value = profile.expertise || "";
+		if (websiteInput instanceof HTMLInputElement) websiteInput.value = profile.websiteUrl || "";
+		setAvatarPreview(profile.avatarUrl, fullName || "SV");
 	}
 
 	async function loadCurrentUser() {
@@ -159,6 +222,7 @@ const schema = {
 		setText(userEmail, result.user.email || "");
 		setText(userRole, result.user.role === "instructor" ? "Vai tro: giang vien" : "Vai tro: hoc vien");
 		setText(userInitial, (result.user.fullName || "SV").slice(0, 2).toUpperCase());
+		setAvatarPreview(null, result.user.fullName || "SV");
 
 		if (profileLink instanceof HTMLAnchorElement && result.user.id) {
 			profileLink.href = `/ho-so/${result.user.id}`;
@@ -168,6 +232,7 @@ const schema = {
 		if (userBox instanceof HTMLElement) userBox.hidden = false;
 		if (logoutButton instanceof HTMLElement) logoutButton.hidden = false;
 		if (profileForm instanceof HTMLElement) profileForm.hidden = false;
+		await loadProfile(result.user.fullName || "SV");
 	}
 
 	if (logoutButton instanceof HTMLButtonElement) {
@@ -180,7 +245,27 @@ const schema = {
 	if (profileForm instanceof HTMLFormElement) {
 		profileForm.addEventListener("submit", async (event) => {
 			event.preventDefault();
-			const payload = Object.fromEntries(new FormData(profileForm));
+			if (profileStatus instanceof HTMLElement) profileStatus.textContent = "Dang luu ho so...";
+
+			if (avatarFile instanceof HTMLInputElement && avatarFile.files?.[0]) {
+				if (profileStatus instanceof HTMLElement) profileStatus.textContent = "Dang upload avatar...";
+				const uploadBody = new FormData();
+				uploadBody.set("file", avatarFile.files[0]);
+				const uploadResponse = await fetch("/api/upload", {
+					method: "POST",
+					body: uploadBody,
+				});
+				const uploadResult = (await uploadResponse.json()) as UploadResponse;
+				if (!uploadResponse.ok || !uploadResult.url) {
+					setText(profileStatus, uploadResult.error || "Khong upload duoc avatar.");
+					return;
+				}
+				if (avatarUrl instanceof HTMLInputElement) avatarUrl.value = uploadResult.url;
+			}
+
+			const formData = new FormData(profileForm);
+			formData.delete("avatarFile");
+			const payload = Object.fromEntries(formData);
 			const response = await fetch("/api/profile", {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
@@ -188,6 +273,15 @@ const schema = {
 			});
 			const result = (await response.json()) as { message?: string };
 			setText(profileStatus, result.message || (response.ok ? "Da luu ho so." : "Khong luu duoc ho so."));
+			if (response.ok && avatarFile instanceof HTMLInputElement) avatarFile.value = "";
+		});
+	}
+
+	if (avatarFile instanceof HTMLInputElement) {
+		avatarFile.addEventListener("change", () => {
+			const file = avatarFile.files?.[0];
+			if (!file) return;
+			setAvatarPreview(URL.createObjectURL(file), "SV");
 		});
 	}
 
@@ -277,6 +371,65 @@ const schema = {
 		margin: 0;
 	}
 
+	.avatar-uploader {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		padding: 16px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		background: var(--soft);
+	}
+
+	.avatar-preview {
+		width: 86px;
+		height: 86px;
+		display: grid;
+		place-items: center;
+		overflow: hidden;
+		flex: 0 0 auto;
+		border-radius: 22px;
+		background: linear-gradient(135deg, var(--primary), var(--secondary));
+		color: #fff;
+		font-size: 1.45rem;
+		font-weight: 900;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.avatar-preview img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.avatar-uploader input[type="file"] {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+
+	.upload-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 9px;
+		min-height: 42px;
+		padding: 10px 14px;
+		border-radius: var(--radius);
+		background: var(--primary);
+		color: #fff;
+		font-weight: 900;
+		cursor: pointer;
+		box-shadow: var(--shadow-blue);
+	}
+
+	.avatar-uploader p {
+		margin: 10px 0 0;
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+
 	.account-links {
 		display: grid;
 		gap: 14px;
@@ -314,6 +467,13 @@ const schema = {
 	@media (max-width: 860px) {
 		.account-grid {
 			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.avatar-uploader {
+			align-items: start;
+			flex-direction: column;
 		}
 	}
 </style>
