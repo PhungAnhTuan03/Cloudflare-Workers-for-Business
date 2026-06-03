@@ -30,6 +30,7 @@ export type LoginPayload = {
 };
 
 const sessionCookieName = "sv_auth";
+const passwordHashIterations = 100000;
 const encoder = new TextEncoder();
 const createAuthUsersSql = `CREATE TABLE IF NOT EXISTS auth_users (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,12 +112,12 @@ export async function hashPassword(password: string): Promise<string> {
 			name: "PBKDF2",
 			hash: "SHA-256",
 			salt,
-			iterations: 120000,
+			iterations: passwordHashIterations,
 		},
 		key,
 		256,
 	);
-	return `pbkdf2_sha256$120000$${toBase64(salt)}$${toBase64(new Uint8Array(bits))}`;
+	return `pbkdf2_sha256$${passwordHashIterations}$${toBase64(salt)}$${toBase64(new Uint8Array(bits))}`;
 }
 
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
