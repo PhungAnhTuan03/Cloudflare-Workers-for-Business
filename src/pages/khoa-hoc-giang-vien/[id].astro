@@ -1,0 +1,270 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../lib/site-data";
+
+const courseId = Astro.params.id || "";
+---
+
+<Layout
+	title={`Khoa hoc giang vien - ${site.name}`}
+	description="Trang xem chi tiet khoa hoc, bai giang va tai lieu cua giang vien."
+>
+	<section class="course-view" data-course-root data-course-id={courseId}>
+		<div class="container course-shell">
+			<div class="course-head card">
+				<span class="page-kicker">
+					<i class="fa-solid fa-book-open" aria-hidden="true"></i>
+					Khoa hoc giang vien
+				</span>
+				<h1 data-course-title>Dang tai khoa hoc...</h1>
+				<p data-course-description></p>
+				<div class="course-meta">
+					<span data-instructor-name></span>
+					<strong data-course-price></strong>
+				</div>
+				<div class="course-actions">
+					<button class="btn btn-primary" type="button" data-buy hidden>Mua khoa hoc</button>
+					<a class="btn btn-secondary" href="#" data-message-link hidden>
+						<i class="fa-solid fa-message" aria-hidden="true"></i>
+						Nhan tin giang vien
+					</a>
+				</div>
+				<p class="form-status" data-course-status></p>
+			</div>
+
+			<div class="content-grid">
+				<section class="content-panel card">
+					<h2>Bai giang</h2>
+					<div data-lesson-list></div>
+				</section>
+				<section class="content-panel card">
+					<h2>Tai lieu</h2>
+					<div data-material-list></div>
+				</section>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	type Lesson = {
+		title: string;
+		content: string;
+	};
+	type Material = {
+		title: string;
+		file_url: string;
+		file_type?: string | null;
+	};
+	type ApiResult = {
+		ok?: boolean;
+		message?: string;
+		canViewContent?: boolean;
+		course?: {
+			public_id: string;
+			title: string;
+			description: string;
+			price: number;
+			instructor_name: string;
+		};
+		lessons?: Lesson[];
+		materials?: Material[];
+	};
+
+	const courseRoot = document.querySelector("[data-course-root]");
+	const courseId =
+		courseRoot instanceof HTMLElement ? courseRoot.dataset.courseId || "" : "";
+	const title = document.querySelector("[data-course-title]");
+	const description = document.querySelector("[data-course-description]");
+	const instructorName = document.querySelector("[data-instructor-name]");
+	const price = document.querySelector("[data-course-price]");
+	const status = document.querySelector("[data-course-status]");
+	const buyButton = document.querySelector("[data-buy]");
+	const messageLink = document.querySelector("[data-message-link]");
+	const lessonList = document.querySelector("[data-lesson-list]");
+	const materialList = document.querySelector("[data-material-list]");
+
+	function setText(target: Element | null, value: string) {
+		if (target instanceof HTMLElement) target.textContent = value;
+	}
+
+	function renderLocked() {
+		setText(lessonList, "Ban can mua khoa hoc de xem bai giang.");
+		setText(materialList, "Ban can mua khoa hoc de xem tai lieu.");
+		if (buyButton instanceof HTMLElement) buyButton.hidden = false;
+		if (messageLink instanceof HTMLElement) messageLink.hidden = true;
+	}
+
+	function renderContent(result: ApiResult) {
+		const lessons = result.lessons || [];
+		const materials = result.materials || [];
+
+		if (lessonList instanceof HTMLElement) {
+			lessonList.innerHTML = lessons.length
+				? lessons
+						.map(
+							(lesson) => `
+								<article class="lesson-item">
+									<h3>${lesson.title}</h3>
+									<p>${lesson.content}</p>
+								</article>
+							`,
+						)
+						.join("")
+				: "<p class='empty'>Giang vien chua dang bai giang nao.</p>";
+		}
+
+		if (materialList instanceof HTMLElement) {
+			materialList.innerHTML = materials.length
+				? materials
+						.map(
+							(material) => `
+								<a class="material-item" href="${material.file_url}" target="_blank" rel="noreferrer">
+									<i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+									<span>
+										<strong>${material.title}</strong>
+										<small>${material.file_type || "Tai lieu"}</small>
+									</span>
+								</a>
+							`,
+						)
+						.join("")
+				: "<p class='empty'>Giang vien chua dang tai lieu nao.</p>";
+		}
+	}
+
+	async function loadCourse() {
+		const response = await fetch(`/api/marketplace/courses/${courseId}`);
+		const result = (await response.json()) as ApiResult;
+
+		if (!response.ok || !result.ok || !result.course) {
+			setText(title, "Khong tim thay khoa hoc");
+			setText(status, result.message || "Khoa hoc khong ton tai.");
+			return;
+		}
+
+		setText(title, result.course.title);
+		setText(description, result.course.description);
+		setText(instructorName, `Giang vien: ${result.course.instructor_name}`);
+		setText(price, `${Number(result.course.price).toLocaleString("vi-VN")}d`);
+
+		if (result.canViewContent) {
+			if (buyButton instanceof HTMLElement) buyButton.hidden = true;
+			if (messageLink instanceof HTMLAnchorElement) {
+				messageLink.hidden = false;
+				messageLink.href = `/tin-nhan/${result.course.public_id}`;
+			}
+			renderContent(result);
+		} else {
+			renderLocked();
+		}
+	}
+
+	if (buyButton instanceof HTMLButtonElement) {
+		buyButton.addEventListener("click", async () => {
+			const response = await fetch(`/api/marketplace/courses/${courseId}/purchase`, { method: "POST" });
+			const result = (await response.json()) as ApiResult;
+			setText(status, result.message || (response.ok ? "Da mua khoa hoc." : "Khong mua duoc."));
+			if (response.ok) await loadCourse();
+		});
+	}
+
+	loadCourse();
+</script>
+
+<style>
+	.course-view {
+		padding: 74px 0 34px;
+	}
+
+	.course-shell {
+		display: grid;
+		gap: 24px;
+	}
+
+	.course-head,
+	.content-panel {
+		padding: 24px;
+	}
+
+	.course-head h1 {
+		margin: 0;
+		font-size: clamp(2.2rem, 4vw, 4rem);
+		line-height: 1.06;
+	}
+
+	.course-head p,
+	.empty {
+		color: var(--muted);
+	}
+
+	.course-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 18px;
+	}
+
+	.course-meta span,
+	.course-meta strong {
+		padding: 8px 10px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: var(--soft);
+	}
+
+	.course-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 18px;
+	}
+
+	.content-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 0.85fr);
+		gap: 20px;
+	}
+
+	.lesson-item,
+	.material-item {
+		display: block;
+		margin-top: 12px;
+		padding: 14px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: var(--soft);
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.lesson-item h3 {
+		margin: 0 0 8px;
+	}
+
+	.material-item {
+		display: flex;
+		gap: 12px;
+		align-items: flex-start;
+	}
+
+	.material-item i {
+		color: var(--primary);
+		margin-top: 4px;
+	}
+
+	.material-item strong,
+	.material-item small {
+		display: block;
+	}
+
+	.material-item small {
+		color: var(--muted);
+	}
+
+	@media (max-width: 860px) {
+		.content-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

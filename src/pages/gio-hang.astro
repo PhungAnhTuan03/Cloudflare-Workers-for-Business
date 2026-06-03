@@ -1,0 +1,236 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../lib/site-data";
+---
+
+<Layout title={`Gio hang - ${site.name}`} description="Gio hang va checkout khoa hoc.">
+	<section class="cart-section">
+		<div class="container cart-grid">
+			<div class="cart-panel card">
+				<span class="page-kicker">
+					<i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+					Gio hang
+				</span>
+				<h1>Khoa hoc sap mua</h1>
+				<div data-cart-items class="cart-items"></div>
+			</div>
+
+			<aside class="checkout-panel card">
+				<h2>Thanh toan</h2>
+				<form data-coupon-form class="coupon-form">
+					<div class="field">
+						<label for="coupon-code">Coupon</label>
+						<input id="coupon-code" name="couponCode" placeholder="Nhap ma giam gia" />
+					</div>
+					<button class="btn btn-secondary" type="submit">Ap dung</button>
+				</form>
+				<div class="summary">
+					<span>Tam tinh</span>
+					<strong data-cart-total>0d</strong>
+				</div>
+				<button class="btn btn-primary checkout-btn" type="button" data-checkout>
+					<i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+					Checkout
+				</button>
+				<p class="form-status" data-cart-status></p>
+			</aside>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	type CartItem = {
+		cart_item_id: number;
+		course_public_id: string;
+		title: string;
+		description: string;
+		price: number;
+		instructor_name: string;
+		coupon_code?: string | null;
+		discount_type?: string | null;
+		discount_value?: number | null;
+	};
+	type ApiResult = {
+		ok?: boolean;
+		message?: string;
+		items?: CartItem[];
+	};
+
+	const list = document.querySelector("[data-cart-items]");
+	const total = document.querySelector("[data-cart-total]");
+	const status = document.querySelector("[data-cart-status]");
+	const couponForm = document.querySelector("[data-coupon-form]");
+	const checkoutButton = document.querySelector("[data-checkout]");
+
+	function setText(target: Element | null, value: string) {
+		if (target instanceof HTMLElement) target.textContent = value;
+	}
+
+	function finalPrice(item: CartItem) {
+		if (!item.discount_type || !item.discount_value) return Number(item.price);
+		if (item.discount_type === "fixed") return Math.max(0, Number(item.price) - Number(item.discount_value));
+		return Math.max(0, Math.round(Number(item.price) * (1 - Number(item.discount_value) / 100)));
+	}
+
+	async function loadCart() {
+		const response = await fetch("/api/cart");
+		const result = (await response.json()) as ApiResult;
+		if (!(list instanceof HTMLElement)) return;
+
+		if (!response.ok || !result.ok) {
+			list.innerHTML = `<p class="empty">${result.message || "Ban can dang nhap de xem gio hang."}</p>`;
+			return;
+		}
+
+		const items = result.items || [];
+		const sum = items.reduce((value, item) => value + finalPrice(item), 0);
+		setText(total, `${sum.toLocaleString("vi-VN")}d`);
+
+		list.innerHTML = items.length
+			? items
+					.map(
+						(item) => `
+							<article class="cart-item">
+								<div>
+									<strong>${item.title}</strong>
+									<span>${item.instructor_name}</span>
+									${item.coupon_code ? `<small>Coupon: ${item.coupon_code}</small>` : ""}
+								</div>
+								<div>
+									<strong>${finalPrice(item).toLocaleString("vi-VN")}d</strong>
+									<a href="/khoa-hoc-giang-vien/${item.course_public_id}">Xem</a>
+									<button type="button" data-remove="${item.cart_item_id}">Xoa</button>
+								</div>
+							</article>
+						`,
+					)
+					.join("")
+			: "<p class='empty'>Gio hang dang trong.</p>";
+
+		for (const button of document.querySelectorAll("[data-remove]")) {
+			if (!(button instanceof HTMLButtonElement)) continue;
+			button.addEventListener("click", async () => {
+				await fetch(`/api/cart/${button.getAttribute("data-remove")}`, { method: "DELETE" });
+				await loadCart();
+			});
+		}
+	}
+
+	if (couponForm instanceof HTMLFormElement) {
+		couponForm.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const payload = Object.fromEntries(new FormData(couponForm));
+			const response = await fetch("/api/cart", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+			const result = (await response.json()) as ApiResult;
+			setText(status, result.message || (response.ok ? "Da ap dung coupon." : "Coupon khong hop le."));
+			await loadCart();
+		});
+	}
+
+	if (checkoutButton instanceof HTMLButtonElement) {
+		checkoutButton.addEventListener("click", async () => {
+			const response = await fetch("/api/cart", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ checkout: true }),
+			});
+			const result = (await response.json()) as ApiResult;
+			setText(status, result.message || (response.ok ? "Thanh toan thanh cong." : "Khong checkout duoc."));
+			if (response.ok) window.location.href = "/hoc-vien/dashboard";
+		});
+	}
+
+	loadCart();
+</script>
+
+<style>
+	.cart-section {
+		padding: 74px 0 34px;
+	}
+
+	.cart-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+		gap: 24px;
+		align-items: start;
+	}
+
+	.cart-panel,
+	.checkout-panel {
+		padding: 24px;
+	}
+
+	.cart-panel h1 {
+		margin: 0 0 20px;
+		font-size: clamp(2.2rem, 4vw, 4rem);
+		line-height: 1.06;
+	}
+
+	.cart-items {
+		display: grid;
+		gap: 14px;
+	}
+
+	.cart-item {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 14px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: var(--soft);
+	}
+
+	.cart-item strong,
+	.cart-item span,
+	.cart-item small,
+	.cart-item a,
+	.cart-item button {
+		display: block;
+	}
+
+	.cart-item span,
+	.cart-item small,
+	.empty {
+		color: var(--muted);
+	}
+
+	.cart-item button {
+		border: 0;
+		background: transparent;
+		color: var(--danger);
+		font-weight: 900;
+		cursor: pointer;
+	}
+
+	.coupon-form {
+		display: grid;
+		gap: 12px;
+	}
+
+	.summary {
+		display: flex;
+		justify-content: space-between;
+		margin: 20px 0;
+		padding-top: 18px;
+		border-top: 1px solid var(--line);
+	}
+
+	.checkout-btn {
+		width: 100%;
+	}
+
+	@media (max-width: 860px) {
+		.cart-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.cart-item {
+			display: grid;
+		}
+	}
+</style>

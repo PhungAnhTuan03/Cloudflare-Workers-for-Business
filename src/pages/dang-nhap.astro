@@ -1,0 +1,23 @@
+---
+import AuthCard from "../components/AuthCard.astro";
+import Layout from "../layouts/Layout.astro";
+import { site } from "../lib/site-data";
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "WebPage",
+	name: "Đăng nhập học viên",
+	url: `${site.url}/dang-nhap`,
+	description: "Đăng nhập cổng học viên để quản lý lịch học, tài liệu và thông tin khóa học.",
+};
+---
+
+<Layout
+	title="Đăng nhập học viên"
+	description="Đăng nhập cổng học viên để quản lý lịch học, tài liệu và thông tin khóa học tại Sao Việt Tech Academy."
+	canonical={`${site.url}/dang-nhap`}
+	schema={schema}
+>
+	<AuthCard mode="login" />
+</Layout>
+

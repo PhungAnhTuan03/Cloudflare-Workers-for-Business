@@ -1,0 +1,22 @@
+---
+import AuthCard from "../components/AuthCard.astro";
+import Layout from "../layouts/Layout.astro";
+import { site } from "../lib/site-data";
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "RegisterAction",
+	name: "Đăng ký tài khoản học viên",
+	target: `${site.url}/dang-ky`,
+};
+---
+
+<Layout
+	title="Đăng ký tài khoản học viên"
+	description="Tạo tài khoản học viên để theo dõi khóa học, lịch học, tài liệu và chứng nhận sau khóa học."
+	canonical={`${site.url}/dang-ky`}
+	schema={schema}
+>
+	<AuthCard mode="register" />
+</Layout>
+

@@ -1,0 +1,16 @@
+---
+import { env } from "cloudflare:workers";
+import { getCurrentUser } from "../lib/auth";
+
+const user = await getCurrentUser(env.DB, env.SESSION, Astro.request);
+
+if (!user) {
+	return Astro.redirect("/dang-nhap");
+}
+
+if (user.role === "instructor") {
+	return Astro.redirect("/giang-vien/dashboard");
+}
+
+return Astro.redirect("/hoc-vien/dashboard");
+---

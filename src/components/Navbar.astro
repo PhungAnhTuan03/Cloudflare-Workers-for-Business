@@ -2,12 +2,10 @@
 import { courseCategories, site } from "../lib/site-data";
 
 const navItems = [
-	{ href: "/", label: "Trang chủ" },
-	{ href: "/gioi-thieu", label: "Giới thiệu" },
-	{ href: "/khoa-hoc", label: "Khóa học" },
-	{ href: "/giang-vien", label: "Giảng viên" },
-	{ href: "/tin-tuc", label: "Tin tức" },
-	{ href: "/lien-he", label: "Liên hệ" },
+	{ href: "/", label: "Trang chu" },
+	{ href: "/khoa-hoc", label: "Khoa hoc" },
+	{ href: "/tin-tuc", label: "Tin tuc" },
+	{ href: "/lien-he", label: "Lien he" },
 ];
 ---
 
@@ -21,11 +19,11 @@ const navItems = [
 			</span>
 		</a>
 
-		<button class="nav-toggle" type="button" aria-label="Mở menu" aria-controls="primary-nav">
+		<button class="nav-toggle" type="button" aria-label="Mo menu" aria-controls="primary-nav">
 			<i class="fa-solid fa-bars"></i>
 		</button>
 
-		<nav id="primary-nav" class="primary-nav" aria-label="Điều hướng chính">
+		<nav id="primary-nav" class="primary-nav" aria-label="Dieu huong chinh">
 			{
 				navItems.map((item) =>
 					item.href === "/khoa-hoc" ? (
@@ -50,13 +48,71 @@ const navItems = [
 			}
 		</nav>
 
-		<a href="/dang-ky-tu-van" class="btn btn-primary nav-cta">Đăng ký tư vấn</a>
+		<form class="nav-search" action="/marketplace" method="get" role="search">
+			<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+			<input name="q" placeholder="Tim khoa hoc, giang vien..." aria-label="Tim khoa hoc" />
+		</form>
+
+		<a href="/dang-nhap" class="nav-login" data-auth-login>
+			<i class="fa-solid fa-user" aria-hidden="true"></i>
+			<span>Dang nhap</span>
+		</a>
+
+		<div class="nav-quick-actions" data-auth-actions hidden>
+			<a href="/tin-nhan" class="icon-action" aria-label="Tin nhan">
+				<i class="fa-regular fa-message" aria-hidden="true"></i>
+			</a>
+			<button class="icon-action" type="button" aria-label="Thong bao">
+				<i class="fa-regular fa-bell" aria-hidden="true"></i>
+				<span class="notify-dot"></span>
+			</button>
+		</div>
+
+		<div class="nav-profile" data-auth-profile hidden>
+			<button class="profile-trigger" type="button" data-profile-trigger aria-haspopup="menu" aria-expanded="false">
+				<span class="profile-avatar" data-profile-initial>SV</span>
+				<span class="profile-copy">
+					<strong data-profile-name>Nguoi dung</strong>
+					<small data-profile-role>Hoc vien</small>
+				</span>
+				<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+			</button>
+			<div class="profile-menu" role="menu">
+				<a href="/dashboard" role="menuitem">
+					<i class="fa-solid fa-table-columns" aria-hidden="true"></i>
+					Dashboard
+				</a>
+				<a href="/tai-khoan" role="menuitem">
+					<i class="fa-solid fa-id-card" aria-hidden="true"></i>
+					Tai khoan
+				</a>
+				<a href="#" data-profile-url role="menuitem">
+					<i class="fa-solid fa-user" aria-hidden="true"></i>
+					Profile
+				</a>
+				<button type="button" data-nav-logout role="menuitem">
+					<i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+					Dang xuat
+				</button>
+			</div>
+		</div>
+
+		<a href="/dang-ky-tu-van" class="btn btn-primary nav-cta">Dang ky tu van</a>
 	</div>
 </header>
 
 <script>
 	const navToggle = document.querySelector(".nav-toggle");
 	const nav = document.querySelector(".primary-nav");
+	const loginLink = document.querySelector("[data-auth-login]");
+	const profile = document.querySelector("[data-auth-profile]");
+	const authActions = document.querySelector("[data-auth-actions]");
+	const profileTrigger = document.querySelector("[data-profile-trigger]");
+	const profileInitial = document.querySelector("[data-profile-initial]");
+	const profileName = document.querySelector("[data-profile-name]");
+	const profileRole = document.querySelector("[data-profile-role]");
+	const profileUrl = document.querySelector("[data-profile-url]");
+	const logoutButton = document.querySelector("[data-nav-logout]");
 
 	if (navToggle instanceof HTMLButtonElement && nav instanceof HTMLElement) {
 		navToggle.addEventListener("click", () => {
@@ -64,6 +120,56 @@ const navItems = [
 			navToggle.setAttribute("aria-expanded", String(nav.classList.contains("is-open")));
 		});
 	}
+
+	function setText(target: Element | null, value: string) {
+		if (target instanceof HTMLElement) target.textContent = value;
+	}
+
+	async function hydrateNavbarUser() {
+		const response = await fetch("/api/auth/me", { headers: { Accept: "application/json" } });
+		const result = (await response.json()) as {
+			user?: {
+				id?: string;
+				fullName?: string;
+				role?: string;
+			} | null;
+		};
+
+		if (!result.user) return;
+
+		if (loginLink instanceof HTMLElement) loginLink.hidden = true;
+		if (authActions instanceof HTMLElement) authActions.hidden = false;
+		if (profile instanceof HTMLElement) profile.hidden = false;
+		setText(profileInitial, (result.user.fullName || "SV").slice(0, 2).toUpperCase());
+		setText(profileName, result.user.fullName || "Nguoi dung");
+		setText(profileRole, result.user.role === "instructor" ? "Giang vien" : "Hoc vien");
+		if (profileUrl instanceof HTMLAnchorElement && result.user.id) {
+			profileUrl.href = `/ho-so/${result.user.id}`;
+		}
+	}
+
+	if (profileTrigger instanceof HTMLButtonElement && profile instanceof HTMLElement) {
+		profileTrigger.addEventListener("click", () => {
+			profile.classList.toggle("is-open");
+			profileTrigger.setAttribute("aria-expanded", String(profile.classList.contains("is-open")));
+		});
+	}
+
+	document.addEventListener("click", (event) => {
+		if (profile instanceof HTMLElement && !profile.contains(event.target as Node)) {
+			profile.classList.remove("is-open");
+			if (profileTrigger instanceof HTMLButtonElement) profileTrigger.setAttribute("aria-expanded", "false");
+		}
+	});
+
+	if (logoutButton instanceof HTMLButtonElement) {
+		logoutButton.addEventListener("click", async () => {
+			await fetch("/api/auth/logout", { method: "POST" });
+			window.location.href = "/";
+		});
+	}
+
+	hydrateNavbarUser().catch(() => undefined);
 </script>
 
 <style>
@@ -72,17 +178,17 @@ const navItems = [
 		top: 0;
 		z-index: 50;
 		border-bottom: 1px solid rgb(226 232 240 / 0.8);
-		background: rgb(255 255 255 / 0.88);
-		backdrop-filter: blur(16px);
+		background: rgb(255 255 255 / 0.82);
+		backdrop-filter: blur(18px);
 	}
 
 	.nav-shell {
-		width: min(1180px, calc(100% - 40px));
-		min-height: 76px;
+		width: min(1280px, calc(100% - 40px));
+		min-height: 72px;
 		margin: 0 auto;
 		display: flex;
 		align-items: center;
-		gap: 22px;
+		gap: 14px;
 	}
 
 	.brand {
@@ -90,7 +196,7 @@ const navItems = [
 		align-items: center;
 		gap: 11px;
 		text-decoration: none;
-		min-width: 190px;
+		min-width: 184px;
 	}
 
 	.brand-mark {
@@ -121,7 +227,7 @@ const navItems = [
 	}
 
 	.primary-nav {
-		flex: 1;
+		flex: 0 1 auto;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -139,6 +245,7 @@ const navItems = [
 		font-size: 0.94rem;
 		font-weight: 800;
 		text-decoration: none;
+		white-space: nowrap;
 	}
 
 	.primary-nav > a:hover,
@@ -215,8 +322,210 @@ const navItems = [
 		height: 42px;
 	}
 
+	.nav-search {
+		flex: 1;
+		min-width: 210px;
+		max-width: 330px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 0 14px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: #f8fafc;
+		color: var(--muted);
+		transition:
+			border-color 300ms ease,
+			box-shadow 300ms ease,
+			background 300ms ease;
+	}
+
+	.nav-search:focus-within {
+		border-color: rgb(37 99 235 / 0.35);
+		background: #fff;
+		box-shadow: 0 0 0 4px rgb(37 99 235 / 0.08);
+	}
+
+	.nav-search input {
+		width: 100%;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		color: var(--ink);
+		font-size: 0.9rem;
+	}
+
+	.nav-quick-actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.icon-action {
+		position: relative;
+		width: 42px;
+		height: 42px;
+		display: inline-grid;
+		place-items: center;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: #fff;
+		color: #334155;
+		text-decoration: none;
+		cursor: pointer;
+		transition:
+			transform 300ms ease,
+			color 300ms ease,
+			border-color 300ms ease,
+			box-shadow 300ms ease;
+	}
+
+	.icon-action:hover {
+		transform: translateY(-2px);
+		border-color: rgb(37 99 235 / 0.28);
+		color: var(--primary);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.notify-dot {
+		position: absolute;
+		top: 9px;
+		right: 10px;
+		width: 8px;
+		height: 8px;
+		border: 2px solid #fff;
+		border-radius: 999px;
+		background: var(--accent);
+	}
+
 	.nav-cta {
 		white-space: nowrap;
+	}
+
+	.nav-login {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		min-height: 42px;
+		padding: 0 12px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff;
+		color: #334155;
+		font-size: 0.92rem;
+		font-weight: 900;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.nav-login:hover {
+		border-color: rgb(37 99 235 / 0.26);
+		color: var(--primary);
+	}
+
+	.nav-profile {
+		position: relative;
+	}
+
+	.profile-trigger {
+		display: inline-flex;
+		align-items: center;
+		gap: 9px;
+		min-height: 44px;
+		padding: 5px 10px 5px 5px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: #fff;
+		color: #334155;
+		cursor: pointer;
+	}
+
+	.profile-avatar {
+		width: 34px;
+		height: 34px;
+		display: inline-grid;
+		place-items: center;
+		border-radius: 8px;
+		background: linear-gradient(135deg, var(--primary), var(--secondary));
+		color: #fff;
+		font-size: 0.78rem;
+		font-weight: 900;
+	}
+
+	.profile-copy {
+		display: grid;
+		text-align: left;
+		line-height: 1.08;
+	}
+
+	.profile-copy strong {
+		max-width: 120px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 0.9rem;
+	}
+
+	.profile-copy small {
+		color: var(--muted);
+		font-size: 0.72rem;
+		font-weight: 800;
+	}
+
+	.profile-menu {
+		position: absolute;
+		top: calc(100% + 10px);
+		right: 0;
+		width: 220px;
+		display: grid;
+		gap: 4px;
+		padding: 8px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff;
+		box-shadow: var(--shadow-md);
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(6px);
+		transition: opacity 160ms ease, transform 160ms ease;
+	}
+
+	.nav-profile.is-open .profile-menu {
+		opacity: 1;
+		pointer-events: auto;
+		transform: translateY(0);
+	}
+
+	.profile-menu a,
+	.profile-menu button {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+		min-height: 38px;
+		padding: 0 10px;
+		border: 0;
+		border-radius: 8px;
+		background: transparent;
+		color: #334155;
+		font-weight: 800;
+		text-align: left;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.profile-menu a:hover,
+	.profile-menu button:hover {
+		background: rgb(37 99 235 / 0.08);
+		color: var(--primary);
+	}
+
+	@media (max-width: 1180px) {
+		.nav-search {
+			display: none;
+		}
 	}
 
 	@media (max-width: 980px) {
@@ -269,7 +578,10 @@ const navItems = [
 			border: 0;
 		}
 
-		.nav-cta {
+		.nav-login,
+		.nav-profile,
+		.nav-cta,
+		.nav-quick-actions {
 			display: none;
 		}
 	}

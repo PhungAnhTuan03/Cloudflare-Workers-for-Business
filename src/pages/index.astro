@@ -4,6 +4,7 @@ import {
 	articles,
 	courseCategories,
 	courses,
+	instructors,
 	reasons,
 	roadmap,
 	site,
@@ -82,6 +83,39 @@ const organizationSchema = {
 					<span>{item.label}</span>
 				</div>
 			))}
+		</div>
+	</section>
+
+	<section id="gioi-thieu" class="section about-home-section">
+		<div class="container about-home-grid">
+			<div class="about-home-media">
+				<img
+					src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=1200&q=82"
+					alt="Lop hoc cong nghe hien dai tai Sao Viet Tech Academy"
+					loading="lazy"
+				/>
+			</div>
+			<div class="about-home-copy">
+				<p class="section-eyebrow">Ve Sao Viet Tech Academy</p>
+				<h2 class="section-title">Mot moi truong hoc cong nghe gon, thuc te va co dinh huong.</h2>
+				<p class="section-lead">
+					Chung toi xay chuong trinh dao tao cho nguoi can dung ky nang ngay trong cong viec:
+					tu tin hoc van phong, AI, lap trinh den thiet ke va marketing so.
+				</p>
+				<div class="about-points">
+					<div>
+						<i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
+						<strong>Hoc bang du an that</strong>
+						<span>Moi module deu co bai tap va san pham dau ra ro rang.</span>
+					</div>
+					<div>
+						<i class="fa-solid fa-user-check" aria-hidden="true"></i>
+						<strong>Mentor theo sat</strong>
+						<span>Giang vien review bai, sua loi va goi y lo trinh tiep theo.</span>
+					</div>
+				</div>
+				<a href="/dang-ky-tu-van" class="btn btn-primary">Nhan tu van lo trinh</a>
+			</div>
 		</div>
 	</section>
 
@@ -180,6 +214,35 @@ const organizationSchema = {
 	</section>
 
 	<section class="section testimonial-section">
+		<div id="giang-vien" class="container instructor-home-block">
+			<div class="section-head">
+				<div>
+					<p class="section-eyebrow">Doi ngu giang vien</p>
+					<h2 class="section-title">Hoc cung mentor co kinh nghiem trien khai thuc te.</h2>
+					<p class="section-lead">
+						Giang vien huong dan quy trinh lam viec, review san pham va giup hoc vien hieu tieu chuan dau ra trong moi truong doanh nghiep.
+					</p>
+				</div>
+				<a href="/dang-ky-tu-van" class="btn btn-secondary">Gap mentor tu van</a>
+			</div>
+			<div class="instructor-home-grid">
+				{instructors.map((instructor) => (
+					<article class="instructor-home-card">
+						<img src={instructor.image} alt={instructor.name} loading="lazy" />
+						<div>
+							<span>{instructor.experience}</span>
+							<h3>{instructor.name}</h3>
+							<p class="mentor-role">{instructor.role}</p>
+							<p>{instructor.bio}</p>
+							<div class="mentor-skills">
+								{instructor.skills.map((skill) => <small>{skill}</small>)}
+							</div>
+						</div>
+					</article>
+				))}
+			</div>
+		</div>
+
 		<div class="container">
 			<div class="section-head">
 				<div>
@@ -348,17 +411,18 @@ const organizationSchema = {
 
 	.hero-media {
 		position: relative;
-		min-height: 520px;
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: var(--shadow-md);
+		aspect-ratio: 5 / 4;
+		max-height: 560px;
 	}
 
 	.hero-media img {
 		width: 100%;
 		height: 100%;
-		min-height: 520px;
 		object-fit: cover;
+		object-position: center;
 	}
 
 	.hero-floating-card {
@@ -387,9 +451,68 @@ const organizationSchema = {
 	}
 
 	.stats-band {
-		padding: 24px 0;
-		background: #0f172a;
-		color: #fff;
+		padding: 28px 0;
+		border-block: 1px solid rgb(37 99 235 / 0.08);
+		background:
+			linear-gradient(135deg, rgb(37 99 235 / 0.08), rgb(96 165 250 / 0.16)),
+			#f8fafc;
+		color: var(--ink);
+	}
+
+	.about-home-section {
+		background: #fff;
+	}
+
+	.about-home-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+		gap: 46px;
+		align-items: center;
+	}
+
+	.about-home-media {
+		overflow: hidden;
+		border-radius: 24px;
+		box-shadow: var(--shadow-md);
+		aspect-ratio: 4 / 3;
+		background: var(--surface-2);
+	}
+
+	.about-home-media img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+	}
+
+	.about-home-copy {
+		min-width: 0;
+	}
+
+	.about-points {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+		margin: 24px 0;
+	}
+
+	.about-points div {
+		display: grid;
+		gap: 6px;
+		padding: 18px;
+		border: 1px solid var(--line);
+		border-radius: 18px;
+		background: var(--soft);
+	}
+
+	.about-points i {
+		color: var(--primary);
+		font-size: 1.4rem;
+	}
+
+	.about-points span {
+		color: var(--muted);
+		font-size: 0.92rem;
 	}
 
 	.stats-grid {
@@ -400,9 +523,10 @@ const organizationSchema = {
 
 	.stat-card {
 		padding: 18px;
-		border: 1px solid rgb(255 255 255 / 0.12);
-		border-radius: 8px;
-		background: rgb(255 255 255 / 0.05);
+		border: 1px solid rgb(37 99 235 / 0.12);
+		border-radius: 18px;
+		background: rgb(255 255 255 / 0.86);
+		box-shadow: var(--shadow-sm);
 	}
 
 	.stat-card strong,
@@ -411,13 +535,14 @@ const organizationSchema = {
 	}
 
 	.stat-card strong {
+		color: var(--primary);
 		font-size: clamp(1.8rem, 4vw, 2.8rem);
 		line-height: 1;
 	}
 
 	.stat-card span {
 		margin-top: 8px;
-		color: #cbd5e1;
+		color: var(--muted);
 		font-weight: 700;
 	}
 
@@ -489,6 +614,80 @@ const organizationSchema = {
 		text-decoration: none;
 		box-shadow: var(--shadow-sm);
 		transition: transform 180ms ease, box-shadow 180ms ease;
+	}
+
+	.instructor-home-block {
+		margin-bottom: 72px;
+	}
+
+	.instructor-home-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 22px;
+	}
+
+	.instructor-home-card {
+		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 20px;
+		background: #fff;
+		box-shadow: var(--shadow-sm);
+		transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+	}
+
+	.instructor-home-card:hover {
+		transform: translateY(-4px);
+		border-color: rgb(37 99 235 / 0.18);
+		box-shadow: var(--shadow-md);
+	}
+
+	.instructor-home-card img {
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		object-fit: cover;
+		object-position: center;
+		background: var(--surface-2);
+	}
+
+	.instructor-home-card > div {
+		padding: 20px;
+	}
+
+	.instructor-home-card span {
+		color: var(--primary);
+		font-size: 0.82rem;
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+
+	.instructor-home-card h3 {
+		margin: 8px 0 4px;
+		font-size: 1.35rem;
+	}
+
+	.instructor-home-card p {
+		color: var(--muted);
+	}
+
+	.mentor-role {
+		margin-top: 0;
+		font-weight: 800;
+		color: #334155 !important;
+	}
+
+	.mentor-skills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 16px;
+	}
+
+	.mentor-skills small {
+		padding: 7px 10px;
+		border-radius: 999px;
+		background: rgb(37 99 235 / 0.08);
+		color: var(--primary);
+		font-weight: 800;
 	}
 
 	.course-card img,
@@ -636,13 +835,15 @@ const organizationSchema = {
 	@media (max-width: 920px) {
 		.hero-grid,
 		.why-grid,
-		.consult-grid {
+		.consult-grid,
+		.about-home-grid {
 			grid-template-columns: 1fr;
 		}
 
 		.category-grid,
 		.course-grid,
 		.article-grid,
+		.instructor-home-grid,
 		.testimonial-track,
 		.timeline {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -650,18 +851,19 @@ const organizationSchema = {
 	}
 
 	@media (max-width: 620px) {
-		.hero-media,
-		.hero-media img {
-			min-height: 360px;
+		.hero-media {
+			aspect-ratio: 4 / 3;
 		}
 
 		.stats-grid,
 		.category-grid,
 		.course-grid,
 		.article-grid,
+		.instructor-home-grid,
 		.reason-grid,
 		.testimonial-track,
-		.timeline {
+		.timeline,
+		.about-points {
 			grid-template-columns: 1fr;
 		}
 	}

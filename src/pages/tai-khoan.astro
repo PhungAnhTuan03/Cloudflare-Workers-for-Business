@@ -1,0 +1,319 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../lib/site-data";
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "ProfilePage",
+	name: "Tai khoan hoc vien",
+	url: `${site.url}/tai-khoan`,
+};
+---
+
+<Layout
+	title="Tai khoan nguoi dung"
+	description="Trang tai khoan de quan ly ho so, vao dashboard giang vien hoac marketplace khoa hoc."
+	canonical={`${site.url}/tai-khoan`}
+	schema={schema}
+>
+	<section class="account-section">
+		<div class="container account-grid">
+			<div class="account-panel card">
+				<span class="page-kicker">
+					<i class="fa-solid fa-user-graduate" aria-hidden="true"></i>
+					Tai khoan
+				</span>
+				<h1>Khong gian nguoi dung</h1>
+				<p data-account-intro>Dang kiem tra phien dang nhap...</p>
+
+				<div class="account-user" data-account-user hidden>
+					<div class="avatar" data-user-initial>SV</div>
+					<div>
+						<strong data-user-name>Hoc vien</strong>
+						<span data-user-email>email@example.com</span>
+						<small data-user-role>Vai tro: hoc vien</small>
+					</div>
+				</div>
+
+				<div class="account-actions">
+					<a href="#" class="btn btn-secondary" data-profile-link>
+						<i class="fa-solid fa-id-card" aria-hidden="true"></i>
+						Xem ho so
+					</a>
+					<a href="/giang-vien/dashboard" class="btn btn-primary" data-instructor-link hidden>
+						<i class="fa-solid fa-chalkboard-user" aria-hidden="true"></i>
+						Dashboard giang vien
+					</a>
+					<a href="/marketplace" class="btn btn-primary" data-student-link hidden>
+						<i class="fa-solid fa-store" aria-hidden="true"></i>
+						Mua khoa hoc
+					</a>
+					<a href="/dang-ky-tu-van" class="btn btn-secondary">
+						<i class="fa-solid fa-headset" aria-hidden="true"></i>
+						Dang ky tu van
+					</a>
+					<button class="btn btn-ghost" type="button" data-logout hidden>
+						<i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+						Dang xuat
+					</button>
+				</div>
+
+				<form class="profile-form" data-profile-form hidden>
+					<h2>Cap nhat ho so</h2>
+					<div class="field">
+						<label for="profile-headline">Tieu de ho so</label>
+						<input id="profile-headline" name="headline" placeholder="Vi du: Mentor Excel / Hoc vien Web Fullstack" />
+					</div>
+					<div class="field">
+						<label for="profile-bio">Gioi thieu</label>
+						<textarea id="profile-bio" name="bio" rows="4" placeholder="Gioi thieu kinh nghiem, muc tieu hoc tap hoac phuong phap giang day"></textarea>
+					</div>
+					<div class="form-grid">
+						<div class="field">
+							<label for="profile-expertise">Chuyen mon</label>
+							<input id="profile-expertise" name="expertise" placeholder="Excel, React, AutoCAD..." />
+						</div>
+						<div class="field">
+							<label for="profile-avatar">Avatar URL</label>
+							<input id="profile-avatar" name="avatarUrl" type="url" placeholder="https://..." />
+						</div>
+					</div>
+					<div class="field">
+						<label for="profile-website">Website ca nhan</label>
+						<input id="profile-website" name="websiteUrl" type="url" placeholder="https://..." />
+					</div>
+					<button class="btn btn-primary" type="submit">Luu ho so</button>
+					<p class="form-status" data-profile-status></p>
+				</form>
+			</div>
+
+			<div class="account-links">
+				<a href="/marketplace" class="account-link card">
+					<i class="fa-solid fa-store" aria-hidden="true"></i>
+					<span>
+						<strong>Marketplace khoa hoc</strong>
+						<small>Mua khoa hoc cua giang vien de mo profile day du va nhan tin rieng.</small>
+					</span>
+				</a>
+				<a href="/giang-vien/dashboard" class="account-link card">
+					<i class="fa-solid fa-chalkboard-user" aria-hidden="true"></i>
+					<span>
+						<strong>Trang rieng giang vien</strong>
+						<small>Tao khoa hoc, dang bai giang va tai lieu len ban cho hoc vien.</small>
+					</span>
+				</a>
+				<a href="/lien-he" class="account-link card">
+					<i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+					<span>
+						<strong>Lien he trung tam</strong>
+						<small>Tim co so gan ban va kenh ho tro phu hop.</small>
+					</span>
+				</a>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	type CurrentUserResponse = {
+		ok?: boolean;
+		user?: {
+			id?: string;
+			fullName?: string;
+			email?: string;
+			role?: string;
+		} | null;
+	};
+
+	const intro = document.querySelector("[data-account-intro]");
+	const userBox = document.querySelector("[data-account-user]");
+	const userInitial = document.querySelector("[data-user-initial]");
+	const userName = document.querySelector("[data-user-name]");
+	const userEmail = document.querySelector("[data-user-email]");
+	const userRole = document.querySelector("[data-user-role]");
+	const logoutButton = document.querySelector("[data-logout]");
+	const profileForm = document.querySelector("[data-profile-form]");
+	const profileStatus = document.querySelector("[data-profile-status]");
+	const profileLink = document.querySelector("[data-profile-link]");
+	const instructorLink = document.querySelector("[data-instructor-link]");
+	const studentLink = document.querySelector("[data-student-link]");
+
+	function setText(target: Element | null, value: string) {
+		if (target instanceof HTMLElement) target.textContent = value;
+	}
+
+	async function loadCurrentUser() {
+		const response = await fetch("/api/auth/me");
+		const result = (await response.json()) as CurrentUserResponse;
+
+		if (!result.user) {
+			setText(intro, "Ban chua dang nhap. Hay dang nhap hoac tao tai khoan de tiep tuc.");
+			window.setTimeout(() => {
+				window.location.href = "/dang-nhap";
+			}, 900);
+			return;
+		}
+
+		setText(intro, "Ban da dang nhap. Hay cap nhat ho so truoc khi hoc tap hoac giang day.");
+		setText(userName, result.user.fullName || "Nguoi dung");
+		setText(userEmail, result.user.email || "");
+		setText(userRole, result.user.role === "instructor" ? "Vai tro: giang vien" : "Vai tro: hoc vien");
+		setText(userInitial, (result.user.fullName || "SV").slice(0, 2).toUpperCase());
+
+		if (profileLink instanceof HTMLAnchorElement && result.user.id) {
+			profileLink.href = `/ho-so/${result.user.id}`;
+		}
+		if (instructorLink instanceof HTMLElement) instructorLink.hidden = result.user.role !== "instructor";
+		if (studentLink instanceof HTMLElement) studentLink.hidden = result.user.role !== "student";
+		if (userBox instanceof HTMLElement) userBox.hidden = false;
+		if (logoutButton instanceof HTMLElement) logoutButton.hidden = false;
+		if (profileForm instanceof HTMLElement) profileForm.hidden = false;
+	}
+
+	if (logoutButton instanceof HTMLButtonElement) {
+		logoutButton.addEventListener("click", async () => {
+			await fetch("/api/auth/logout", { method: "POST" });
+			window.location.href = "/dang-nhap";
+		});
+	}
+
+	if (profileForm instanceof HTMLFormElement) {
+		profileForm.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const payload = Object.fromEntries(new FormData(profileForm));
+			const response = await fetch("/api/profile", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+			const result = (await response.json()) as { message?: string };
+			setText(profileStatus, result.message || (response.ok ? "Da luu ho so." : "Khong luu duoc ho so."));
+		});
+	}
+
+	loadCurrentUser().catch(() => {
+		setText(intro, "Khong kiem tra duoc phien dang nhap. Vui long thu lai.");
+	});
+</script>
+
+<style>
+	.account-section {
+		padding: 74px 0 34px;
+	}
+
+	.account-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);
+		gap: 28px;
+		align-items: start;
+	}
+
+	.account-panel {
+		padding: 30px;
+	}
+
+	.account-panel h1 {
+		margin: 0;
+		font-size: clamp(2.2rem, 4vw, 4rem);
+		line-height: 1.06;
+		letter-spacing: 0;
+	}
+
+	.account-panel p {
+		max-width: 660px;
+		margin: 16px 0 0;
+		color: var(--muted);
+	}
+
+	.account-user {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-top: 24px;
+		padding: 16px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: var(--soft);
+	}
+
+	.avatar {
+		width: 52px;
+		height: 52px;
+		display: inline-grid;
+		place-items: center;
+		border-radius: 8px;
+		background: linear-gradient(135deg, var(--primary), var(--secondary));
+		color: #fff;
+		font-weight: 900;
+	}
+
+	.account-user strong,
+	.account-user span,
+	.account-user small {
+		display: block;
+	}
+
+	.account-user span,
+	.account-user small {
+		color: var(--muted);
+	}
+
+	.account-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 24px;
+	}
+
+	.profile-form {
+		display: grid;
+		gap: 14px;
+		margin-top: 24px;
+		padding-top: 24px;
+		border-top: 1px solid var(--line);
+	}
+
+	.profile-form h2 {
+		margin: 0;
+	}
+
+	.account-links {
+		display: grid;
+		gap: 14px;
+	}
+
+	.account-link {
+		display: flex;
+		gap: 14px;
+		padding: 18px;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.account-link i {
+		width: 40px;
+		height: 40px;
+		display: inline-grid;
+		place-items: center;
+		flex: 0 0 auto;
+		border-radius: 8px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.account-link strong,
+	.account-link small {
+		display: block;
+	}
+
+	.account-link small {
+		color: var(--muted);
+		line-height: 1.45;
+	}
+
+	@media (max-width: 860px) {
+		.account-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

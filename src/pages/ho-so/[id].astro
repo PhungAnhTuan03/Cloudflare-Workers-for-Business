@@ -1,0 +1,457 @@
+---
+import { env } from "cloudflare:workers";
+import Layout from "../../layouts/Layout.astro";
+import { getCurrentUser } from "../../lib/auth";
+import { getProfileForViewer } from "../../lib/learning";
+import { site } from "../../lib/site-data";
+
+const viewer = await getCurrentUser(env.DB, env.SESSION, Astro.request);
+const profile = await getProfileForViewer(env.DB, Astro.params.id || "", viewer);
+
+if (!profile) {
+	return Astro.redirect("/404");
+}
+
+const roleLabel = profile.role === "instructor" ? "Giang vien" : "Hoc vien";
+const skills = (profile.expertise || "React, NodeJS, Java, Spring Boot, Astro, Cloudflare")
+	.split(",")
+	.map((item) => item.trim())
+	.filter(Boolean)
+	.slice(0, 8);
+---
+
+<Layout
+	title={`${profile.fullName} - Ho so`}
+	description={`Ho so ${roleLabel.toLowerCase()} tai ${site.name}.`}
+>
+	<section class="profile-page">
+		<div class="container profile-shell">
+			<section class="profile-hero card">
+				<div class="profile-avatar">
+					{profile.avatarUrl ? <img src={profile.avatarUrl} alt={profile.fullName} /> : <span>{profile.fullName.slice(0, 2).toUpperCase()}</span>}
+				</div>
+				<div class="profile-main">
+					<span class="profile-role">
+						<i class="fa-solid fa-id-card" aria-hidden="true"></i>
+						{roleLabel}
+					</span>
+					<h1>{profile.fullName}</h1>
+					{
+						profile.canViewFullProfile ? (
+							<>
+								<strong class="headline">{profile.headline || "Chua cap nhat tieu de ho so."}</strong>
+								<p>{profile.bio || "Nguoi dung chua cap nhat gioi thieu chi tiet."}</p>
+								<div class="social-row">
+									{profile.websiteUrl && <a href={profile.websiteUrl} target="_blank" rel="noreferrer"><i class="fa-solid fa-globe" aria-hidden="true"></i> Website</a>}
+									<a href="/tin-nhan"><i class="fa-regular fa-message" aria-hidden="true"></i> Tin nhan</a>
+									<a href="/marketplace"><i class="fa-solid fa-store" aria-hidden="true"></i> Khoa hoc</a>
+								</div>
+							</>
+						) : (
+							<div class="locked">
+								<i class="fa-solid fa-lock" aria-hidden="true"></i>
+								<div>
+									<strong>Ho so dang duoc bao ve</strong>
+									<p>Ban chua mua khoa hoc cua giang vien nay nen chi xem duoc ten. Sau khi mua khoa hoc, ho so day du va nhan tin rieng se duoc mo.</p>
+								</div>
+								<a href="/marketplace" class="btn btn-primary">Xem khoa hoc dang ban</a>
+							</div>
+						)
+					}
+				</div>
+			</section>
+
+			{
+				profile.canViewFullProfile && (
+					<section class="profile-content">
+						<aside class="profile-side">
+							<div class="side-card card">
+								<h2>Skills</h2>
+								<div class="skill-list">
+									{skills.map((skill) => <span>{skill}</span>)}
+								</div>
+							</div>
+							<div class="side-card card">
+								<h2>Thanh tich</h2>
+								<div class="badge-list">
+									<span><i class="fa-solid fa-trophy" aria-hidden="true"></i> Top Learner</span>
+									<span><i class="fa-solid fa-fire" aria-hidden="true"></i> 30 Days Streak</span>
+									<span><i class="fa-solid fa-certificate" aria-hidden="true"></i> Certified Developer</span>
+								</div>
+							</div>
+						</aside>
+
+						<div class="profile-tabs card">
+							<div class="tab-list" role="tablist" aria-label="Profile tabs">
+								<button class="active" type="button" data-tab="overview">Tong quan</button>
+								<button type="button" data-tab="courses">Khoa hoc</button>
+								<button type="button" data-tab="certs">Chung chi</button>
+								<button type="button" data-tab="achievements">Thanh tich</button>
+								<button type="button" data-tab="activity">Hoat dong</button>
+							</div>
+							<div class="tab-panel active" data-panel="overview">
+								<h2>Tong quan</h2>
+								<p>{profile.bio || "Nguoi dung chua cap nhat gioi thieu."}</p>
+								<div class="metric-row">
+									<div><strong>12</strong><span>Gio hoc</span></div>
+									<div><strong>4</strong><span>Khoa hoc</span></div>
+									<div><strong>98%</strong><span>Hoan thanh muc tieu</span></div>
+								</div>
+							</div>
+							<div class="tab-panel" data-panel="courses">
+								<h2>Khoa hoc</h2>
+								<div class="mini-course">
+									<i class="fa-solid fa-code" aria-hidden="true"></i>
+									<div>
+										<strong>ReactJS Foundation</strong>
+										<span>Dang hoc - 80% hoan thanh</span>
+									</div>
+								</div>
+							</div>
+							<div class="tab-panel" data-panel="certs">
+								<h2>Chung chi</h2>
+								<div class="certificate-card">
+									<i class="fa-solid fa-certificate" aria-hidden="true"></i>
+									<div>
+										<strong>Certified Developer</strong>
+										<span>Cap boi Sao Viet Tech Academy</span>
+									</div>
+								</div>
+							</div>
+							<div class="tab-panel" data-panel="achievements">
+								<h2>Thanh tich</h2>
+								<div class="badge-list horizontal">
+									<span><i class="fa-solid fa-trophy" aria-hidden="true"></i> Top Learner</span>
+									<span><i class="fa-solid fa-fire" aria-hidden="true"></i> 30 Days Streak</span>
+									<span><i class="fa-solid fa-star" aria-hidden="true"></i> Mentor Choice</span>
+								</div>
+							</div>
+							<div class="tab-panel" data-panel="activity">
+								<h2>Hoat dong gan day</h2>
+								<div class="activity-line">
+									<span></span>
+									<div>
+										<strong>Hoan thanh bai hoc moi</strong>
+										<small>2 gio truoc</small>
+									</div>
+								</div>
+								<div class="activity-line">
+									<span></span>
+									<div>
+										<strong>Cap nhat ho so ca nhan</strong>
+										<small>Hom nay</small>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+				)
+			}
+		</div>
+	</section>
+</Layout>
+
+<script>
+	const tabButtons = document.querySelectorAll("[data-tab]");
+	const panels = document.querySelectorAll("[data-panel]");
+
+	for (const button of tabButtons) {
+		button.addEventListener("click", () => {
+			const key = button.getAttribute("data-tab");
+			for (const item of tabButtons) item.classList.toggle("active", item === button);
+			for (const panel of panels) panel.classList.toggle("active", panel.getAttribute("data-panel") === key);
+		});
+	}
+</script>
+
+<style>
+	.profile-page {
+		padding: 34px 0 18px;
+		background: var(--soft);
+	}
+
+	.profile-shell {
+		display: grid;
+		gap: 22px;
+	}
+
+	.profile-hero {
+		display: grid;
+		grid-template-columns: 150px minmax(0, 1fr);
+		gap: 26px;
+		align-items: center;
+		padding: 28px;
+	}
+
+	.profile-avatar {
+		width: 150px;
+		aspect-ratio: 1;
+		display: grid;
+		place-items: center;
+		overflow: hidden;
+		border-radius: 24px;
+		background: linear-gradient(135deg, var(--primary), var(--secondary));
+		color: #fff;
+		font-size: 2.6rem;
+		font-weight: 900;
+		box-shadow: var(--shadow-blue);
+	}
+
+	.profile-avatar img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.profile-role {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 7px 11px;
+		border: 1px solid rgb(37 99 235 / 0.18);
+		border-radius: 999px;
+		background: rgb(37 99 235 / 0.08);
+		color: var(--primary);
+		font-size: 0.82rem;
+		font-weight: 900;
+	}
+
+	.profile-main h1 {
+		margin: 10px 0 6px;
+		font-size: clamp(2.4rem, 5vw, 4.6rem);
+		line-height: 1.02;
+	}
+
+	.headline {
+		display: block;
+		font-size: 1.08rem;
+	}
+
+	.profile-main p {
+		max-width: 760px;
+		margin: 8px 0 0;
+		color: var(--muted);
+	}
+
+	.social-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 18px;
+	}
+
+	.social-row a {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 40px;
+		padding: 0 12px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: #fff;
+		color: #334155;
+		font-weight: 800;
+		text-decoration: none;
+		transition: transform 300ms ease, color 300ms ease, border-color 300ms ease;
+	}
+
+	.social-row a:hover {
+		transform: translateY(-2px);
+		border-color: rgb(37 99 235 / 0.28);
+		color: var(--primary);
+	}
+
+	.locked {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		gap: 14px;
+		align-items: center;
+		margin-top: 18px;
+		padding: 18px;
+		border: 1px solid rgb(245 158 11 / 0.28);
+		border-radius: var(--radius-lg);
+		background: rgb(245 158 11 / 0.08);
+	}
+
+	.locked > i {
+		width: 42px;
+		height: 42px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: #fff;
+		color: var(--accent);
+	}
+
+	.locked strong {
+		display: block;
+	}
+
+	.profile-content {
+		display: grid;
+		grid-template-columns: 300px minmax(0, 1fr);
+		gap: 22px;
+		align-items: start;
+	}
+
+	.profile-side {
+		display: grid;
+		gap: 16px;
+	}
+
+	.side-card,
+	.profile-tabs {
+		padding: 22px;
+	}
+
+	.side-card h2,
+	.profile-tabs h2 {
+		margin: 0 0 14px;
+		font-size: 1.15rem;
+	}
+
+	.skill-list,
+	.badge-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.skill-list span,
+	.badge-list span {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 11px;
+		border-radius: 999px;
+		background: rgb(37 99 235 / 0.08);
+		color: var(--primary);
+		font-size: 0.86rem;
+		font-weight: 900;
+	}
+
+	.badge-list span {
+		background: rgb(245 158 11 / 0.12);
+		color: #92400e;
+	}
+
+	.tab-list {
+		overflow-x: auto;
+		display: flex;
+		gap: 8px;
+		margin-bottom: 20px;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.tab-list button {
+		min-height: 44px;
+		padding: 0 12px;
+		border: 0;
+		border-bottom: 3px solid transparent;
+		background: transparent;
+		color: var(--muted);
+		font-weight: 900;
+		cursor: pointer;
+		white-space: nowrap;
+	}
+
+	.tab-list button.active {
+		border-color: var(--primary);
+		color: var(--primary);
+	}
+
+	.tab-panel {
+		display: none;
+		animation: fade-up 300ms ease both;
+	}
+
+	.tab-panel.active {
+		display: block;
+	}
+
+	@keyframes fade-up {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.metric-row {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 12px;
+		margin-top: 18px;
+	}
+
+	.metric-row div,
+	.mini-course,
+	.certificate-card,
+	.activity-line {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px;
+		border: 1px solid var(--line);
+		border-radius: 16px;
+		background: var(--soft);
+	}
+
+	.metric-row div {
+		display: grid;
+	}
+
+	.metric-row strong {
+		font-size: 1.8rem;
+		line-height: 1;
+	}
+
+	.metric-row span,
+	.mini-course span,
+	.certificate-card span,
+	.activity-line small {
+		color: var(--muted);
+	}
+
+	.mini-course i,
+	.certificate-card i {
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.activity-line {
+		margin-bottom: 10px;
+	}
+
+	.activity-line > span {
+		width: 12px;
+		height: 12px;
+		border-radius: 999px;
+		background: var(--primary);
+		box-shadow: 0 0 0 6px rgb(37 99 235 / 0.1);
+	}
+
+	@media (max-width: 860px) {
+		.profile-hero,
+		.profile-content,
+		.locked {
+			grid-template-columns: 1fr;
+		}
+
+		.profile-avatar {
+			width: 120px;
+		}
+
+		.metric-row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

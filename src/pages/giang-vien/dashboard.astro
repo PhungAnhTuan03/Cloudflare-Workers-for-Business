@@ -1,0 +1,975 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../lib/site-data";
+
+const sidebarItems = [
+	["fa-chart-line", "Dashboard", "/giang-vien/dashboard", true],
+	["fa-book", "Khoa hoc", "#course-management", false],
+	["fa-upload", "Dang bai giang", "#course-management", false],
+	["fa-ticket", "Coupon", "#coupon-panel", false],
+	["fa-message", "Tin nhan", "#student-messages", false],
+	["fa-id-card", "Ho so", "/tai-khoan", false],
+	["fa-gear", "Cai dat", "/tai-khoan", false],
+];
+---
+
+<Layout
+	title={`Dashboard giang vien - ${site.name}`}
+	description="Dashboard giang vien de quan ly khoa hoc, bai giang, tai lieu, coupon va tin nhan hoc vien."
+>
+	<section class="teacher-page">
+		<div class="container teacher-shell">
+			<aside class="teacher-sidebar glass-card">
+				<div class="sidebar-head">
+					<span class="sidebar-icon"><i class="fa-solid fa-chalkboard-user" aria-hidden="true"></i></span>
+					<div>
+						<strong>Instructor Studio</strong>
+						<small>Quan ly kinh doanh khoa hoc</small>
+					</div>
+				</div>
+				<nav aria-label="Instructor dashboard">
+					{
+						sidebarItems.map(([icon, label, href, active]) => (
+							<a class:list={["sidebar-link", { active }]} href={href as string}>
+								<i class={`fa-solid ${icon}`} aria-hidden="true"></i>
+								<span>{label}</span>
+							</a>
+						))
+					}
+				</nav>
+			</aside>
+
+			<main class="teacher-main">
+				<section class="teacher-hero">
+					<div>
+						<span class="hero-chip">Giang vien</span>
+						<h1>Quan ly khoa hoc, doanh thu va hoc vien trong mot man hinh.</h1>
+						<p data-dashboard-status>Dang kiem tra tai khoan giang vien...</p>
+					</div>
+					<a href="#create-course" class="btn btn-accent">
+						<i class="fa-solid fa-plus" aria-hidden="true"></i>
+						Tao khoa hoc moi
+					</a>
+				</section>
+
+				<section class="teacher-stats" aria-label="Thong ke giang vien">
+					<article class="stat-card glass-card surface-hover">
+						<span><i class="fa-solid fa-book" aria-hidden="true"></i></span>
+						<small>Tong khoa hoc</small>
+						<strong data-stat-courses>0</strong>
+					</article>
+					<article class="stat-card glass-card surface-hover">
+						<span><i class="fa-solid fa-users" aria-hidden="true"></i></span>
+						<small>Tong hoc vien</small>
+						<strong data-stat-students>0</strong>
+					</article>
+					<article class="stat-card glass-card surface-hover">
+						<span><i class="fa-solid fa-wallet" aria-hidden="true"></i></span>
+						<small>Doanh thu uoc tinh</small>
+						<strong data-stat-revenue>0d</strong>
+					</article>
+					<article class="stat-card glass-card surface-hover">
+						<span><i class="fa-solid fa-star" aria-hidden="true"></i></span>
+						<small>Danh gia TB</small>
+						<strong>4.8</strong>
+					</article>
+				</section>
+
+				<section class="analytics-grid">
+					<article class="analytics-card">
+						<div class="panel-head">
+							<div>
+								<h2>Doanh thu thang</h2>
+								<p>Mo phong xu huong doanh thu theo thang.</p>
+							</div>
+						</div>
+						<div class="line-chart" aria-label="Revenue chart">
+							{[34, 48, 42, 68, 76, 90].map((height, index) => (
+								<div>
+									<span style={`--height: ${height}%`}></span>
+									<small>T{index + 1}</small>
+								</div>
+							))}
+						</div>
+					</article>
+					<article class="analytics-card">
+						<div class="panel-head">
+							<div>
+								<h2>Hoc vien moi</h2>
+								<p>Luong hoc vien dang ky trong 6 thang gan nhat.</p>
+							</div>
+						</div>
+						<div class="area-summary">
+							<strong data-new-students>0</strong>
+							<span>hoc vien tu cac khoa hoc dang ban</span>
+						</div>
+						<div class="completion-ring" style="--value: 72">
+							<strong>72%</strong>
+							<span>Ti le hoan thanh</span>
+						</div>
+					</article>
+				</section>
+
+				<section id="course-management" class="teacher-panel">
+					<div class="panel-head">
+						<div>
+							<h2>Quan ly khoa hoc</h2>
+							<p>Bang khoa hoc dang ban, doanh thu, trang thai va thao tac nhanh.</p>
+						</div>
+					</div>
+					<div class="course-table" data-course-list>
+						<div class="loading-state">Dang tai khoa hoc...</div>
+					</div>
+				</section>
+
+				<section class="forms-grid">
+					<form id="create-course" class="teacher-panel dash-form" data-course-form>
+						<h2>Tao khoa hoc moi</h2>
+						<div class="field">
+							<label for="course-title">Ten khoa hoc</label>
+							<input id="course-title" name="title" required placeholder="Vi du: Excel thuc chien cho ke toan" />
+						</div>
+						<div class="field">
+							<label for="course-description">Mo ta</label>
+							<textarea id="course-description" name="description" rows="4" required placeholder="Mo ta muc tieu, noi dung va gia tri khoa hoc"></textarea>
+						</div>
+						<div class="form-grid">
+							<div class="field">
+								<label for="course-price">Hoc phi</label>
+								<input id="course-price" name="price" type="number" min="0" value="0" />
+							</div>
+							<div class="field">
+								<label for="course-status">Trang thai</label>
+								<select id="course-status" name="status">
+									<option value="published">Dang ban</option>
+									<option value="draft">Ban nhap</option>
+								</select>
+							</div>
+						</div>
+						<div class="field">
+							<label for="course-cover">Anh bia URL</label>
+							<input id="course-cover" name="coverUrl" type="url" placeholder="https://..." />
+						</div>
+						<button class="btn btn-primary" type="submit">
+							<i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+							Luu vao database
+						</button>
+						<p class="form-status" data-course-status></p>
+					</form>
+
+					<form id="coupon-panel" class="teacher-panel dash-form" data-coupon-form>
+						<h2>Tao coupon giam gia</h2>
+						<div class="field">
+							<label for="coupon-code">Ma coupon</label>
+							<input id="coupon-code" name="code" placeholder="VD: TET2026" required />
+						</div>
+						<div class="field">
+							<label for="coupon-course">Khoa hoc ap dung</label>
+							<select id="coupon-course" name="coursePublicId" data-coupon-course>
+								<option value="">Tat ca khoa hoc cua toi</option>
+							</select>
+						</div>
+						<div class="form-grid">
+							<div class="field">
+								<label for="discount-type">Kieu giam</label>
+								<select id="discount-type" name="discountType">
+									<option value="percent">Theo phan tram</option>
+									<option value="fixed">So tien co dinh</option>
+								</select>
+							</div>
+							<div class="field">
+								<label for="discount-value">Gia tri</label>
+								<input id="discount-value" name="discountValue" type="number" min="1" value="20" required />
+							</div>
+						</div>
+						<button class="btn btn-secondary" type="submit">
+							<i class="fa-solid fa-ticket" aria-hidden="true"></i>
+							Tao coupon
+						</button>
+						<p class="form-status" data-coupon-status></p>
+					</form>
+				</section>
+			</main>
+
+			<aside class="teacher-rail">
+				<section id="student-messages" class="rail-card glass-card">
+					<h2>Tin nhan hoc vien</h2>
+					<div data-thread-list class="thread-list">
+						<p class="empty-small">Dang tai tin nhan...</p>
+					</div>
+				</section>
+				<section class="rail-card goal-card">
+					<h2>Quick Actions</h2>
+					<a href="/marketplace"><i class="fa-solid fa-store" aria-hidden="true"></i> Xem marketplace</a>
+					<a href="/tai-khoan"><i class="fa-solid fa-id-card" aria-hidden="true"></i> Cap nhat profile</a>
+				</section>
+			</aside>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	type Course = {
+		public_id: string;
+		title: string;
+		description: string;
+		price: number;
+		status: string;
+	};
+
+	type Thread = {
+		course_public_id: string;
+		course_title: string;
+		student_public_id: string;
+		student_name: string;
+		last_message?: string | null;
+	};
+
+	type ApiResult = {
+		ok?: boolean;
+		message?: string;
+		courses?: Course[];
+		threads?: Thread[];
+	};
+
+	const dashboardStatus = document.querySelector("[data-dashboard-status]");
+	const courseForm = document.querySelector("[data-course-form]");
+	const courseStatus = document.querySelector("[data-course-status]");
+	const courseList = document.querySelector("[data-course-list]");
+	const threadList = document.querySelector("[data-thread-list]");
+	const couponForm = document.querySelector("[data-coupon-form]");
+	const couponStatus = document.querySelector("[data-coupon-status]");
+	const couponCourse = document.querySelector("[data-coupon-course]");
+	const statCourses = document.querySelector("[data-stat-courses]");
+	const statStudents = document.querySelector("[data-stat-students]");
+	const statRevenue = document.querySelector("[data-stat-revenue]");
+	const newStudents = document.querySelector("[data-new-students]");
+
+	function esc(value: string) {
+		return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] || char);
+	}
+
+	function setText(target: Element | null, value: string) {
+		if (target instanceof HTMLElement) target.textContent = value;
+	}
+
+	function formatCurrency(value: number) {
+		return `${Number(value || 0).toLocaleString("vi-VN")}d`;
+	}
+
+	function formPayload(form: HTMLFormElement) {
+		return Object.fromEntries(new FormData(form)) as Record<string, FormDataEntryValue | number>;
+	}
+
+	function renderCourses(courses: Course[]) {
+		if (!(courseList instanceof HTMLElement)) return;
+		setText(statCourses, String(courses.length));
+		setText(statRevenue, formatCurrency(courses.reduce((sum, course) => sum + Number(course.price || 0), 0)));
+
+		if (couponCourse instanceof HTMLSelectElement) {
+			couponCourse.innerHTML = [
+				`<option value="">Tat ca khoa hoc cua toi</option>`,
+				...courses.map((course) => `<option value="${course.public_id}">${esc(course.title)}</option>`),
+			].join("");
+		}
+
+		if (!courses.length) {
+			courseList.innerHTML = `<div class="empty-state">
+				<div>
+					<strong>Chua co khoa hoc nao.</strong>
+					<p>Tao khoa hoc dau tien de bat dau ban va nhan hoc vien.</p>
+				</div>
+			</div>`;
+			return;
+		}
+
+		courseList.innerHTML = `
+			<div class="table-head">
+				<span>Ten khoa hoc</span>
+				<span>Hoc vien</span>
+				<span>Doanh thu</span>
+				<span>Trang thai</span>
+				<span>Hanh dong</span>
+			</div>
+			${courses
+				.map((course, index) => {
+					const students = [12, 8, 5, 2][index % 4];
+					return `
+						<article class="table-row">
+							<div class="course-title-cell">
+								<span class="course-icon"><i class="fa-solid fa-code" aria-hidden="true"></i></span>
+								<div>
+									<strong>${esc(course.title)}</strong>
+									<small>${esc(course.description || "Chua co mo ta").slice(0, 86)}</small>
+								</div>
+							</div>
+							<span>${students}</span>
+							<span>${formatCurrency(Number(course.price || 0) * students)}</span>
+							<span class="status-pill ${course.status === "published" ? "published" : "draft"}">${course.status === "published" ? "Dang ban" : "Ban nhap"}</span>
+							<div class="row-actions">
+								<a href="/khoa-hoc-giang-vien/${course.public_id}" aria-label="Xem khoa hoc"><i class="fa-solid fa-eye" aria-hidden="true"></i></a>
+								${course.status === "published" ? "" : `<button type="button" data-publish="${course.public_id}" aria-label="Dang ban"><i class="fa-solid fa-upload" aria-hidden="true"></i></button>`}
+							</div>
+							<div class="inline-forms">
+								<form data-lesson-form="${course.public_id}">
+									<input name="title" placeholder="Ten bai giang" required />
+									<textarea name="content" placeholder="Noi dung bai giang" required></textarea>
+									<button class="btn btn-ghost" type="submit">Them bai</button>
+								</form>
+								<form data-material-form="${course.public_id}">
+									<input name="title" placeholder="Ten tai lieu" required />
+									<input name="fileUrl" placeholder="Link tai lieu" required />
+									<button class="btn btn-ghost" type="submit">Them tai lieu</button>
+								</form>
+							</div>
+						</article>
+					`;
+				})
+				.join("")}`;
+
+		bindNestedForms();
+		bindPublishButtons();
+	}
+
+	async function loadCourses() {
+		const response = await fetch("/api/instructor/courses");
+		const result = (await response.json()) as ApiResult;
+		if (!response.ok || !result.ok) {
+			setText(dashboardStatus, result.message || "Ban can dang nhap bang tai khoan giang vien.");
+			if (courseList instanceof HTMLElement) courseList.innerHTML = `<div class="empty-state">Ban can dang nhap bang tai khoan giang vien.</div>`;
+			return;
+		}
+
+		setText(dashboardStatus, "Ban dang dang nhap voi quyen giang vien. Moi khoa hoc tao moi se luu truc tiep vao database.");
+		renderCourses(result.courses || []);
+	}
+
+	async function loadThreads() {
+		const response = await fetch("/api/instructor/threads");
+		const result = (await response.json()) as ApiResult;
+		if (!(threadList instanceof HTMLElement)) return;
+
+		if (!response.ok || !result.ok) {
+			threadList.innerHTML = "<p class='empty-small'>Chua co quyen xem tin nhan.</p>";
+			return;
+		}
+
+		const threads = result.threads || [];
+		setText(statStudents, String(threads.length));
+		setText(newStudents, String(threads.length));
+		threadList.innerHTML = threads.length
+			? threads
+					.map(
+						(thread) => `
+							<a class="thread-item" href="/tin-nhan/${thread.course_public_id}?studentId=${thread.student_public_id}">
+								<strong>${esc(thread.student_name)}</strong>
+								<span>${esc(thread.course_title)}</span>
+								<small>${esc(thread.last_message || "Chua co tin nhan")}</small>
+							</a>
+						`,
+					)
+					.join("")
+			: "<p class='empty-small'>Chua co hoc vien mua khoa hoc.</p>";
+	}
+
+	if (courseForm instanceof HTMLFormElement) {
+		courseForm.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const payload = formPayload(courseForm);
+			payload.price = Number(payload.price || 0);
+			setText(courseStatus, "Dang luu khoa hoc...");
+
+			const response = await fetch("/api/instructor/courses", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+			const result = (await response.json()) as ApiResult;
+			setText(courseStatus, result.message || (response.ok ? "Da luu vao database." : "Khong luu duoc."));
+			if (response.ok && result.ok) {
+				courseForm.reset();
+				await loadCourses();
+			}
+		});
+	}
+
+	if (couponForm instanceof HTMLFormElement) {
+		couponForm.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const payload = formPayload(couponForm);
+			payload.discountValue = Number(payload.discountValue || 0);
+			setText(couponStatus, "Dang tao coupon...");
+			const response = await fetch("/api/instructor/coupons", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+			const result = (await response.json()) as ApiResult;
+			setText(couponStatus, result.message || (response.ok ? "Da tao coupon." : "Khong tao duoc coupon."));
+			if (response.ok) couponForm.reset();
+		});
+	}
+
+	function bindNestedForms() {
+		for (const form of document.querySelectorAll("[data-lesson-form]")) {
+			if (!(form instanceof HTMLFormElement) || form.dataset.bound === "true") continue;
+			form.dataset.bound = "true";
+			form.addEventListener("submit", async (event) => {
+				event.preventDefault();
+				const id = form.getAttribute("data-lesson-form");
+				const response = await fetch(`/api/instructor/courses/${id}/lessons`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(formPayload(form)),
+				});
+				const result = (await response.json()) as ApiResult;
+				alert(result.message || (response.ok ? "Da them bai giang." : "Khong them duoc."));
+				if (response.ok) form.reset();
+			});
+		}
+
+		for (const form of document.querySelectorAll("[data-material-form]")) {
+			if (!(form instanceof HTMLFormElement) || form.dataset.bound === "true") continue;
+			form.dataset.bound = "true";
+			form.addEventListener("submit", async (event) => {
+				event.preventDefault();
+				const id = form.getAttribute("data-material-form");
+				const response = await fetch(`/api/instructor/courses/${id}/materials`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(formPayload(form)),
+				});
+				const result = (await response.json()) as ApiResult;
+				alert(result.message || (response.ok ? "Da them tai lieu." : "Khong them duoc."));
+				if (response.ok) form.reset();
+			});
+		}
+	}
+
+	function bindPublishButtons() {
+		for (const button of document.querySelectorAll("[data-publish]")) {
+			if (!(button instanceof HTMLButtonElement) || button.dataset.bound === "true") continue;
+			button.dataset.bound = "true";
+			button.addEventListener("click", async () => {
+				const id = button.getAttribute("data-publish");
+				const response = await fetch(`/api/instructor/courses/${id}`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ status: "published" }),
+				});
+				const result = (await response.json()) as ApiResult;
+				alert(result.message || (response.ok ? "Da dang ban." : "Khong dang ban duoc."));
+				if (response.ok) await loadCourses();
+			});
+		}
+	}
+
+	loadCourses().catch(() => undefined);
+	loadThreads().catch(() => undefined);
+</script>
+
+<style>
+	.teacher-page {
+		padding: 22px 0 32px;
+		background: var(--soft);
+	}
+
+	.teacher-page .container {
+		width: min(1320px, calc(100% - 36px));
+	}
+
+	.teacher-shell {
+		display: grid;
+		grid-template-columns: 220px minmax(0, 1fr) 250px;
+		gap: 18px;
+		align-items: start;
+	}
+
+	.teacher-sidebar,
+	.teacher-rail {
+		position: sticky;
+		top: 92px;
+	}
+
+	.teacher-sidebar {
+		padding: 14px;
+		border-radius: 20px;
+	}
+
+	.sidebar-head {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 14px;
+	}
+
+	.sidebar-icon {
+		width: 42px;
+		height: 42px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.sidebar-head strong,
+	.sidebar-head small {
+		display: block;
+		line-height: 1.2;
+	}
+
+	.sidebar-head small {
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 700;
+	}
+
+	.sidebar-link {
+		display: flex;
+		align-items: center;
+		gap: 11px;
+		min-height: 40px;
+		padding: 0 10px;
+		border-radius: 14px;
+		color: #475569;
+		font-weight: 800;
+		text-decoration: none;
+		transition: background 300ms ease, color 300ms ease, transform 300ms ease;
+	}
+
+	.sidebar-link:hover,
+	.sidebar-link.active {
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+		transform: translateX(2px);
+	}
+
+	.teacher-main,
+	.teacher-rail {
+		display: grid;
+		gap: 14px;
+		min-width: 0;
+	}
+
+	.teacher-hero {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 18px;
+		padding: 22px;
+		border-radius: 22px;
+		background:
+			linear-gradient(135deg, #0f172a, #1d4ed8);
+		color: #fff;
+		box-shadow: var(--shadow-blue);
+	}
+
+	.teacher-hero h1 {
+		max-width: 620px;
+		margin: 8px 0;
+		font-size: clamp(1.9rem, 3.2vw, 2.7rem);
+		line-height: 1.08;
+	}
+
+	.teacher-hero p {
+		margin: 0;
+		color: rgb(255 255 255 / 0.78);
+	}
+
+	.teacher-hero .btn {
+		flex: 0 0 auto;
+		min-width: 166px;
+		white-space: nowrap;
+	}
+
+	.hero-chip {
+		display: inline-flex;
+		padding: 7px 11px;
+		border-radius: 999px;
+		background: rgb(255 255 255 / 0.14);
+		font-size: 0.82rem;
+		font-weight: 900;
+	}
+
+	.teacher-stats {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.stat-card {
+		display: grid;
+		gap: 7px;
+		padding: 14px;
+		border-radius: 18px;
+	}
+
+	.stat-card span {
+		width: 38px;
+		height: 38px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.stat-card small {
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.stat-card strong {
+		font-size: 1.55rem;
+		line-height: 1;
+	}
+
+	.analytics-grid,
+	.forms-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.analytics-card,
+	.teacher-panel,
+	.rail-card {
+		padding: 16px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		background: #fff;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.panel-head {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 14px;
+	}
+
+	.panel-head h2,
+	.teacher-panel h2,
+	.rail-card h2 {
+		margin: 0;
+		font-size: 1.2rem;
+	}
+
+	.panel-head p {
+		margin: 4px 0 0;
+		color: var(--muted);
+	}
+
+	.line-chart {
+		display: grid;
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		gap: 12px;
+		height: 150px;
+		align-items: end;
+	}
+
+	.line-chart div {
+		display: grid;
+		gap: 8px;
+		justify-items: center;
+		height: 100%;
+	}
+
+	.line-chart span {
+		width: 100%;
+		max-width: 42px;
+		height: var(--height);
+		margin-top: auto;
+		border-radius: 999px;
+		background: linear-gradient(180deg, var(--accent), var(--primary));
+	}
+
+	.line-chart small {
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.area-summary {
+		display: grid;
+		gap: 4px;
+		margin-bottom: 20px;
+	}
+
+	.area-summary strong {
+		font-size: 2.4rem;
+		line-height: 1;
+	}
+
+	.area-summary span {
+		color: var(--muted);
+	}
+
+	.completion-ring {
+		width: 126px;
+		aspect-ratio: 1;
+		display: grid;
+		place-items: center;
+		margin: 0 auto;
+		border-radius: 999px;
+		background: conic-gradient(var(--primary) calc(var(--value) * 1%), #e2e8f0 0);
+		position: relative;
+	}
+
+	.completion-ring::before {
+		position: absolute;
+		inset: 14px;
+		content: "";
+		border-radius: inherit;
+		background: #fff;
+	}
+
+	.completion-ring strong,
+	.completion-ring span {
+		position: relative;
+		z-index: 1;
+		display: block;
+		text-align: center;
+	}
+
+	.completion-ring strong {
+		font-size: 2rem;
+		line-height: 1;
+	}
+
+	.completion-ring span {
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 800;
+	}
+
+	.course-table {
+		display: grid;
+		gap: 10px;
+	}
+
+	.table-head,
+	.table-row {
+		display: grid;
+		grid-template-columns: minmax(220px, 1.7fr) 0.5fr 0.75fr 0.7fr 0.5fr;
+		gap: 10px;
+		align-items: center;
+	}
+
+	.table-head {
+		padding: 0 14px;
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+
+	.table-row {
+		padding: 12px;
+		border: 1px solid var(--line);
+		border-radius: 18px;
+		background: var(--soft);
+	}
+
+	.course-title-cell {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-width: 0;
+	}
+
+	.course-title-cell strong,
+	.course-title-cell small {
+		display: block;
+	}
+
+	.course-title-cell small {
+		color: var(--muted);
+	}
+
+	.course-icon {
+		width: 38px;
+		height: 38px;
+		display: grid;
+		place-items: center;
+		flex: 0 0 auto;
+		border-radius: 14px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.status-pill {
+		justify-self: start;
+		padding: 7px 10px;
+		border-radius: 999px;
+		font-size: 0.78rem;
+		font-weight: 900;
+	}
+
+	.status-pill.published {
+		background: rgb(16 185 129 / 0.12);
+		color: #047857;
+	}
+
+	.status-pill.draft {
+		background: rgb(245 158 11 / 0.14);
+		color: #92400e;
+	}
+
+	.row-actions {
+		display: flex;
+		gap: 8px;
+	}
+
+	.row-actions a,
+	.row-actions button {
+		width: 36px;
+		height: 36px;
+		display: grid;
+		place-items: center;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: #fff;
+		color: var(--primary);
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.inline-forms {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+		margin-top: 8px;
+	}
+
+	.inline-forms form {
+		display: grid;
+		gap: 8px;
+	}
+
+	.inline-forms input,
+	.inline-forms textarea,
+	.dash-form input,
+	.dash-form textarea,
+	.dash-form select {
+		width: 100%;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		padding: 11px 12px;
+		outline: none;
+	}
+
+	.dash-form {
+		display: grid;
+		gap: 14px;
+	}
+
+	.thread-list {
+		display: grid;
+		gap: 10px;
+	}
+
+	.thread-item,
+	.rail-card a {
+		display: grid;
+		gap: 2px;
+		padding: 10px;
+		border-radius: 16px;
+		background: var(--soft);
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.thread-item span,
+	.thread-item small,
+	.empty-small {
+		color: var(--muted);
+	}
+
+	.goal-card {
+		background: linear-gradient(135deg, #fff, #eef6ff);
+	}
+
+	@media (max-width: 1280px) {
+		.teacher-shell {
+			grid-template-columns: 76px minmax(0, 1fr);
+		}
+
+		.teacher-sidebar {
+			padding: 14px;
+		}
+
+		.sidebar-head div,
+		.sidebar-link span,
+		.teacher-rail {
+			display: none;
+		}
+	}
+
+	@media (max-width: 940px) {
+		.teacher-shell,
+		.analytics-grid,
+		.forms-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.teacher-sidebar {
+			position: static;
+			overflow-x: auto;
+		}
+
+		.teacher-sidebar nav {
+			display: flex;
+			gap: 8px;
+		}
+
+		.sidebar-head {
+			display: none;
+		}
+
+		.sidebar-link {
+			white-space: nowrap;
+		}
+
+		.sidebar-link span {
+			display: inline;
+		}
+
+		.teacher-stats {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.teacher-hero {
+			display: grid;
+		}
+
+		.table-head {
+			display: none;
+		}
+
+		.table-row {
+			grid-template-columns: 1fr;
+		}
+
+		.inline-forms {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.teacher-page .container {
+			width: min(100% - 24px, 1320px);
+		}
+
+		.teacher-hero,
+		.teacher-panel,
+		.analytics-card {
+			padding: 18px;
+		}
+
+		.teacher-stats {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

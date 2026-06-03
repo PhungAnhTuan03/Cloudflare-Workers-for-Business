@@ -1,0 +1,387 @@
+---
+interface Props {
+	mode?: "login" | "register";
+}
+
+const { mode = "login" } = Astro.props;
+const isRegister = mode === "register";
+---
+
+<section class="auth-section">
+	<div class="container auth-grid">
+		<div class="auth-copy">
+			<span class="page-kicker">
+				<i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+				Cổng học viên
+			</span>
+			<h1>{isRegister ? "Tạo tài khoản học viên trong vài bước." : "Đăng nhập để tiếp tục lộ trình học."}</h1>
+			<p>
+				Quản lý khóa học đã đăng ký, xem lịch học, nhận tài liệu và theo dõi hỗ trợ tư vấn từ trung tâm trong
+				một không gian bảo mật, rõ ràng.
+			</p>
+
+			<div class="auth-benefits">
+				<div>
+					<i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+					<span>Lịch học và thông báo khai giảng</span>
+				</div>
+				<div>
+					<i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+					<span>Tài liệu, bài tập và tiến độ học tập</span>
+				</div>
+				<div>
+					<i class="fa-solid fa-certificate" aria-hidden="true"></i>
+					<span>Liên kết tra cứu chứng nhận sau khóa học</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="auth-card card" data-auth-card data-mode={mode}>
+			<div class="auth-tabs" role="tablist" aria-label="Chọn hình thức xác thực">
+				<a href="/dang-nhap" class:list={["auth-tab", !isRegister && "is-active"]}>
+					<i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+					Đăng nhập
+				</a>
+				<a href="/dang-ky" class:list={["auth-tab", isRegister && "is-active"]}>
+					<i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+					Đăng ký
+				</a>
+			</div>
+
+			<form class:list={["auth-form", !isRegister && "is-active"]} data-auth-form="login" novalidate>
+				<div class="form-heading">
+					<h2>Chào mừng quay lại</h2>
+					<p>Dùng email đã đăng ký với trung tâm.</p>
+				</div>
+
+				<div class="field">
+					<label for="login-email">Email</label>
+					<input id="login-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+				</div>
+
+				<div class="field">
+					<label for="login-password">Mật khẩu</label>
+					<input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu" required />
+				</div>
+
+				<label class="check-row">
+					<input name="remember" type="checkbox" value="true" />
+					<span>Ghi nhớ đăng nhập</span>
+				</label>
+
+				<button class="btn btn-primary auth-submit" type="submit">
+					<i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i>
+					Đăng nhập
+				</button>
+
+				<p class="auth-note">
+					Chưa có tài khoản? <a href="/dang-ky">Tạo tài khoản mới</a>
+				</p>
+				<p class="form-status" data-auth-status="login" aria-live="polite"></p>
+			</form>
+
+			<form class:list={["auth-form", isRegister && "is-active"]} data-auth-form="register" novalidate>
+				<div class="form-heading">
+					<h2>Tạo tài khoản mới</h2>
+					<p>Thông tin này giúp tư vấn viên hỗ trợ đúng khóa học.</p>
+				</div>
+
+				<div class="field">
+					<label for="register-name">Họ và tên</label>
+					<input id="register-name" name="fullName" type="text" autocomplete="name" placeholder="Nguyễn Văn A" required />
+				</div>
+
+				<div class="field">
+					<label for="register-role">Vai trò</label>
+					<select id="register-role" name="role" required>
+						<option value="student">Học viên</option>
+						<option value="instructor">Giảng viên</option>
+					</select>
+				</div>
+
+				<div class="form-grid compact">
+					<div class="field">
+						<label for="register-email">Email</label>
+						<input id="register-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+					</div>
+					<div class="field">
+						<label for="register-phone">Số điện thoại</label>
+						<input id="register-phone" name="phone" type="tel" autocomplete="tel" placeholder="0901234567" />
+					</div>
+				</div>
+
+				<div class="form-grid compact">
+					<div class="field">
+						<label for="register-password">Mật khẩu</label>
+						<input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" placeholder="Tối thiểu 8 ký tự" required />
+					</div>
+					<div class="field">
+						<label for="register-confirm">Xác nhận mật khẩu</label>
+						<input id="register-confirm" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Nhập lại mật khẩu" required />
+					</div>
+				</div>
+
+				<div class="form-honeypot" aria-hidden="true">
+					<label>
+						Website
+						<input name="website" tabindex="-1" autocomplete="off" />
+					</label>
+				</div>
+
+				<button class="btn btn-primary auth-submit" type="submit">
+					<i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+					Tạo tài khoản
+				</button>
+
+				<p class="auth-note">
+					Đã có tài khoản? <a href="/dang-nhap">Đăng nhập ngay</a>
+				</p>
+				<p class="form-status" data-auth-status="register" aria-live="polite"></p>
+			</form>
+		</div>
+	</div>
+</section>
+
+<script>
+	const forms = document.querySelectorAll("[data-auth-form]");
+
+	type AuthResponse = {
+		ok?: boolean;
+		message?: string;
+		redirectTo?: string;
+	};
+
+	function setStatus(form: HTMLFormElement, state: string, message: string) {
+		const mode = form.getAttribute("data-auth-form");
+		const status = document.querySelector(`[data-auth-status="${mode}"]`);
+		if (status instanceof HTMLElement) {
+			status.dataset.state = state;
+			status.textContent = message;
+		}
+	}
+
+	function payloadFromForm(form: HTMLFormElement) {
+		const data: Record<string, FormDataEntryValue | boolean> = Object.fromEntries(new FormData(form));
+		if ("remember" in data) data.remember = true;
+		return data;
+	}
+
+	for (const form of forms) {
+		if (!(form instanceof HTMLFormElement)) continue;
+
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+
+			if (!form.reportValidity()) return;
+
+			const mode = form.getAttribute("data-auth-form");
+			const button = form.querySelector("button[type='submit']");
+			if (button instanceof HTMLButtonElement) button.disabled = true;
+
+			setStatus(form, "", "Đang xử lý...");
+
+			try {
+				const response = await fetch(`/api/auth/${mode}`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(payloadFromForm(form)),
+				});
+				const result = (await response.json()) as AuthResponse;
+
+				if (!response.ok || !result.ok) {
+					setStatus(form, "error", result.message || "Không thể xử lý yêu cầu.");
+					return;
+				}
+
+				setStatus(form, "success", result.message || "Thành công.");
+				window.setTimeout(() => {
+					window.location.href = result.redirectTo || "/tai-khoan";
+				}, 450);
+			} catch {
+				setStatus(form, "error", "Không kết nối được máy chủ. Vui lòng thử lại.");
+			} finally {
+				if (button instanceof HTMLButtonElement) button.disabled = false;
+			}
+		});
+	}
+</script>
+
+<style>
+	.auth-section {
+		padding: 74px 0 34px;
+	}
+
+	.auth-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.92fr) minmax(360px, 520px);
+		gap: 48px;
+		align-items: center;
+	}
+
+	.auth-copy h1 {
+		max-width: 720px;
+		margin: 0;
+		font-size: clamp(2.35rem, 5vw, 4.7rem);
+		line-height: 1.04;
+		letter-spacing: 0;
+	}
+
+	.auth-copy p {
+		max-width: 640px;
+		margin: 20px 0 0;
+		color: var(--muted);
+		font-size: 1.08rem;
+	}
+
+	.auth-benefits {
+		display: grid;
+		gap: 12px;
+		margin-top: 30px;
+	}
+
+	.auth-benefits div {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		max-width: 520px;
+		padding: 14px;
+		border: 1px solid rgb(37 99 235 / 0.14);
+		border-radius: var(--radius);
+		background: rgb(255 255 255 / 0.78);
+		color: #334155;
+		font-weight: 800;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.auth-benefits i {
+		width: 36px;
+		height: 36px;
+		display: inline-grid;
+		place-items: center;
+		border-radius: 8px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.auth-card {
+		padding: 18px;
+		background: rgb(255 255 255 / 0.96);
+	}
+
+	.auth-tabs {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px;
+		margin-bottom: 18px;
+		padding: 6px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: var(--soft);
+	}
+
+	.auth-tab {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		min-height: 42px;
+		border-radius: 8px;
+		color: var(--muted);
+		font-weight: 900;
+		text-decoration: none;
+	}
+
+	.auth-tab.is-active {
+		background: #fff;
+		color: var(--primary);
+		box-shadow: 0 10px 24px rgb(15 23 42 / 0.08);
+	}
+
+	.auth-form {
+		display: none;
+		gap: 14px;
+	}
+
+	.auth-form.is-active {
+		display: grid;
+	}
+
+	.form-heading h2 {
+		margin: 0;
+		font-size: 1.45rem;
+		letter-spacing: 0;
+	}
+
+	.form-heading p {
+		margin: 6px 0 4px;
+		color: var(--muted);
+	}
+
+	.form-grid.compact {
+		gap: 12px;
+	}
+
+	.check-row {
+		display: flex;
+		align-items: center;
+		gap: 9px;
+		color: #475569;
+		font-weight: 700;
+	}
+
+	.check-row input {
+		width: 18px;
+		height: 18px;
+		accent-color: var(--primary);
+	}
+
+	.auth-submit {
+		width: 100%;
+		margin-top: 4px;
+	}
+
+	.auth-submit:disabled {
+		cursor: wait;
+		opacity: 0.7;
+		transform: none;
+	}
+
+	.auth-note {
+		margin: 0;
+		color: var(--muted);
+		text-align: center;
+	}
+
+	.auth-note a {
+		color: var(--primary);
+		font-weight: 900;
+		text-decoration: none;
+	}
+
+	@media (max-width: 960px) {
+		.auth-grid {
+			grid-template-columns: 1fr;
+			gap: 30px;
+		}
+
+		.auth-card {
+			max-width: 560px;
+			width: 100%;
+			margin-inline: auto;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.auth-section {
+			padding-top: 46px;
+		}
+
+		.auth-card {
+			padding: 14px;
+		}
+
+		.auth-benefits div {
+			align-items: flex-start;
+		}
+	}
+</style>

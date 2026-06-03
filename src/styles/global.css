@@ -2,7 +2,7 @@
 
 :root {
 	--primary: #2563eb;
-	--secondary: #0ea5e9;
+	--secondary: #60a5fa;
 	--accent: #f59e0b;
 	--ink: #0f172a;
 	--muted: #64748b;
@@ -12,9 +12,11 @@
 	--line: #e2e8f0;
 	--success: #10b981;
 	--danger: #ef4444;
-	--radius: 8px;
+	--radius: 12px;
+	--radius-lg: 20px;
 	--shadow-sm: 0 10px 30px rgb(15 23 42 / 0.08);
 	--shadow-md: 0 20px 60px rgb(15 23 42 / 0.14);
+	--shadow-blue: 0 22px 50px rgb(37 99 235 / 0.22);
 	--font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
@@ -29,8 +31,8 @@ html {
 body {
 	margin: 0;
 	background:
-		radial-gradient(circle at 8% 10%, rgb(14 165 233 / 0.08), transparent 26rem),
-		linear-gradient(180deg, #ffffff 0%, #f8fafc 45%, #ffffff 100%);
+		radial-gradient(circle at 8% 10%, rgb(96 165 250 / 0.16), transparent 26rem),
+		linear-gradient(180deg, #ffffff 0%, var(--soft) 45%, #ffffff 100%);
 	color: var(--ink);
 	font-family: var(--font-sans);
 	line-height: 1.65;
@@ -124,10 +126,11 @@ textarea {
 	text-decoration: none;
 	cursor: pointer;
 	transition:
-		transform 180ms ease,
-		box-shadow 180ms ease,
-		background 180ms ease,
-		border-color 180ms ease;
+		transform 300ms ease,
+		box-shadow 300ms ease,
+		background 300ms ease,
+		border-color 300ms ease,
+		color 300ms ease;
 }
 
 .btn:hover {
@@ -177,9 +180,64 @@ textarea {
 
 .card {
 	border: 1px solid var(--line);
-	border-radius: var(--radius);
+	border-radius: var(--radius-lg);
 	background: rgb(255 255 255 / 0.92);
 	box-shadow: var(--shadow-sm);
+}
+
+.glass-card {
+	border: 1px solid rgb(255 255 255 / 0.68);
+	border-radius: var(--radius-lg);
+	background: linear-gradient(145deg, rgb(255 255 255 / 0.88), rgb(255 255 255 / 0.64));
+	box-shadow: var(--shadow-sm);
+	backdrop-filter: blur(18px);
+}
+
+.surface-hover {
+	transition:
+		transform 300ms ease,
+		box-shadow 300ms ease,
+		border-color 300ms ease;
+}
+
+.surface-hover:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--shadow-md);
+	border-color: rgb(37 99 235 / 0.22);
+}
+
+.empty-state,
+.loading-state {
+	display: grid;
+	place-items: center;
+	min-height: 150px;
+	padding: 24px;
+	border: 1px dashed rgb(148 163 184 / 0.42);
+	border-radius: var(--radius-lg);
+	background: rgb(248 250 252 / 0.72);
+	color: var(--muted);
+	text-align: center;
+}
+
+.skeleton {
+	overflow: hidden;
+	position: relative;
+	background: #e2e8f0;
+}
+
+.skeleton::after {
+	position: absolute;
+	inset: 0;
+	content: "";
+	transform: translateX(-100%);
+	background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.58), transparent);
+	animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+	to {
+		transform: translateX(100%);
+	}
 }
 
 .page-hero {

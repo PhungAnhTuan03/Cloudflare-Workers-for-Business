@@ -24,39 +24,41 @@ const props = Astro.props;
 		<div class="container footer-grid">
 			<div class="footer-brand">
 				<a href="/" class="footer-logo">
-					<span><i class="fa-solid fa-graduation-cap"></i></span>
+					<span><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></span>
 					<strong>{site.name}</strong>
 				</a>
 				<p>
-					Đào tạo công nghệ thực chiến cho học viên, người đi làm và doanh nghiệp
-					muốn nâng cấp năng lực số.
+					Dao tao cong nghe thuc chien cho hoc vien, nguoi di lam va doanh nghiep muon nang cap
+					nang luc so.
 				</p>
-				<div class="footer-socials" aria-label="Mạng xã hội">
-					<a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-					<a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
-					<a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+				<div class="footer-socials" aria-label="Mang xa hoi">
+					<a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+					<a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+					<a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+					<a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
 				</div>
 			</div>
 
 			<div>
-				<h2>Khóa học</h2>
+				<h2>Khoa hoc</h2>
 				{courseCategories.map((category) => <a href={category.href}>{category.title}</a>)}
 			</div>
 
 			<div>
-				<h2>Trung tâm</h2>
-				<a href="/gioi-thieu">Giới thiệu</a>
-				<a href="/giang-vien">Giảng viên</a>
-				<a href="/tin-tuc">Tin tức</a>
-				<a href="/lien-he">Liên hệ</a>
+				<h2>Academy</h2>
+				<a href="/gioi-thieu">Gioi thieu</a>
+				<a href="/#giang-vien">Giang vien</a>
+				<a href="/marketplace">Marketplace</a>
+				<a href="/tin-tuc">Tin tuc</a>
+				<a href="/lien-he">Lien he</a>
 			</div>
 
 			<div>
-				<h2>Liên hệ</h2>
+				<h2>Lien he</h2>
 				<p>{site.address}</p>
 				<a href={`tel:${site.phone.replaceAll(" ", "")}`}>{site.phone}</a>
 				<a href={`mailto:${site.email}`}>{site.email}</a>
-				<a href="/dang-ky-tu-van" class="btn btn-accent footer-cta">Đăng ký tư vấn</a>
+				<a href="/dang-ky-tu-van" class="btn btn-accent footer-cta">Dang ky tu van</a>
 			</div>
 		</div>
 		<div class="container footer-bottom">
@@ -69,8 +71,10 @@ const props = Astro.props;
 <style>
 	.site-footer {
 		margin-top: 70px;
-		padding: 58px 0 24px;
-		background: #0f172a;
+		padding: 64px 0 24px;
+		background:
+			linear-gradient(135deg, rgb(37 99 235 / 0.14), transparent 38%),
+			#0f172a;
 		color: #cbd5e1;
 	}
 
@@ -93,8 +97,9 @@ const props = Astro.props;
 		height: 38px;
 		display: inline-grid;
 		place-items: center;
-		border-radius: 8px;
+		border-radius: 10px;
 		background: linear-gradient(135deg, var(--primary), var(--secondary));
+		box-shadow: 0 14px 30px rgb(37 99 235 / 0.28);
 	}
 
 	.footer-brand p {
@@ -113,10 +118,14 @@ const props = Astro.props;
 		margin: 9px 0;
 		color: #cbd5e1;
 		text-decoration: none;
+		transition:
+			color 300ms ease,
+			transform 300ms ease;
 	}
 
 	.site-footer a:hover {
 		color: #fff;
+		transform: translateX(2px);
 	}
 
 	.footer-socials {
@@ -132,7 +141,17 @@ const props = Astro.props;
 		place-items: center;
 		margin: 0;
 		border: 1px solid rgb(255 255 255 / 0.12);
-		border-radius: 8px;
+		border-radius: 999px;
+		transition:
+			transform 300ms ease,
+			background 300ms ease,
+			border-color 300ms ease;
+	}
+
+	.footer-socials a:hover {
+		transform: translateY(-3px);
+		border-color: rgb(255 255 255 / 0.28);
+		background: rgb(255 255 255 / 0.08);
 	}
 
 	.footer-cta {

@@ -164,6 +164,7 @@ const subjectOptions = showCourseOptions
 				const result = (await response.json().catch(() => ({}))) as {
 					ok?: boolean;
 					message?: string;
+					resendId?: string;
 				};
 
 				if (!response.ok || result.ok === false) {
@@ -173,7 +174,9 @@ const subjectOptions = showCourseOptions
 				if (status instanceof HTMLElement) {
 					status.dataset.state = "success";
 					status.textContent =
-						result.message || "Gửi thành công. Trung tâm sẽ phản hồi trong thời gian sớm nhất.";
+						result.resendId
+							? `${result.message || "Gửi thành công."} Mã Resend: ${result.resendId}`
+							: result.message || "Gửi thành công. Trung tâm sẽ phản hồi trong thời gian sớm nhất.";
 				}
 				form.reset();
 			} catch (error) {

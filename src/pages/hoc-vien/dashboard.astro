@@ -1,0 +1,838 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../lib/site-data";
+
+const sidebarItems = [
+	["fa-table-columns", "Dashboard", "/hoc-vien/dashboard", true],
+	["fa-book-open", "Khoa hoc cua toi", "/hoc-vien/dashboard", false],
+	["fa-route", "Lo trinh hoc", "/marketplace", false],
+	["fa-certificate", "Chung chi", "/tra-cuu-chung-nhan", false],
+	["fa-message", "Tin nhan", "/dashboard", false],
+	["fa-calendar-days", "Lich hoc", "/dashboard", false],
+	["fa-id-card", "Ho so", "/tai-khoan", false],
+	["fa-gear", "Cai dat", "/tai-khoan", false],
+];
+---
+
+<Layout
+	title={`Dashboard hoc vien - ${site.name}`}
+	description="Dashboard hoc vien hien dai voi thong ke hoc tap, tien do khoa hoc va thong bao mentor."
+>
+	<section class="lms-page">
+		<div class="container lms-shell">
+			<aside class="lms-sidebar glass-card">
+				<div class="sidebar-head">
+					<span class="sidebar-icon"><i class="fa-solid fa-user-graduate" aria-hidden="true"></i></span>
+					<div>
+						<strong>Student Hub</strong>
+						<small>Sao Viet Academy</small>
+					</div>
+				</div>
+				<nav aria-label="Student dashboard">
+					{
+						sidebarItems.map(([icon, label, href, active]) => (
+							<a class:list={["sidebar-link", { active }]} href={href as string}>
+								<i class={`fa-solid ${icon}`} aria-hidden="true"></i>
+								<span>{label}</span>
+							</a>
+						))
+					}
+				</nav>
+			</aside>
+
+			<main class="lms-main">
+				<section class="student-hero">
+					<div>
+						<span class="hero-chip">Hoc vien</span>
+						<h1>Xin chao, <span data-student-name>ban</span></h1>
+						<p>Tiep tuc hanh trinh hoc tap cua ban voi khoa hoc, mentor va muc tieu ro rang hon moi ngay.</p>
+						<div class="hero-actions">
+							<a class="btn btn-accent" href="#my-courses">
+								<i class="fa-solid fa-play" aria-hidden="true"></i>
+								Tiep tuc hoc
+							</a>
+							<a class="btn btn-secondary" href="/marketplace">
+								<i class="fa-solid fa-compass" aria-hidden="true"></i>
+								Kham pha khoa hoc
+							</a>
+						</div>
+					</div>
+					<div class="hero-illustration" aria-hidden="true">
+						<div class="screen-card">
+							<span></span>
+							<strong>80%</strong>
+							<small>ReactJS Progress</small>
+						</div>
+						<div class="floating-badge">
+							<i class="fa-solid fa-bolt"></i>
+							12 day streak
+						</div>
+					</div>
+				</section>
+
+				<section class="stats-grid" aria-label="Thong ke hoc tap">
+					<article class="stat-card glass-card surface-hover">
+						<span><i class="fa-solid fa-book-open" aria-hidden="true"></i></span>
+						<small>Khoa hoc da dang ky</small>
+						<strong data-stat-courses>0</strong>
+					</article>
+					<article class="stat-card glass-card surface-hover">
+						<span><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></span>
+						<small>Khoa hoc hoan thanh</small>
+						<strong data-stat-completed>0</strong>
+					</article>
+					<article class="stat-card glass-card surface-hover">
+						<span><i class="fa-solid fa-clock" aria-hidden="true"></i></span>
+						<small>Tong gio hoc</small>
+						<strong>12.5h</strong>
+					</article>
+					<article class="stat-card glass-card surface-hover">
+						<span><i class="fa-solid fa-trophy" aria-hidden="true"></i></span>
+						<small>Chung chi dat duoc</small>
+						<strong>1</strong>
+					</article>
+				</section>
+
+				<section class="dashboard-panel">
+					<div class="panel-head">
+						<div>
+							<h2>Learning Progress</h2>
+							<p>Tong quan tien do va thoi quen hoc tap trong tuan.</p>
+						</div>
+						<span class="streak"><i class="fa-solid fa-fire" aria-hidden="true"></i> Hoc lien tuc 12 ngay</span>
+					</div>
+					<div class="progress-grid">
+						<div class="circle-progress" style="--value: 76">
+							<strong>76%</strong>
+							<span>Muc tieu tuan</span>
+						</div>
+						<div class="weekly-chart" aria-label="Weekly activity chart">
+							{["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((day, index) => (
+								<div class="bar-item">
+									<span style={`--height: ${[54, 68, 42, 82, 74, 60, 88][index]}%`}></span>
+									<small>{day}</small>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
+
+				<section id="my-courses" class="dashboard-panel">
+					<div class="panel-head">
+						<div>
+							<h2>Khoa hoc cua toi</h2>
+							<p>Nhung khoa hoc ban da mua va co the vao hoc ngay.</p>
+						</div>
+						<a href="/marketplace" class="text-link">Xem marketplace</a>
+					</div>
+					<div data-my-courses class="course-card-grid">
+						<div class="loading-state">Dang tai khoa hoc...</div>
+					</div>
+				</section>
+
+				<section class="dashboard-panel">
+					<div class="panel-head">
+						<div>
+							<h2>Upcoming Lessons</h2>
+							<p>Lich hoc sap toi va viec can lam.</p>
+						</div>
+					</div>
+					<div class="lesson-list">
+						<article>
+							<span>19:30</span>
+							<div>
+								<strong>On tap bai gan nhat</strong>
+								<small>Hoan thanh bai hoc con dang do.</small>
+							</div>
+						</article>
+						<article>
+							<span>21:00</span>
+							<div>
+								<strong>Gui cau hoi cho mentor</strong>
+								<small>Chuan bi cau hoi truoc buoi hoc tiep theo.</small>
+							</div>
+						</article>
+					</div>
+				</section>
+			</main>
+
+			<aside class="right-rail">
+				<section class="rail-card glass-card">
+					<h2>Notifications</h2>
+					<a href="/marketplace">
+						<i class="fa-solid fa-bell" aria-hidden="true"></i>
+						Khoa hoc moi dang mo uu dai trong tuan nay.
+					</a>
+					<a href="/tai-khoan">
+						<i class="fa-solid fa-id-card" aria-hidden="true"></i>
+						Cap nhat ho so de mentor tu van tot hon.
+					</a>
+				</section>
+				<section class="rail-card glass-card">
+					<h2>Mentor Messages</h2>
+					<div data-mentor-messages class="mentor-list">
+						<p class="empty-small">Tin nhan se hien thi khi ban mua khoa hoc.</p>
+					</div>
+				</section>
+				<section class="rail-card goal-card">
+					<h2>Learning Goals</h2>
+					<p>Hoan thanh 4 bai hoc trong tuan nay</p>
+					<div class="goal-bar"><span style="width: 65%"></span></div>
+					<small>65% completed</small>
+				</section>
+			</aside>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	type PurchasedCourse = {
+		course_public_id: string;
+		course_title: string;
+		instructor_name: string;
+		created_at: string;
+	};
+
+	type StudentCoursesResult = {
+		ok?: boolean;
+		message?: string;
+		courses?: PurchasedCourse[];
+	};
+
+	type MeResult = {
+		user?: {
+			fullName?: string;
+		} | null;
+	};
+
+	const list = document.querySelector("[data-my-courses]");
+	const mentorList = document.querySelector("[data-mentor-messages]");
+	const statCourses = document.querySelector("[data-stat-courses]");
+	const statCompleted = document.querySelector("[data-stat-completed]");
+	const studentName = document.querySelector("[data-student-name]");
+
+	function esc(value: string) {
+		return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] || char);
+	}
+
+	function setText(target: Element | null, value: string) {
+		if (target instanceof HTMLElement) target.textContent = value;
+	}
+
+	async function hydrateStudentName() {
+		const response = await fetch("/api/auth/me");
+		const result = (await response.json()) as MeResult;
+		if (result.user?.fullName) setText(studentName, result.user.fullName);
+	}
+
+	async function loadMyCourses() {
+		const response = await fetch("/api/student/courses");
+		const result = (await response.json()) as StudentCoursesResult;
+		if (!(list instanceof HTMLElement)) return;
+
+		if (!response.ok || !result.ok) {
+			list.innerHTML = `<div class="empty-state">${esc(result.message || "Khong tai duoc khoa hoc.")}</div>`;
+			return;
+		}
+
+		const courses = result.courses || [];
+		setText(statCourses, String(courses.length));
+		setText(statCompleted, courses.length > 0 ? "1" : "0");
+
+		if (mentorList instanceof HTMLElement && courses.length) {
+			mentorList.innerHTML = courses
+				.slice(0, 2)
+				.map(
+					(course) => `
+						<a href="/tin-nhan/${course.course_public_id}">
+							<strong>${esc(course.instructor_name)}</strong>
+							<span>${esc(course.course_title)}</span>
+						</a>
+					`,
+				)
+				.join("");
+		}
+
+		list.innerHTML = courses.length
+			? courses
+					.map((course, index) => {
+						const progress = [80, 64, 42, 25][index % 4];
+						return `
+							<article class="student-course-card surface-hover">
+								<div class="course-thumb">
+									<i class="fa-solid fa-code" aria-hidden="true"></i>
+								</div>
+								<div class="course-body">
+									<strong>${esc(course.course_title)}</strong>
+									<span>Giang vien: ${esc(course.instructor_name)}</span>
+									<div class="progress-line" aria-label="${progress}% hoan thanh">
+										<span style="width: ${progress}%"></span>
+									</div>
+									<div class="course-meta">
+										<small>${progress}% hoan thanh</small>
+										<a href="/khoa-hoc-giang-vien/${course.course_public_id}">Tiep tuc hoc <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+									</div>
+								</div>
+							</article>
+						`;
+					})
+					.join("")
+			: `<div class="empty-state">
+					<div>
+						<strong>Ban chua mua khoa hoc nao.</strong>
+						<p>Hay kham pha marketplace de bat dau lo trinh hoc tap dau tien.</p>
+						<a class="btn btn-primary" href="/marketplace">Mua khoa hoc moi</a>
+					</div>
+				</div>`;
+	}
+
+	hydrateStudentName().catch(() => undefined);
+	loadMyCourses().catch(() => undefined);
+</script>
+
+<style>
+	.lms-page {
+		padding: 22px 0 32px;
+		background: var(--soft);
+	}
+
+	.lms-page .container {
+		width: min(1320px, calc(100% - 36px));
+	}
+
+	.lms-shell {
+		display: grid;
+		grid-template-columns: 220px minmax(0, 1fr) 260px;
+		gap: 18px;
+		align-items: start;
+	}
+
+	.lms-sidebar {
+		position: sticky;
+		top: 92px;
+		padding: 14px;
+		border-radius: 20px;
+	}
+
+	.sidebar-head {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 14px;
+	}
+
+	.sidebar-icon {
+		width: 42px;
+		height: 42px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.sidebar-head strong,
+	.sidebar-head small {
+		display: block;
+		line-height: 1.2;
+	}
+
+	.sidebar-head small {
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 700;
+	}
+
+	.sidebar-link {
+		display: flex;
+		align-items: center;
+		gap: 11px;
+		min-height: 40px;
+		padding: 0 10px;
+		border-radius: 14px;
+		color: #475569;
+		font-weight: 800;
+		text-decoration: none;
+		transition: background 300ms ease, color 300ms ease, transform 300ms ease;
+	}
+
+	.sidebar-link:hover,
+	.sidebar-link.active {
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+		transform: translateX(2px);
+	}
+
+	.lms-main {
+		display: grid;
+		gap: 14px;
+		min-width: 0;
+	}
+
+	.student-hero {
+		position: relative;
+		overflow: hidden;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 210px;
+		gap: 18px;
+		padding: 22px;
+		border-radius: 22px;
+		background:
+			linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+		color: #fff;
+		box-shadow: var(--shadow-blue);
+	}
+
+	.student-hero h1 {
+		margin: 8px 0 8px;
+		font-size: clamp(1.9rem, 3.2vw, 2.7rem);
+		line-height: 1.08;
+	}
+
+	.student-hero p {
+		max-width: 620px;
+		margin: 0;
+		color: rgb(255 255 255 / 0.84);
+	}
+
+	.hero-chip {
+		display: inline-flex;
+		padding: 7px 11px;
+		border-radius: 999px;
+		background: rgb(255 255 255 / 0.16);
+		font-size: 0.82rem;
+		font-weight: 900;
+	}
+
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 18px;
+	}
+
+	.hero-illustration {
+		position: relative;
+		display: grid;
+		place-items: center;
+		min-height: 160px;
+	}
+
+	.screen-card {
+		width: 156px;
+		padding: 18px;
+		border: 1px solid rgb(255 255 255 / 0.28);
+		border-radius: 22px;
+		background: rgb(255 255 255 / 0.16);
+		box-shadow: 0 24px 50px rgb(15 23 42 / 0.16);
+		backdrop-filter: blur(16px);
+	}
+
+	.screen-card span {
+		display: block;
+		width: 46px;
+		height: 46px;
+		margin-bottom: 14px;
+		border-radius: 18px;
+		background: #fff;
+	}
+
+	.screen-card strong,
+	.screen-card small {
+		display: block;
+	}
+
+	.screen-card strong {
+		font-size: 2rem;
+		line-height: 1;
+	}
+
+	.floating-badge {
+		position: absolute;
+		right: 8px;
+		bottom: 18px;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 12px;
+		border-radius: 999px;
+		background: #fff;
+		color: var(--ink);
+		font-size: 0.86rem;
+		font-weight: 900;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.stat-card {
+		display: grid;
+		gap: 7px;
+		padding: 14px;
+		border-radius: 18px;
+	}
+
+	.stat-card span {
+		width: 38px;
+		height: 38px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.stat-card small {
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.stat-card strong {
+		font-size: 1.6rem;
+		line-height: 1;
+	}
+
+	.dashboard-panel,
+	.rail-card {
+		padding: 16px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		background: #fff;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.panel-head {
+		display: flex;
+		align-items: start;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 14px;
+	}
+
+	.panel-head h2,
+	.rail-card h2 {
+		margin: 0;
+		font-size: 1.2rem;
+	}
+
+	.panel-head p {
+		margin: 4px 0 0;
+		color: var(--muted);
+	}
+
+	.streak {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 10px;
+		border-radius: 999px;
+		background: rgb(245 158 11 / 0.12);
+		color: #92400e;
+		font-size: 0.82rem;
+		font-weight: 900;
+		white-space: nowrap;
+	}
+
+	.progress-grid {
+		display: grid;
+		grid-template-columns: 150px minmax(0, 1fr);
+		gap: 18px;
+		align-items: center;
+	}
+
+	.circle-progress {
+		width: 126px;
+		aspect-ratio: 1;
+		display: grid;
+		place-items: center;
+		margin: auto;
+		border-radius: 999px;
+		background: conic-gradient(var(--primary) calc(var(--value) * 1%), #e2e8f0 0);
+		position: relative;
+	}
+
+	.circle-progress::before {
+		position: absolute;
+		inset: 14px;
+		content: "";
+		border-radius: inherit;
+		background: #fff;
+	}
+
+	.circle-progress strong,
+	.circle-progress span {
+		position: relative;
+		z-index: 1;
+		display: block;
+		text-align: center;
+	}
+
+	.circle-progress strong {
+		font-size: 2rem;
+		line-height: 1;
+	}
+
+	.circle-progress span {
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 800;
+	}
+
+	.weekly-chart {
+		display: grid;
+		grid-template-columns: repeat(7, minmax(0, 1fr));
+		gap: 12px;
+		height: 130px;
+		align-items: end;
+	}
+
+	.bar-item {
+		display: grid;
+		gap: 8px;
+		justify-items: center;
+		height: 100%;
+	}
+
+	.bar-item span {
+		width: 100%;
+		max-width: 34px;
+		height: var(--height);
+		margin-top: auto;
+		border-radius: 999px;
+		background: linear-gradient(180deg, var(--secondary), var(--primary));
+	}
+
+	.bar-item small {
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.course-card-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.student-course-card {
+		overflow: hidden;
+		display: grid;
+		grid-template-columns: 110px minmax(0, 1fr);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		background: #fff;
+	}
+
+	.course-thumb {
+		display: grid;
+		place-items: center;
+		min-height: 128px;
+		background: linear-gradient(135deg, rgb(37 99 235 / 0.95), rgb(96 165 250 / 0.95));
+		color: #fff;
+		font-size: 2rem;
+	}
+
+	.course-body {
+		display: grid;
+		gap: 8px;
+		padding: 14px;
+		min-width: 0;
+	}
+
+	.course-body strong {
+		line-height: 1.35;
+	}
+
+	.course-body span,
+	.course-meta small {
+		color: var(--muted);
+		font-size: 0.86rem;
+	}
+
+	.progress-line,
+	.goal-bar {
+		overflow: hidden;
+		height: 8px;
+		border-radius: 999px;
+		background: #e2e8f0;
+	}
+
+	.progress-line span,
+	.goal-bar span {
+		display: block;
+		height: 100%;
+		border-radius: inherit;
+		background: linear-gradient(90deg, var(--primary), var(--secondary));
+	}
+
+	.course-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.course-meta a,
+	.text-link {
+		color: var(--primary);
+		font-weight: 900;
+		text-decoration: none;
+	}
+
+	.lesson-list {
+		display: grid;
+		gap: 12px;
+	}
+
+	.lesson-list article {
+		display: flex;
+		gap: 14px;
+		padding: 12px;
+		border: 1px solid var(--line);
+		border-radius: 16px;
+		background: var(--soft);
+	}
+
+	.lesson-list article > span {
+		color: var(--primary);
+		font-weight: 900;
+	}
+
+	.lesson-list small,
+	.empty-small {
+		color: var(--muted);
+	}
+
+	.right-rail {
+		position: sticky;
+		top: 92px;
+		display: grid;
+		gap: 12px;
+	}
+
+	.rail-card {
+		display: grid;
+		gap: 12px;
+	}
+
+	.rail-card a,
+	.mentor-list a {
+		display: flex;
+		gap: 10px;
+		padding: 12px;
+		border-radius: 16px;
+		background: var(--soft);
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.mentor-list {
+		display: grid;
+		gap: 10px;
+	}
+
+	.mentor-list a {
+		display: grid;
+		gap: 2px;
+	}
+
+	.mentor-list span {
+		color: var(--muted);
+		font-size: 0.84rem;
+	}
+
+	.goal-card {
+		background: linear-gradient(135deg, #0f172a, #1e3a8a);
+		color: #fff;
+	}
+
+	.goal-card p,
+	.goal-card small {
+		color: rgb(255 255 255 / 0.78);
+	}
+
+	@media (max-width: 1280px) {
+		.lms-shell {
+			grid-template-columns: 76px minmax(0, 1fr);
+		}
+
+		.lms-sidebar {
+			padding: 14px;
+		}
+
+		.sidebar-head div,
+		.sidebar-link span,
+		.right-rail {
+			display: none;
+		}
+	}
+
+	@media (max-width: 860px) {
+		.lms-page {
+			padding-top: 16px;
+		}
+
+		.lms-shell {
+			grid-template-columns: 1fr;
+		}
+
+		.lms-sidebar {
+			position: static;
+			overflow-x: auto;
+		}
+
+		.lms-sidebar nav {
+			display: flex;
+			gap: 8px;
+		}
+
+		.sidebar-head {
+			display: none;
+		}
+
+		.sidebar-link {
+			white-space: nowrap;
+		}
+
+		.sidebar-link span {
+			display: inline;
+		}
+
+		.student-hero,
+		.progress-grid,
+		.course-card-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.hero-illustration {
+			display: none;
+		}
+
+		.stats-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 560px) {
+		.lms-page .container {
+			width: min(100% - 24px, 1320px);
+		}
+
+		.student-hero,
+		.dashboard-panel {
+			padding: 18px;
+		}
+
+		.stats-grid,
+		.student-course-card {
+			grid-template-columns: 1fr;
+		}
+
+		.panel-head,
+		.course-meta {
+			display: grid;
+		}
+	}
+</style>
