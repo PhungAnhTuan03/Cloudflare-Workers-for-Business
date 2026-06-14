@@ -143,8 +143,8 @@ const organizationSchema = {
 				<a href="#khoa-hoc" class="btn btn-ghost">Xem khóa học bên dưới</a>
 			</div>
 			<div class="category-grid">
-				{courseCategories.map((category, index) => (
-					<a href={category.href} class:list={["category-card", index === 0 && "is-featured"]}>
+				{courseCategories.map((category) => (
+					<a href={category.href} class="category-card">
 						<div class="category-icon" style={`--accent-color: ${category.accent}`}>
 							<i class={category.icon} aria-hidden="true"></i>
 						</div>
@@ -623,13 +623,6 @@ const organizationSchema = {
 			border-color 220ms ease;
 	}
 
-	.category-card.is-featured {
-		grid-column: span 2;
-		background:
-			radial-gradient(circle at 92% 0%, rgb(96 165 250 / 0.22), transparent 16rem),
-			#fff;
-	}
-
 	.category-card:hover,
 	.course-card:hover,
 	.article-card:hover,
@@ -970,10 +963,6 @@ const organizationSchema = {
 		.testimonial-track,
 		.about-points {
 			grid-template-columns: 1fr;
-		}
-
-		.category-card.is-featured {
-			grid-column: auto;
 		}
 
 		.home-course-actions {
