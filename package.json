@@ -8,10 +8,10 @@
     "seed": "seed/seed.json"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-4322.ps1",
     "types": "emdash types",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "set ASTRO_TELEMETRY_DISABLED=1&& set XDG_CONFIG_HOME=.wrangler-xdg&& astro preview --host 127.0.0.1 --port 4322",
     "deploy": "astro build && wrangler deploy",
     "typecheck": "astro check"
   },

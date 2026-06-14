@@ -1,7 +1,8 @@
 import { clean, publicId } from "./business-api";
 import { Resend } from "resend";
 
-export type AuthRole = "student" | "instructor";
+export type AuthRole = "student" | "instructor" | "admin";
+export type PublicRegisterRole = Exclude<AuthRole, "admin">;
 
 export type AuthUser = {
 	id: number;
@@ -84,11 +85,24 @@ export function normalizeEmail(email: unknown): string {
 }
 
 export function normalizeRole(role: unknown): AuthRole {
+	const value = clean(role);
+	if (value === "admin") return "admin";
+	return value === "instructor" ? "instructor" : "student";
+}
+
+export function normalizePublicRegisterRole(role: unknown): PublicRegisterRole {
 	return clean(role) === "instructor" ? "instructor" : "student";
 }
 
 export function roleLabel(role: string): string {
+	if (role === "admin") return "Admin";
 	return role === "instructor" ? "Giang vien" : "Hoc vien";
+}
+
+export function roleHomePath(role: string): string {
+	if (role === "admin") return "/admin";
+	if (role === "instructor") return "/giang-vien/dashboard";
+	return "/hoc-vien/dashboard";
 }
 
 export async function ensureAuthSchema(db: D1Database): Promise<void> {
@@ -153,7 +167,7 @@ export function validateRegisterPayload(payload: RegisterPayload):
 	const fullName = clean(payload.fullName);
 	const email = normalizeEmail(payload.email);
 	const phone = clean(payload.phone).replaceAll(" ", "");
-	const role = normalizeRole(payload.role);
+	const role = normalizePublicRegisterRole(payload.role);
 	const password = clean(payload.password);
 	const confirmPassword = clean(payload.confirmPassword);
 
@@ -205,7 +219,7 @@ export async function createUser(db: D1Database, payload: RegisterPayload): Prom
 				validation.value.email,
 				clean(validation.value.phone) || null,
 				passwordHash,
-				normalizeRole(validation.value.role),
+				normalizePublicRegisterRole(validation.value.role),
 				now,
 				now,
 			)

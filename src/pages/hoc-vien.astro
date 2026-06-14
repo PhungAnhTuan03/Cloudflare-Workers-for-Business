@@ -9,6 +9,24 @@ const schema = {
 	url: `${site.url}/hoc-vien`,
 	description: "Câu chuyện học tập và kết quả của học viên Sao Việt Tech Academy.",
 };
+
+const outcomes = [
+	{
+		icon: "fa-briefcase",
+		title: "Portfolio thực tế",
+		text: "Mỗi lộ trình đều hướng tới bài tập, dự án hoặc sản phẩm có thể đưa vào hồ sơ năng lực.",
+	},
+	{
+		icon: "fa-comments",
+		title: "Mentor đồng hành",
+		text: "Học viên có kênh hỏi đáp, nhận góp ý và được định hướng sau khi hoàn thành module.",
+	},
+	{
+		icon: "fa-certificate",
+		title: "Chứng nhận rõ tiêu chí",
+		text: "Chứng nhận hoàn thành gắn với đầu ra, bài kiểm tra và tiến độ học tập minh bạch.",
+	},
+];
 ---
 
 <Layout
@@ -18,47 +36,87 @@ const schema = {
 	schema={schema}
 >
 	<section class="page-hero">
-		<div class="container">
-			<span class="page-kicker">
-				<i class="fa-solid fa-star" aria-hidden="true"></i>
-				Học viên nói gì?
-			</span>
-			<h1 class="page-title">Kết quả tốt nhất là khi học viên tự tin làm được việc.</h1>
-			<p class="page-lead">
-				Một vài phản hồi tiêu biểu từ những người đã học Office, lập trình, thiết kế, AI và
-				marketing tại trung tâm.
-			</p>
+		<div class="container page-hero-grid">
+			<div>
+				<span class="page-kicker">
+					<i class="fa-solid fa-star" aria-hidden="true"></i>
+					Học viên Sao Việt
+				</span>
+				<h1 class="page-title">Kết quả tốt nhất là khi học viên tự tin làm được việc.</h1>
+				<p class="page-lead">
+					Những phản hồi này đại diện cho cách Sao Việt thiết kế trải nghiệm học: rõ mục tiêu, thực hành nhiều,
+					có mentor hỗ trợ và đo tiến bộ bằng sản phẩm thật.
+				</p>
+				<div class="hero-actions">
+					<a href="/marketplace" class="btn btn-primary">Khám phá khóa học</a>
+					<a href="/dang-ky-tu-van" class="btn btn-secondary">Nhận tư vấn lộ trình</a>
+				</div>
+			</div>
+			<div class="student-summary card" aria-label="Tóm tắt kết quả học viên">
+				<div>
+					<strong>92%</strong>
+					<span>hoàn thành mục tiêu học tập</span>
+				</div>
+				<div>
+					<strong>4.8/5</strong>
+					<span>đánh giá trải nghiệm mentor</span>
+				</div>
+				<div>
+					<strong>30 ngày</strong>
+					<span>hỗ trợ hỏi đáp sau khóa học</span>
+				</div>
+			</div>
 		</div>
 	</section>
 
 	<section class="section">
-		<div class="container testimonial-grid">
-			{testimonials.map((item) => (
-				<article class="testimonial-card card">
-					<div class="rating">
-						<i class="fa-solid fa-star" aria-hidden="true"></i>
-						<span>{item.rating}</span>
-					</div>
-					<p>"{item.content}"</p>
-					<div class="student">
-						<strong>{item.name}</strong>
-						<span>{item.role}</span>
-					</div>
-				</article>
-			))}
+		<div class="container">
+			<div class="section-head center">
+				<div>
+					<p class="section-eyebrow">Câu chuyện thật</p>
+					<h2 class="section-title">Học viên đánh giá cao bài tập thực chiến và phản hồi từ mentor</h2>
+					<p class="section-lead">
+						Trang này không dùng lời hứa quá đà. Trọng tâm là năng lực học viên đạt được sau từng khóa.
+					</p>
+				</div>
+			</div>
+			<div class="testimonial-grid">
+				{testimonials.map((item) => (
+					<article class="testimonial-card card">
+						<div class="rating">
+							<i class="fa-solid fa-star" aria-hidden="true"></i>
+							<span>{item.rating}</span>
+						</div>
+						<p>"{item.content}"</p>
+						<div class="student">
+							<span class="student-avatar">{item.name.slice(0, 2).toUpperCase()}</span>
+							<div>
+								<strong>{item.name}</strong>
+								<span>{item.role}</span>
+							</div>
+						</div>
+					</article>
+				))}
+			</div>
 		</div>
 	</section>
 
-	<section class="section tight outcome-band">
-		<div class="container outcome-grid">
+	<section class="section tight">
+		<div class="container outcome-panel">
 			<div>
 				<p class="section-eyebrow">Sau khóa học</p>
-				<h2 class="section-title">Học viên rời lớp với sản phẩm thật, không chỉ chứng chỉ.</h2>
+				<h2 class="section-title">Rời lớp với năng lực có thể dùng ngay, không chỉ một tấm chứng nhận.</h2>
 			</div>
 			<div class="outcome-list">
-				<div><i class="fa-solid fa-briefcase" aria-hidden="true"></i>Portfolio hoặc bộ bài tập có mentor review.</div>
-				<div><i class="fa-solid fa-comments" aria-hidden="true"></i>Nhóm hỗ trợ hỏi đáp sau khóa học.</div>
-				<div><i class="fa-solid fa-file-signature" aria-hidden="true"></i>Chứng nhận hoàn thành theo tiêu chí đầu ra.</div>
+				{outcomes.map((item) => (
+					<article class="outcome-item">
+						<i class={`fa-solid ${item.icon}`} aria-hidden="true"></i>
+						<div>
+							<strong>{item.title}</strong>
+							<p>{item.text}</p>
+						</div>
+					</article>
+				))}
 			</div>
 		</div>
 	</section>
@@ -76,8 +134,11 @@ const schema = {
 				{courses.slice(0, 3).map((course) => (
 					<a href={`/khoa-hoc/${course.slug}`} class="mini-course card">
 						<img src={course.image} alt={course.title} loading="lazy" />
-						<strong>{course.title}</strong>
-						<span>{course.duration} • {course.price}</span>
+						<div>
+							<span>{course.categoryId}</span>
+							<strong>{course.title}</strong>
+							<small>{course.duration}<br />{course.price}</small>
+						</div>
 					</a>
 				))}
 			</div>
@@ -86,6 +147,44 @@ const schema = {
 </Layout>
 
 <style>
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 26px;
+	}
+
+	.student-summary {
+		display: grid;
+		gap: 14px;
+		padding: 18px;
+		background: linear-gradient(180deg, #fff, #f8fbff);
+	}
+
+	.student-summary div {
+		padding: 18px;
+		border: 1px solid rgb(37 99 235 / 0.12);
+		border-radius: 18px;
+		background: #fff;
+	}
+
+	.student-summary strong,
+	.student-summary span {
+		display: block;
+	}
+
+	.student-summary strong {
+		color: var(--primary);
+		font-size: clamp(1.7rem, 4vw, 2.5rem);
+		line-height: 1;
+	}
+
+	.student-summary span {
+		margin-top: 6px;
+		color: var(--muted);
+		font-weight: 800;
+	}
+
 	.testimonial-grid {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -114,32 +213,49 @@ const schema = {
 	}
 
 	.student {
-		display: grid;
-		gap: 2px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		padding-top: 16px;
 		border-top: 1px solid var(--line);
 	}
 
+	.student-avatar {
+		width: 42px;
+		height: 42px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: linear-gradient(135deg, var(--primary), var(--secondary));
+		color: #fff !important;
+		font-size: 0.88rem;
+		font-weight: 900;
+	}
+
+	.student strong,
 	.student span,
-	.mini-course span {
+	.mini-course span,
+	.mini-course small {
+		display: block;
+	}
+
+	.student span,
+	.mini-course small {
 		color: var(--muted);
 	}
 
-	.outcome-band {
-		background: #0f172a;
-		color: #fff;
-	}
-
-	.outcome-band .section-title,
-	.outcome-band .section-eyebrow {
-		color: #fff;
-	}
-
-	.outcome-grid {
+	.outcome-panel {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
-		gap: 34px;
-		align-items: center;
+		grid-template-columns: minmax(0, 0.9fr) minmax(300px, 1.1fr);
+		gap: 30px;
+		align-items: start;
+		padding: clamp(24px, 4vw, 38px);
+		border: 1px solid rgb(37 99 235 / 0.12);
+		border-radius: 30px;
+		background:
+			radial-gradient(circle at 100% 0%, rgb(96 165 250 / 0.18), transparent 26rem),
+			linear-gradient(180deg, #ffffff, #f8fbff);
+		box-shadow: var(--shadow-sm);
 	}
 
 	.outcome-list {
@@ -147,19 +263,34 @@ const schema = {
 		gap: 14px;
 	}
 
-	.outcome-list div {
+	.outcome-item {
 		display: flex;
-		gap: 12px;
-		padding: 14px;
-		border: 1px solid rgb(255 255 255 / 0.14);
-		border-radius: var(--radius);
-		background: rgb(255 255 255 / 0.06);
-		color: #dbeafe;
+		gap: 14px;
+		padding: 16px;
+		border: 1px solid var(--line);
+		border-radius: 20px;
+		background: #fff;
+		box-shadow: var(--shadow-xs);
 	}
 
-	.outcome-list i {
+	.outcome-item i {
+		width: 42px;
+		height: 42px;
+		display: grid;
+		place-items: center;
+		flex: 0 0 auto;
+		border-radius: 14px;
+		background: rgb(245 158 11 / 0.13);
 		color: var(--accent);
-		margin-top: 4px;
+	}
+
+	.outcome-item strong {
+		display: block;
+	}
+
+	.outcome-item p {
+		margin: 5px 0 0;
+		color: var(--muted);
 	}
 
 	.mini-course {
@@ -174,23 +305,27 @@ const schema = {
 		object-fit: cover;
 	}
 
-	.mini-course strong,
+	.mini-course div {
+		padding: 16px;
+	}
+
 	.mini-course span {
-		display: block;
-		padding: 0 16px;
+		margin-bottom: 6px;
+		color: var(--primary);
+		font-size: 0.8rem;
+		font-weight: 900;
+		text-transform: uppercase;
 	}
 
 	.mini-course strong {
-		padding-top: 16px;
-	}
-
-	.mini-course span {
-		padding-bottom: 16px;
+		display: block;
+		font-size: 1.06rem;
+		line-height: 1.35;
 	}
 
 	@media (max-width: 900px) {
 		.testimonial-grid,
-		.outcome-grid {
+		.outcome-panel {
 			grid-template-columns: 1fr;
 		}
 	}

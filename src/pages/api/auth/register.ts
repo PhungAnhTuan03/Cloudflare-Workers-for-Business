@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
-import { createSession, createUser, notifyRegistration, publicUser } from "../../../lib/auth";
+import { createSession, createUser, notifyRegistration, publicUser, roleHomePath } from "../../../lib/auth";
 import { getClientIp, json, rateLimit, readJson } from "../../../lib/business-api";
 import type { RegisterPayload } from "../../../lib/auth";
 
@@ -43,7 +43,7 @@ export const POST: APIRoute = async ({ request }) => {
 				emailSent,
 				resendId,
 				emailWarning,
-				redirectTo: "/tai-khoan",
+				redirectTo: roleHomePath(user.role),
 				message: emailSent
 					? "Dang ky tai khoan thanh cong. Email thong bao da duoc gui."
 					: "Dang ky tai khoan thanh cong, nhung email thong bao chua gui duoc.",

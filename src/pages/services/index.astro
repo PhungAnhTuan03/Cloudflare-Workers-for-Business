@@ -1,144 +1,287 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import { courseCategories, site } from "../../lib/site-data";
 
 const services = [
-  {
-    title: "Đào tạo tin học văn phòng",
-    icon: "fas fa-file-alt",
-    desc: "Khóa học từ cơ bản đến nâng cao, luyện thi MOS chứng chỉ quốc tế.",
-    price: "Liên hệ",
-  },
-  {
-    title: "Đào tạo lập trình",
-    icon: "fas fa-code",
-    desc: "Python, Java, Web Fullstack, lập trình ứng dụng – học xong có việc ngay.",
-    price: "Liên hệ",
-  },
-  {
-    title: "Tổ chức thi chứng chỉ",
-    icon: "fas fa-certificate",
-    desc: "MOS, IC3, CCNA, khảo thí tại trung tâm uy tín.",
-    price: "Theo yêu cầu",
-  },
-  {
-    title: "Đào tạo doanh nghiệp",
-    icon: "fas fa-building",
-    desc: "Thiết kế khóa học riêng cho công ty, đào tạo tại chỗ hoặc online.",
-    price: "Báo giá theo nhu cầu",
-  },
-  {
-    title: "Cho thuê phòng máy",
-    icon: "fas fa-laptop",
-    desc: "Phòng máy lạnh, cấu hình cao, hỗ trợ tổ chức sự kiện, thi cử.",
-    price: "200.000đ/giờ",
-  },
-  {
-    title: "Tư vấn giải pháp CNTT",
-    icon: "fas fa-microchip",
-    desc: "Triển khai phần mềm quản lý, bảo mật mạng, website doanh nghiệp.",
-    price: "Báo giá",
-  },
+	{
+		title: "Đào tạo công nghệ cho cá nhân",
+		icon: "fa-user-graduate",
+		desc: "Lộ trình học theo mục tiêu: tin học văn phòng, lập trình, AI, thiết kế, kế toán và marketing.",
+		price: "Tư vấn theo nhu cầu",
+	},
+	{
+		title: "Đào tạo doanh nghiệp",
+		icon: "fa-building",
+		desc: "Thiết kế chương trình riêng cho đội nhóm, có thể đào tạo tại trung tâm, tại doanh nghiệp hoặc online.",
+		price: "Báo giá theo quy mô",
+	},
+	{
+		title: "Luyện thi chứng chỉ",
+		icon: "fa-certificate",
+		desc: "Ôn luyện theo mục tiêu chứng nhận, bài kiểm tra đầu ra và hỗ trợ tra cứu sau khi hoàn thành.",
+		price: "Theo chứng chỉ",
+	},
+	{
+		title: "Tư vấn lộ trình nghề nghiệp",
+		icon: "fa-route",
+		desc: "Định hướng kỹ năng, portfolio, dự án thực tế và kế hoạch học phù hợp với thời gian hiện tại.",
+		price: "Miễn phí bước đầu",
+	},
+	{
+		title: "Phòng lab và thực hành",
+		icon: "fa-laptop-code",
+		desc: "Không gian học thực hành, mentor hỗ trợ và tài liệu theo từng module đào tạo.",
+		price: "Theo lịch lớp",
+	},
+	{
+		title: "Nội dung học trực tuyến",
+		icon: "fa-cloud-arrow-up",
+		desc: "Giảng viên có thể đăng khóa học, bài giảng, tài liệu và bán trực tiếp cho học viên.",
+		price: "Marketplace",
+	},
 ];
 ---
 
-<Layout>
-  <section class="page-header">
-    <div class="container">
-      <h1>Dịch vụ của chúng tôi</h1>
-      <p class="section-subhead">
-        Giải pháp công nghệ toàn diện – Đồng hành cùng doanh nghiệp
-      </p>
-    </div>
-  </section>
+<Layout
+	title={`Dịch vụ đào tạo - ${site.name}`}
+	description="Các dịch vụ đào tạo công nghệ, đào tạo doanh nghiệp, luyện thi chứng chỉ và tư vấn lộ trình tại Sao Việt Tech Academy."
+	canonical={`${site.url}/services`}
+>
+	<section class="page-hero">
+		<div class="container page-hero-grid">
+			<div>
+				<span class="page-kicker">
+					<i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+					Dịch vụ đào tạo
+				</span>
+				<h1 class="page-title">Giải pháp học công nghệ cho cá nhân, giảng viên và doanh nghiệp.</h1>
+				<p class="page-lead">
+					Không chỉ là danh sách khóa học, Sao Việt xây dựng hệ sinh thái tư vấn, học tập, chứng nhận và nội dung
+					trực tuyến có thể mở rộng theo nhiều cơ sở.
+				</p>
+				<div class="hero-actions">
+					<a href="/dang-ky-tu-van" class="btn btn-primary">Nhận tư vấn</a>
+					<a href="/khoa-hoc" class="btn btn-secondary">Xem danh mục khóa học</a>
+				</div>
+			</div>
+			<div class="service-summary card">
+				<strong>6</strong>
+				<span>nhóm dịch vụ chính</span>
+				<p>Từ khóa học offline, marketplace giảng viên đến tư vấn doanh nghiệp và tra cứu chứng nhận.</p>
+			</div>
+		</div>
+	</section>
 
-  <section class="services-list">
-    <div class="container">
-      <div class="services-grid">
-        {
-          services.map((service) => (
-            <div class="service-card">
-              <div class="service-icon">
-                <i class={service.icon} />
-              </div>
-              <h3>{service.title}</h3>
-              <p>{service.desc}</p>
-              <div class="service-price">
-                {service.price === "Liên hệ"
-                  ? '<a href="/lien-he" class="btn btn-outline btn-sm">Liên hệ ngay</a>'
-                  : `<span class="price-tag">${service.price}</span>`}
-              </div>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+	<section class="section">
+		<div class="container">
+			<div class="section-head">
+				<div>
+					<p class="section-eyebrow">Dịch vụ</p>
+					<h2 class="section-title">Tập trung vào đầu ra học tập và khả năng triển khai thật</h2>
+				</div>
+			</div>
+			<div class="services-grid">
+				{services.map((service) => (
+					<article class="service-card card">
+						<div class="service-icon">
+							<i class={`fa-solid ${service.icon}`} aria-hidden="true"></i>
+						</div>
+						<h3>{service.title}</h3>
+						<p>{service.desc}</p>
+						<span>{service.price}</span>
+					</article>
+				))}
+			</div>
+		</div>
+	</section>
 
-  <section class="cta-section">
-    <div class="container">
-      <div class="cta-box">
-        <h2>Bạn cần tư vấn dịch vụ?</h2>
-        <p>Liên hệ ngay để được hỗ trợ báo giá và lộ trình phù hợp.</p>
-        <a href="/lien-he" class="btn btn-cta">Yêu cầu tư vấn</a>
-      </div>
-    </div>
-  </section>
+	<section class="section tight">
+		<div class="container service-band">
+			<div>
+				<p class="section-eyebrow">Khóa học liên quan</p>
+				<h2 class="section-title">Chọn lĩnh vực để bắt đầu nhanh hơn</h2>
+			</div>
+			<div class="category-strip">
+				{courseCategories.slice(0, 6).map((category) => (
+					<a href={category.href}>
+						<i class={category.icon} aria-hidden="true" style={`color: ${category.accent}`}></i>
+						<span>{category.title}</span>
+					</a>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="section tight">
+		<div class="container cta-panel card">
+			<div>
+				<p class="section-eyebrow">Bạn cần tư vấn?</p>
+				<h2 class="section-title">Gửi mục tiêu học tập, đội ngũ tư vấn sẽ gợi ý lộ trình phù hợp.</h2>
+			</div>
+			<div class="cta-actions">
+				<a href="/dang-ky-tu-van" class="btn btn-primary">Yêu cầu tư vấn</a>
+				<a href="/lien-he" class="btn btn-secondary">Liên hệ trung tâm</a>
+			</div>
+		</div>
+	</section>
 </Layout>
 
-<style is:global>
-  .services-list {
-    padding: 60px 0;
-  }
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 32px;
-  }
-  .service-card {
-    background: var(--card-bg);
-    border-radius: 28px;
-    padding: 28px;
-    text-align: center;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
-    transition: var(--transition);
-  }
-  .service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-md);
-  }
-  .service-icon {
-    font-size: 2.8rem;
-    color: var(--primary-blue);
-    margin-bottom: 20px;
-  }
-  .service-price {
-    margin-top: 20px;
-  }
-  .price-tag {
-    font-weight: 800;
-    color: var(--warning-orange);
-    font-size: 1.2rem;
-  }
-  .btn-sm {
-    padding: 8px 20px;
-    font-size: 0.85rem;
-  }
-  .cta-section {
-    padding: 40px 0 80px;
-  }
-  .cta-box {
-    background: linear-gradient(135deg, var(--primary-dark), #1a3b4e);
-    border-radius: 40px;
-    padding: 60px 40px;
-    text-align: center;
-    color: white;
-  }
-  .cta-box h2 {
-    color: white;
-    margin-bottom: 1rem;
-  }
-  .cta-box h2:after {
-    background: var(--warning-orange);
-  }
+<style>
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 26px;
+	}
+
+	.service-summary {
+		display: grid;
+		align-content: center;
+		gap: 10px;
+		min-height: 320px;
+		padding: 28px;
+		background:
+			radial-gradient(circle at 100% 0%, rgb(245 158 11 / 0.16), transparent 18rem),
+			linear-gradient(180deg, #fff, #f8fbff);
+	}
+
+	.service-summary strong {
+		color: var(--primary);
+		font-size: clamp(4rem, 10vw, 7rem);
+		line-height: 0.9;
+	}
+
+	.service-summary span {
+		color: var(--ink);
+		font-size: 1.15rem;
+		font-weight: 900;
+	}
+
+	.service-summary p {
+		margin: 0;
+		color: var(--muted);
+	}
+
+	.services-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 20px;
+	}
+
+	.service-card {
+		display: grid;
+		align-content: start;
+		gap: 12px;
+		padding: 24px;
+	}
+
+	.service-icon {
+		width: 48px;
+		height: 48px;
+		display: grid;
+		place-items: center;
+		border-radius: 16px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+		font-size: 1.2rem;
+	}
+
+	.service-card h3 {
+		margin: 0;
+		font-size: 1.18rem;
+		line-height: 1.35;
+	}
+
+	.service-card p {
+		margin: 0;
+		color: var(--muted);
+	}
+
+	.service-card span {
+		width: fit-content;
+		margin-top: 6px;
+		padding: 7px 10px;
+		border-radius: 999px;
+		background: rgb(245 158 11 / 0.13);
+		color: #92400e;
+		font-size: 0.84rem;
+		font-weight: 900;
+	}
+
+	.service-band,
+	.cta-panel {
+		display: grid;
+		grid-template-columns: minmax(0, 0.85fr) minmax(300px, 1fr);
+		gap: 28px;
+		align-items: center;
+		padding: clamp(24px, 4vw, 36px);
+		border: 1px solid rgb(37 99 235 / 0.12);
+		border-radius: 30px;
+		background:
+			radial-gradient(circle at 100% 0%, rgb(96 165 250 / 0.18), transparent 24rem),
+			#fff;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.category-strip {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.category-strip a {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px;
+		border: 1px solid var(--line);
+		border-radius: 18px;
+		background: #fff;
+		color: inherit;
+		font-weight: 900;
+		text-decoration: none;
+		transition:
+			transform 220ms ease,
+			border-color 220ms ease,
+			box-shadow 220ms ease;
+	}
+
+	.category-strip a:hover {
+		transform: translateY(-2px);
+		border-color: rgb(37 99 235 / 0.22);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.category-strip i {
+		width: 38px;
+		height: 38px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: rgb(37 99 235 / 0.08);
+	}
+
+	.cta-panel {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.cta-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	@media (max-width: 920px) {
+		.services-grid,
+		.service-band,
+		.cta-panel {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.category-strip {
+			grid-template-columns: 1fr;
+		}
+	}
 </style>

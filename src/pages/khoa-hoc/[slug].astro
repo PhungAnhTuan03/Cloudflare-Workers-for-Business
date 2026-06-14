@@ -1,4 +1,5 @@
 ---
+import ContactForm from "../../components/ContactForm.astro";
 import Layout from "../../layouts/Layout.astro";
 import {
 	courses,
@@ -61,7 +62,7 @@ const breadcrumbSchema = {
 					<strong>{course.shortTitle}</strong>
 				</nav>
 				<p class="page-kicker">
-					<i class={category?.icon ?? "fa-solid fa-layer-group"}></i>
+					<i class={category?.icon ?? "fa-solid fa-layer-group"} aria-hidden="true"></i>
 					{category?.title}
 				</p>
 				<h1 class="page-title">{course.title}</h1>
@@ -76,10 +77,10 @@ const breadcrumbSchema = {
 				<div class="enroll-card-body">
 					<strong>{course.price}</strong>
 					<div class="enroll-meta">
-						<span><i class="fa-regular fa-clock"></i> {course.duration}</span>
-						<span><i class="fa-solid fa-book-open"></i> {course.lessons} bài học</span>
-						<span><i class="fa-solid fa-star"></i> {course.rating}/5</span>
-						<span><i class="fa-solid fa-users"></i> {course.students} học viên</span>
+						<span><i class="fa-regular fa-clock" aria-hidden="true"></i> {course.duration}</span>
+						<span><i class="fa-solid fa-book-open" aria-hidden="true"></i> {course.lessons} bài học</span>
+						<span><i class="fa-solid fa-star" aria-hidden="true"></i> {course.rating}/5</span>
+						<span><i class="fa-solid fa-users" aria-hidden="true"></i> {course.students} học viên</span>
 					</div>
 					<a href="#dang-ky" class="btn btn-accent">Nhận tư vấn lộ trình</a>
 				</div>
@@ -95,7 +96,7 @@ const breadcrumbSchema = {
 					<h2>Bạn sẽ làm được gì sau khóa học?</h2>
 					<div class="check-grid">
 						{course.outcomes.map((item) => (
-							<div class="check-item"><i class="fa-solid fa-circle-check"></i><span>{item}</span></div>
+							<div class="check-item"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>{item}</span></div>
 						))}
 					</div>
 				</section>
@@ -134,7 +135,7 @@ const breadcrumbSchema = {
 							<img src={instructor.image} alt={instructor.name} loading="lazy" />
 							<div>
 								<h3>{instructor.name}</h3>
-								<p class="muted">{instructor.role} · {instructor.experience}</p>
+								<p class="muted">{instructor.role}<br />{instructor.experience}</p>
 								<p>{instructor.bio}</p>
 								<div class="pill-list small">
 									{instructor.skills.map((skill) => <span>{skill}</span>)}
@@ -150,7 +151,7 @@ const breadcrumbSchema = {
 					<div class="project-grid">
 						{course.projects.map((project) => (
 							<div class="project-card">
-								<i class="fa-solid fa-folder-open"></i>
+								<i class="fa-solid fa-folder-open" aria-hidden="true"></i>
 								<strong>{project}</strong>
 							</div>
 						))}
@@ -160,10 +161,10 @@ const breadcrumbSchema = {
 				<section class="detail-block certificate-block">
 					<div>
 						<p class="section-eyebrow">Chứng chỉ</p>
-						<h2>Nhận chứng nhận hoàn thành sau đồ án.</h2>
+						<h2>Nhận chứng nhận hoàn thành sau bài cuối khóa.</h2>
 						<p>
-							Học viên hoàn thành bài tập, dự án cuối khóa và tham gia đầy đủ sẽ nhận chứng nhận
-							để bổ sung vào CV, portfolio hoặc hồ sơ nội bộ doanh nghiệp.
+							Học viên hoàn thành bài tập, dự án cuối khóa và tham gia đầy đủ sẽ nhận chứng nhận để bổ sung
+							vào CV, portfolio hoặc hồ sơ nội bộ doanh nghiệp.
 						</p>
 					</div>
 					<div class="certificate-preview">
@@ -179,9 +180,9 @@ const breadcrumbSchema = {
 					<div class="testimonial-mini-grid">
 						{testimonials.slice(0, 2).map((item) => (
 							<figure>
-								<div><i class="fa-solid fa-star"></i> {item.rating}</div>
+								<div><i class="fa-solid fa-star" aria-hidden="true"></i> {item.rating}</div>
 								<blockquote>{item.content}</blockquote>
-								<figcaption>{item.name} · {item.role}</figcaption>
+								<figcaption>{item.name}<br />{item.role}</figcaption>
 							</figure>
 						))}
 					</div>
@@ -202,33 +203,17 @@ const breadcrumbSchema = {
 			</main>
 
 			<aside id="dang-ky" class="sticky-form">
-				<form class="card lead-form" action="/api/contact" method="POST" data-contact-form>
+				<div class="card lead-form-card">
 					<h2>Đăng ký tư vấn</h2>
-					<p>Nhận lộ trình, lịch khai giảng và ưu đãi mới nhất cho khóa {course.shortTitle}.</p>
-					<div class="form-honeypot" aria-hidden="true">
-						<label for="course-website">Website</label>
-						<input id="course-website" name="website" tabindex="-1" autocomplete="off" />
-					</div>
-					<div class="field">
-						<label for="course-name">Họ tên</label>
-						<input id="course-name" name="name" required autocomplete="name" />
-					</div>
-					<div class="field">
-						<label for="course-phone">Số điện thoại</label>
-						<input id="course-phone" name="phone" required autocomplete="tel" />
-					</div>
-					<div class="field">
-						<label for="course-email">Email</label>
-						<input id="course-email" type="email" name="email" required autocomplete="email" />
-					</div>
-					<input type="hidden" name="subject" value={course.title} />
-					<div class="field">
-						<label for="course-message">Ghi chú</label>
-						<textarea id="course-message" name="message" rows="4" required>{`Tôi muốn được tư vấn khóa ${course.title}.`}</textarea>
-					</div>
-					<button class="btn btn-primary" type="submit">Gửi thông tin</button>
-					<p class="form-status" aria-live="polite"></p>
-				</form>
+					<p>Nhận lộ trình, lịch khai giảng và học phí mới nhất cho khóa {course.shortTitle}.</p>
+					<ContactForm
+						formId="course-consult-form"
+						submitLabel="Gửi thông tin"
+						defaultSubject={course.title}
+						defaultMessage={`Tôi muốn được tư vấn khóa ${course.title}.`}
+						compact
+					/>
+				</div>
 			</aside>
 		</div>
 	</section>
@@ -247,70 +232,37 @@ const breadcrumbSchema = {
 					{relatedCourses.map((item) => (
 						<a href={`/khoa-hoc/${item.slug}`} class="related-card">
 							<img src={item.image} alt={item.title} loading="lazy" />
-							<h3>{item.title}</h3>
-							<p>{item.description}</p>
+							<div>
+								<h3>{item.title}</h3>
+								<p>{item.description}</p>
+							</div>
 						</a>
 					))}
 				</div>
 			</div>
 		</section>
 	)}
+
+	<div class="mobile-sticky-cta">
+		<a href="#dang-ky" class="btn btn-primary">Đăng ký tư vấn</a>
+	</div>
 </Layout>
-
-<script>
-	document.querySelectorAll("[data-contact-form]").forEach((formElement) => {
-		if (!(formElement instanceof HTMLFormElement)) return;
-		const status = formElement.querySelector(".form-status");
-
-		formElement.addEventListener("submit", async (event) => {
-			event.preventDefault();
-			const button = formElement.querySelector("button[type='submit']");
-			if (button instanceof HTMLButtonElement) button.disabled = true;
-			if (status instanceof HTMLElement) {
-				status.dataset.state = "";
-				status.textContent = "Đang gửi thông tin...";
-			}
-
-			try {
-				const body = new URLSearchParams();
-				for (const [key, value] of new FormData(formElement).entries()) {
-					if (typeof value === "string") body.append(key, value);
-				}
-				const response = await fetch("/api/contact", {
-					method: "POST",
-					body,
-					headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-				});
-				const result = (await response.json().catch(() => ({}))) as { message?: string };
-				if (!response.ok) throw new Error(result.message || "Không gửi được thông tin.");
-				if (status instanceof HTMLElement) {
-					status.dataset.state = "success";
-					status.textContent = result.message || "Gửi thành công. Chúng tôi sẽ liên hệ lại sớm.";
-				}
-				formElement.reset();
-			} catch (error) {
-				if (status instanceof HTMLElement) {
-					status.dataset.state = "error";
-					status.textContent = error instanceof Error ? error.message : "Lỗi kết nối, vui lòng thử lại.";
-				}
-			} finally {
-				if (button instanceof HTMLButtonElement) button.disabled = false;
-			}
-		});
-	});
-</script>
 
 <style>
 	.course-hero {
-		padding: 50px 0 70px;
-		background: linear-gradient(135deg, rgb(37 99 235 / 0.12), rgb(14 165 233 / 0.08));
+		position: relative;
+		overflow: hidden;
+		padding: clamp(48px, 7vw, 88px) 0 clamp(52px, 7vw, 82px);
 		border-bottom: 1px solid var(--line);
+		background:
+			radial-gradient(circle at 86% 8%, rgb(96 165 250 / 0.2), transparent 25rem),
+			linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 	}
 
 	.course-hero-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 380px;
-		gap: 42px;
+		grid-template-columns: minmax(0, 1fr) 390px;
+		gap: clamp(28px, 5vw, 52px);
 		align-items: center;
 	}
 
@@ -321,7 +273,7 @@ const breadcrumbSchema = {
 		margin-bottom: 18px;
 		color: var(--muted);
 		font-size: 0.9rem;
-		font-weight: 800;
+		font-weight: 900;
 	}
 
 	.breadcrumb a {
@@ -333,7 +285,7 @@ const breadcrumbSchema = {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 12px;
-		margin-top: 26px;
+		margin-top: 28px;
 	}
 
 	.enroll-card {
@@ -347,7 +299,7 @@ const breadcrumbSchema = {
 	}
 
 	.enroll-card-body,
-	.lead-form {
+	.lead-form-card {
 		padding: 22px;
 	}
 
@@ -363,32 +315,37 @@ const breadcrumbSchema = {
 		margin: 16px 0 18px;
 		color: var(--muted);
 		font-size: 0.9rem;
-		font-weight: 800;
+		font-weight: 900;
+	}
+
+	.enroll-card .btn {
+		width: 100%;
 	}
 
 	.detail-grid {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) 360px;
-		gap: 34px;
+		gap: 30px;
 		align-items: start;
 	}
 
 	.detail-main {
 		display: grid;
-		gap: 24px;
+		gap: 22px;
 	}
 
 	.detail-block {
-		padding: 28px;
+		padding: clamp(22px, 3vw, 30px);
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 22px;
 		background: #fff;
-		box-shadow: var(--shadow-sm);
+		box-shadow: var(--shadow-xs);
 	}
 
 	.detail-block h2 {
 		margin: 0 0 18px;
-		font-size: clamp(1.55rem, 3vw, 2.15rem);
+		font-size: clamp(1.55rem, 3vw, 2.2rem);
+		line-height: 1.12;
 	}
 
 	.check-grid {
@@ -401,7 +358,7 @@ const breadcrumbSchema = {
 		display: flex;
 		gap: 10px;
 		color: #334155;
-		font-weight: 700;
+		font-weight: 800;
 	}
 
 	.check-item i {
@@ -420,7 +377,7 @@ const breadcrumbSchema = {
 		border-radius: 999px;
 		background: rgb(37 99 235 / 0.08);
 		color: var(--primary);
-		font-weight: 800;
+		font-weight: 900;
 	}
 
 	.pill-list.small span {
@@ -436,7 +393,7 @@ const breadcrumbSchema = {
 	.curriculum details,
 	.faq-list details {
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 16px;
 		background: var(--soft);
 	}
 
@@ -454,6 +411,7 @@ const breadcrumbSchema = {
 
 	.curriculum summary span {
 		color: var(--primary);
+		font-family: var(--font-mono);
 	}
 
 	.curriculum ul {
@@ -472,7 +430,7 @@ const breadcrumbSchema = {
 	.instructor-card img {
 		aspect-ratio: 1;
 		width: 150px;
-		border-radius: 8px;
+		border-radius: 18px;
 		object-fit: cover;
 	}
 
@@ -495,7 +453,7 @@ const breadcrumbSchema = {
 		gap: 12px;
 		padding: 18px;
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 18px;
 		background: var(--soft);
 	}
 
@@ -512,13 +470,13 @@ const breadcrumbSchema = {
 	}
 
 	.certificate-preview {
-		min-height: 170px;
+		min-height: 176px;
 		display: grid;
 		align-content: center;
 		gap: 8px;
 		padding: 20px;
-		border: 1px solid rgb(37 99 235 / 0.25);
-		border-radius: 8px;
+		border: 1px solid rgb(37 99 235 / 0.22);
+		border-radius: 18px;
 		background: linear-gradient(135deg, #fff, #eaf5ff);
 		text-align: center;
 	}
@@ -526,13 +484,14 @@ const breadcrumbSchema = {
 	.certificate-preview span,
 	.certificate-preview small {
 		color: var(--muted);
-		font-weight: 800;
+		font-weight: 900;
 		text-transform: uppercase;
 	}
 
 	.certificate-preview strong {
 		color: var(--primary);
 		font-size: 1.5rem;
+		line-height: 1.1;
 	}
 
 	.testimonial-mini-grid {
@@ -543,7 +502,7 @@ const breadcrumbSchema = {
 		margin: 0;
 		padding: 18px;
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 18px;
 		background: var(--soft);
 	}
 
@@ -577,31 +536,38 @@ const breadcrumbSchema = {
 		top: 96px;
 	}
 
-	.lead-form h2 {
-		margin: 0 0 6px;
+	.lead-form-card h2 {
+		margin: 0;
+		font-size: 1.35rem;
 	}
 
-	.lead-form .field {
-		margin-top: 12px;
-	}
-
-	.lead-form .btn {
-		width: 100%;
-		margin-top: 16px;
+	.lead-form-card > p {
+		margin: 8px 0 18px;
+		color: var(--muted);
 	}
 
 	.related-section {
-		background: var(--surface-2);
+		background: linear-gradient(180deg, #f8fafc, #ffffff);
 	}
 
 	.related-card {
-		display: block;
 		overflow: hidden;
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 22px;
 		background: #fff;
+		color: inherit;
 		text-decoration: none;
-		box-shadow: var(--shadow-sm);
+		box-shadow: var(--shadow-xs);
+		transition:
+			transform 220ms ease,
+			box-shadow 220ms ease,
+			border-color 220ms ease;
+	}
+
+	.related-card:hover {
+		transform: translateY(-4px);
+		border-color: rgb(37 99 235 / 0.2);
+		box-shadow: var(--shadow-md);
 	}
 
 	.related-card img {
@@ -610,15 +576,35 @@ const breadcrumbSchema = {
 		object-fit: cover;
 	}
 
-	.related-card h3,
-	.related-card p {
-		margin-left: 18px;
-		margin-right: 18px;
+	.related-card div {
+		padding: 18px;
+	}
+
+	.related-card h3 {
+		margin: 0 0 8px;
 	}
 
 	.related-card p {
-		margin-bottom: 18px;
 		color: var(--muted);
+	}
+
+	.mobile-sticky-cta {
+		position: fixed;
+		right: 14px;
+		bottom: 14px;
+		left: 14px;
+		z-index: 40;
+		display: none;
+		padding: 10px;
+		border: 1px solid var(--line);
+		border-radius: 18px;
+		background: rgb(255 255 255 / 0.92);
+		box-shadow: var(--shadow-md);
+		backdrop-filter: blur(16px);
+	}
+
+	.mobile-sticky-cta .btn {
+		width: 100%;
 	}
 
 	@media (max-width: 980px) {
@@ -630,15 +616,19 @@ const breadcrumbSchema = {
 		.sticky-form {
 			position: static;
 		}
+
+		.mobile-sticky-cta {
+			display: block;
+		}
 	}
 
 	@media (max-width: 720px) {
 		.check-grid,
+		.instructor-card,
+		.certificate-block,
 		.project-grid,
 		.testimonial-mini-grid,
-		.related-grid,
-		.certificate-block,
-		.instructor-card {
+		.related-grid {
 			grid-template-columns: 1fr;
 		}
 
@@ -646,5 +636,41 @@ const breadcrumbSchema = {
 			width: 100%;
 			max-width: 220px;
 		}
+	}
+
+	.enroll-card {
+		border-left: 5px solid var(--primary);
+	}
+
+	.detail-block {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.detail-block::before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 5px;
+		height: 100%;
+		content: "";
+		background: var(--primary);
+		opacity: 0.22;
+	}
+
+	.curriculum details[open] {
+		background:
+			linear-gradient(90deg, rgb(215 53 42 / 0.08), transparent 36%),
+			rgb(255 255 255 / 0.86);
+	}
+
+	.instructor-card img,
+	.enroll-card img,
+	.related-card img {
+		filter: saturate(1.08) contrast(1.06);
+	}
+
+	.sticky-form .card {
+		border-top: 5px solid var(--primary);
 	}
 </style>

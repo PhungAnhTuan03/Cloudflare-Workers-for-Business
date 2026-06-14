@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
+import { articles } from "../../lib/site-data";
 
 export const prerender = false;
 
@@ -25,29 +26,60 @@ export const GET: APIRoute = async ({ request }) => {
 		: "WHERE status='published'";
 	const bindings: string[] = tag ? [tag] : [];
 
-	const countResult = await DB.prepare(
-		`SELECT COUNT(*) as total FROM posts ${whereClause}`,
-	)
-		.bind(...bindings)
-		.first<{ total: number }>();
-	const total = countResult?.total ?? 0;
+	try {
+		const countResult = await DB.prepare(
+			`SELECT COUNT(*) as total FROM posts ${whereClause}`,
+		)
+			.bind(...bindings)
+			.first<{ total: number }>();
+		const total = countResult?.total ?? 0;
 
-	const { results } = await DB.prepare(
-		`SELECT id, title, slug, excerpt, published_at, tags FROM posts ${whereClause} ORDER BY published_at DESC LIMIT ? OFFSET ?`,
-	)
-		.bind(...bindings, limit, offset)
-		.all();
+		const { results } = await DB.prepare(
+			`SELECT id, title, slug, excerpt, published_at, tags FROM posts ${whereClause} ORDER BY published_at DESC LIMIT ? OFFSET ?`,
+		)
+			.bind(...bindings, limit, offset)
+			.all();
 
-	const payload = JSON.stringify({
-		data: results,
-		page,
-		limit,
-		total,
-		totalPages: Math.ceil(total / limit),
-	});
+		const payload = JSON.stringify({
+			data: results,
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		});
 
-	await CACHE.put(cacheKey, payload, { expirationTtl: 300 });
-	return new Response(payload, {
-		headers: { "Content-Type": "application/json", "X-Cache": "MISS" },
-	});
+		await CACHE.put(cacheKey, payload, { expirationTtl: 300 });
+		return new Response(payload, {
+			headers: { "Content-Type": "application/json", "X-Cache": "MISS" },
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : "";
+		if (!message.includes("no such table: posts")) {
+			throw error;
+		}
+
+		const allPosts = articles
+			.filter((article) => !tag || article.category.toLowerCase().replace(/\s+/g, "-") === tag)
+			.map((article, index) => ({
+				id: article.slug || String(index + 1),
+				title: article.title,
+				slug: article.slug,
+				excerpt: article.description,
+				published_at: article.date,
+				tags: JSON.stringify([article.category]),
+			}));
+		const results = allPosts.slice(offset, offset + limit);
+		const payload = JSON.stringify({
+			data: results,
+			page,
+			limit,
+			total: allPosts.length,
+			totalPages: Math.ceil(allPosts.length / limit),
+		});
+
+		await CACHE.put(cacheKey, payload, { expirationTtl: 300 });
+		return new Response(payload, {
+			headers: { "Content-Type": "application/json", "X-Cache": "STATIC-FALLBACK" },
+		});
+	}
 };

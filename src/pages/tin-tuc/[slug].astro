@@ -85,25 +85,24 @@ const schema = article
 					<div class="container article-layout">
 						<article class="article-content card">
 							<p class="lead">
-								Trong đào tạo công nghệ, điều quan trọng không phải là học thật nhiều công cụ
-								một lúc, mà là biết công cụ nào giúp giải quyết đúng vấn đề hiện tại.
+								Trong đào tạo công nghệ, điều quan trọng không phải là học thật nhiều công cụ một lúc,
+								mà là biết công cụ nào giúp giải quyết đúng vấn đề hiện tại.
 							</p>
 							<h2>Bắt đầu từ mục tiêu học tập</h2>
 							<p>
-								Trước khi chọn khóa học, hãy xác định kết quả bạn muốn đạt được: làm việc nhanh
-								hơn, xây portfolio, chuyển nghề, hay tối ưu hiệu suất công việc. Khi mục tiêu rõ,
-								lộ trình học sẽ gọn và dễ đo lường hơn.
+								Trước khi chọn khóa học, hãy xác định kết quả bạn muốn đạt được: làm việc nhanh hơn,
+								xây portfolio, chuyển nghề, hay tối ưu hiệu suất công việc. Khi mục tiêu rõ, lộ trình học sẽ gọn
+								và dễ đo lường hơn.
 							</p>
 							<h2>Ưu tiên thực hành theo tình huống thật</h2>
 							<p>
-								Kiến thức chỉ thật sự có giá trị khi được áp dụng vào bài tập, dự án hoặc quy
-								trình làm việc. Vì vậy mỗi module nên có đầu ra cụ thể: báo cáo, landing page,
-								bộ thiết kế, bản vẽ hoặc chiến dịch mẫu.
+								Kiến thức chỉ thật sự có giá trị khi được áp dụng vào bài tập, dự án hoặc quy trình làm việc.
+								Vì vậy mỗi module nên có đầu ra cụ thể: báo cáo, landing page, bộ thiết kế, bản vẽ hoặc chiến dịch mẫu.
 							</p>
 							<h2>Đo tiến độ bằng sản phẩm</h2>
 							<p>
-								Một lộ trình tốt luôn có tiêu chí đánh giá rõ ràng. Học viên nên lưu lại sản phẩm
-								qua từng giai đoạn để thấy kỹ năng đang tiến bộ ra sao và còn thiếu điểm nào.
+								Một lộ trình tốt luôn có tiêu chí đánh giá rõ ràng. Học viên nên lưu lại sản phẩm qua từng giai đoạn
+								để thấy kỹ năng đang tiến bộ ra sao và còn thiếu điểm nào.
 							</p>
 							<div class="article-cta">
 								<strong>Cần mentor tư vấn lộ trình?</strong>
@@ -138,9 +137,11 @@ const schema = article
 
 <style>
 	.article-hero {
-		padding: 62px 0 36px;
-		background: #fff;
+		padding: clamp(54px, 7vw, 86px) 0 42px;
 		border-bottom: 1px solid var(--line);
+		background:
+			radial-gradient(circle at 86% 8%, rgb(96 165 250 / 0.18), transparent 24rem),
+			#fff;
 	}
 
 	.article-hero-grid {
@@ -152,12 +153,14 @@ const schema = article
 
 	.breadcrumb {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 8px;
 		color: var(--muted);
-		font-weight: 800;
+		font-weight: 900;
 	}
 
 	.breadcrumb a {
+		color: var(--primary);
 		text-decoration: none;
 	}
 
@@ -172,9 +175,10 @@ const schema = article
 
 	.article-hero h1 {
 		margin: 0;
-		font-size: clamp(2.1rem, 4.6vw, 4rem);
-		line-height: 1.06;
+		font-size: clamp(2.2rem, 4.8vw, 4.25rem);
+		line-height: 1.04;
 		letter-spacing: 0;
+		text-wrap: balance;
 	}
 
 	.article-hero p {
@@ -186,7 +190,7 @@ const schema = article
 		width: 100%;
 		aspect-ratio: 4 / 3;
 		object-fit: cover;
-		border-radius: var(--radius);
+		border-radius: 24px;
 		box-shadow: var(--shadow-md);
 	}
 
@@ -198,18 +202,19 @@ const schema = article
 	}
 
 	.article-content {
-		padding: 30px;
+		padding: clamp(24px, 4vw, 38px);
 	}
 
 	.article-content .lead {
 		color: var(--ink);
 		font-size: 1.18rem;
-		font-weight: 700;
+		font-weight: 800;
 	}
 
 	.article-content h2 {
-		margin: 30px 0 10px;
-		font-size: 1.6rem;
+		margin: 32px 0 10px;
+		font-size: 1.65rem;
+		line-height: 1.2;
 	}
 
 	.article-content p {
@@ -224,8 +229,9 @@ const schema = article
 		gap: 16px;
 		margin-top: 34px;
 		padding: 18px;
-		border-radius: var(--radius);
-		background: var(--surface-2);
+		border: 1px solid rgb(37 99 235 / 0.12);
+		border-radius: 18px;
+		background: var(--soft-blue);
 	}
 
 	.article-sidebar {
@@ -246,7 +252,7 @@ const schema = article
 		padding: 12px 0;
 		border-top: 1px solid var(--line);
 		color: inherit;
-		font-weight: 800;
+		font-weight: 900;
 		text-decoration: none;
 	}
 

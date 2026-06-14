@@ -1,7 +1,7 @@
 ---
 import ContactForm from "../components/ContactForm.astro";
 import Layout from "../layouts/Layout.astro";
-import { site } from "../lib/site-data";
+import { locations, site } from "../lib/site-data";
 
 const schema = {
 	"@context": "https://schema.org",
@@ -33,8 +33,8 @@ const schema = {
 				</span>
 				<h1 class="page-title">Đội tư vấn luôn sẵn sàng giúp bạn chọn đúng lộ trình.</h1>
 				<p class="page-lead">
-					Gửi thông tin bên dưới, trung tâm sẽ phản hồi qua email hoặc điện thoại. Mọi liên hệ
-					được lưu vào hệ thống D1 và gửi thông báo qua Resend về email quản trị.
+					Gửi thông tin bên dưới, trung tâm sẽ phản hồi qua email hoặc điện thoại. Bạn cũng có thể chọn cơ sở
+					gần nhất để được tư vấn lịch học phù hợp.
 				</p>
 			</div>
 			<div class="contact-card card">
@@ -61,21 +61,48 @@ const schema = {
 		</div>
 	</section>
 
+	<section class="section branch-section">
+		<div class="container">
+			<div class="section-head">
+				<div>
+					<p class="section-eyebrow">Hệ thống cơ sở</p>
+					<h2 class="section-title">Chọn cơ sở gần bạn để được tư vấn lịch học phù hợp.</h2>
+					<p class="section-lead">
+						Dữ liệu chi nhánh đã được chuẩn hóa để có thể mở rộng thành landing page địa phương cho SEO local.
+					</p>
+				</div>
+			</div>
+			<div class="branch-grid">
+				{locations.map((location) => (
+					<article class="branch-card">
+						<span>{location.province}</span>
+						<h3>{location.name}</h3>
+						<p>{location.address}</p>
+						<a href={`tel:${location.phone.replaceAll(" ", "")}`}>
+							<i class="fa-solid fa-phone" aria-hidden="true"></i>
+							{location.phone}
+						</a>
+					</article>
+				))}
+			</div>
+		</div>
+	</section>
+
 	<section class="section contact-section">
 		<div class="container contact-grid">
 			<div class="contact-copy">
 				<p class="section-eyebrow">Tư vấn cá nhân hóa</p>
 				<h2 class="section-title">Bạn đang cần học gì?</h2>
 				<p class="section-lead">
-					Chọn khóa học quan tâm hoặc ghi rõ mục tiêu của bạn. Mentor sẽ gợi ý lộ trình, lịch
-					học, học phí và đầu ra phù hợp.
+					Chọn khóa học quan tâm hoặc ghi rõ mục tiêu của bạn. Mentor sẽ gợi ý lộ trình, lịch học, học phí và
+					đầu ra phù hợp.
 				</p>
 
 				<div class="support-grid">
 					<div class="support-item">
 						<i class="fa-solid fa-route" aria-hidden="true"></i>
 						<strong>Lộ trình rõ ràng</strong>
-						<span>Tư vấn theo mục tiêu và thời gian học thực tế.</span>
+						<span>Tư vấn theo mục tiêu, trình độ và thời gian học thực tế.</span>
 					</div>
 					<div class="support-item">
 						<i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
@@ -123,7 +150,7 @@ const schema = {
 
 	.contact-card li {
 		display: grid;
-		grid-template-columns: 28px 1fr;
+		grid-template-columns: 30px 1fr;
 		gap: 10px;
 		color: var(--muted);
 	}
@@ -135,8 +162,72 @@ const schema = {
 
 	.contact-card a {
 		color: var(--ink);
-		font-weight: 800;
+		font-weight: 900;
 		text-decoration: none;
+	}
+
+	.branch-section {
+		background: #fff;
+	}
+
+	.branch-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.branch-card {
+		min-height: 190px;
+		padding: 20px;
+		border: 1px solid var(--line);
+		border-radius: 20px;
+		background: #fff;
+		box-shadow: var(--shadow-xs);
+		transition:
+			transform 220ms ease,
+			box-shadow 220ms ease,
+			border-color 220ms ease;
+	}
+
+	.branch-card:hover {
+		transform: translateY(-4px);
+		border-color: rgb(215 53 42 / 0.28);
+		box-shadow: var(--shadow-md);
+	}
+
+	.branch-card span {
+		display: inline-flex;
+		padding: 6px 10px;
+		border-radius: 999px;
+		background: rgb(215 53 42 / 0.08);
+		color: var(--primary);
+		font-size: 0.82rem;
+		font-weight: 900;
+	}
+
+	.branch-card h3 {
+		margin: 14px 0 8px;
+		font-size: 1.06rem;
+		line-height: 1.25;
+	}
+
+	.branch-card p {
+		margin: 0 0 16px;
+		color: var(--muted);
+		line-height: 1.55;
+	}
+
+	.branch-card a {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--ink);
+		font-weight: 900;
+		text-decoration: none;
+	}
+
+	.contact-section {
+		background: linear-gradient(180deg, #f2f0e8, #fffdfa);
 	}
 
 	.contact-grid {
@@ -154,23 +245,23 @@ const schema = {
 
 	.support-item {
 		display: grid;
-		grid-template-columns: 42px 1fr;
+		grid-template-columns: 44px 1fr;
 		gap: 8px 14px;
 		align-items: start;
 		padding: 16px;
 		border: 1px solid var(--line);
-		border-radius: var(--radius);
+		border-radius: 18px;
 		background: #fff;
 	}
 
 	.support-item i {
 		grid-row: span 2;
-		width: 42px;
-		height: 42px;
+		width: 44px;
+		height: 44px;
 		display: inline-grid;
 		place-items: center;
-		border-radius: var(--radius);
-		background: rgb(37 99 235 / 0.1);
+		border-radius: 14px;
+		background: rgb(215 53 42 / 0.1);
 		color: var(--primary);
 	}
 
@@ -186,8 +277,262 @@ const schema = {
 		padding: 28px;
 	}
 
-	@media (max-width: 860px) {
+	@media (max-width: 900px) {
+		.branch-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		.contact-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.branch-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.contact-card,
+	.contact-form-panel {
+		border-left: 5px solid var(--primary);
+	}
+
+	.branch-card {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.branch-card::after {
+		position: absolute;
+		right: 14px;
+		bottom: 14px;
+		width: 48px;
+		height: 9px;
+		content: "";
+		background: repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 8px);
+		opacity: 0.1;
+	}
+
+	.branch-card:nth-child(3n + 2) {
+		transform: translateY(18px);
+	}
+
+	.support-item {
+		border-left: 5px solid var(--primary);
+	}
+
+	@media (max-width: 900px) {
+		.branch-card:nth-child(3n + 2) {
+			transform: none;
+		}
+	}
+
+	.contact-hero {
+		padding-top: clamp(76px, 8vw, 116px);
+	}
+
+	.contact-card,
+	.contact-form-panel,
+	.branch-card,
+	.support-item {
+		border-radius: 8px !important;
+	}
+
+	.branch-section {
+		padding-top: clamp(86px, 9vw, 122px);
+		scroll-margin-top: 120px;
+	}
+
+	.branch-section .section-head {
+		align-items: start;
+		margin-bottom: 28px;
+		padding-bottom: 22px;
+		border-bottom: 1px solid rgb(17 17 17 / 0.14);
+	}
+
+	.branch-section .section-title {
+		max-width: 960px;
+	}
+
+	.branch-grid {
+		counter-reset: branch-card;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 14px;
+		align-items: stretch;
+	}
+
+	.branch-card {
+		counter-increment: branch-card;
+		grid-column: span 4;
+		min-height: 214px;
+		display: grid;
+		align-content: space-between;
+		padding: 20px;
+		background:
+			linear-gradient(90deg, rgb(215 53 42 / 0.1) 0 5px, transparent 5px),
+			linear-gradient(rgb(17 17 17 / 0.026) 1px, transparent 1px),
+			linear-gradient(90deg, rgb(17 17 17 / 0.026) 1px, transparent 1px),
+			rgb(255 255 255 / 0.9) !important;
+		background-size: auto, 18px 18px, 18px 18px, auto !important;
+	}
+
+	.branch-card::before {
+		content: counter(branch-card, decimal-leading-zero);
+		position: absolute;
+		top: 16px;
+		right: 18px;
+		color: rgb(17 17 17 / 0.22);
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		font-weight: 800;
+	}
+
+	.branch-card:nth-child(6n + 1),
+	.branch-card:nth-child(6n + 4) {
+		grid-column: span 5;
+	}
+
+	.branch-card:nth-child(6n + 2),
+	.branch-card:nth-child(6n + 5) {
+		grid-column: span 3;
+	}
+
+	.branch-card:nth-child(3n + 2) {
+		transform: translateY(14px);
+	}
+
+	.branch-card span {
+		border-radius: 4px !important;
+		background: var(--primary) !important;
+		color: #fff !important;
+	}
+
+	.branch-card h3 {
+		max-width: calc(100% - 52px);
+		font-size: clamp(1.06rem, 1.4vw, 1.28rem);
+	}
+
+	.branch-card a {
+		width: fit-content;
+		min-height: 36px;
+		padding: 0 10px;
+		border: 1px solid rgb(17 17 17 / 0.14);
+		border-radius: 4px;
+		background: rgb(242 240 232 / 0.74);
+		transition:
+			color 260ms var(--motion-ease),
+			transform 260ms var(--motion-ease),
+			border-color 260ms var(--motion-ease);
+	}
+
+	.branch-card a:hover {
+		border-color: rgb(215 53 42 / 0.34);
+		color: var(--primary);
+		transform: translateY(-2px);
+	}
+
+	.support-item {
+		background:
+			linear-gradient(90deg, var(--primary) 0 5px, transparent 5px),
+			rgb(255 255 255 / 0.88) !important;
+	}
+
+	@media (max-width: 980px) {
+		.branch-card,
+		.branch-card:nth-child(6n + 1),
+		.branch-card:nth-child(6n + 2),
+		.branch-card:nth-child(6n + 4),
+		.branch-card:nth-child(6n + 5) {
+			grid-column: span 6;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.contact-hero {
+			padding-top: 58px;
+		}
+
+		.branch-section {
+			padding-top: 58px;
+		}
+
+		.branch-card,
+		.branch-card:nth-child(6n + 1),
+		.branch-card:nth-child(6n + 2),
+		.branch-card:nth-child(6n + 4),
+		.branch-card:nth-child(6n + 5) {
+			grid-column: 1 / -1;
+		}
+
+		.branch-card:nth-child(3n + 2) {
+			transform: none;
+		}
+	}
+
+	/* Equalized branch cards requested after visual QA. */
+	.branch-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.branch-card,
+	.branch-card:nth-child(6n + 1),
+	.branch-card:nth-child(6n + 2),
+	.branch-card:nth-child(6n + 4),
+	.branch-card:nth-child(6n + 5) {
+		grid-column: auto;
+		min-height: 236px;
+		display: grid;
+		grid-template-rows: auto auto 1fr auto;
+		align-content: stretch;
+		transform: none;
+	}
+
+	.branch-card:hover {
+		transform: translateY(-3px);
+	}
+
+	.branch-card:nth-child(3n + 2) {
+		transform: none;
+	}
+
+	.branch-card h3 {
+		display: -webkit-box;
+		max-width: calc(100% - 54px);
+		min-height: 3.1em;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.branch-card p {
+		display: -webkit-box;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+	}
+
+	.branch-card a {
+		align-self: end;
+	}
+
+	@media (max-width: 980px) {
+		.branch-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.branch-card,
+		.branch-card:nth-child(6n + 1),
+		.branch-card:nth-child(6n + 2),
+		.branch-card:nth-child(6n + 4),
+		.branch-card:nth-child(6n + 5) {
+			grid-column: auto;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.branch-grid {
 			grid-template-columns: 1fr;
 		}
 	}

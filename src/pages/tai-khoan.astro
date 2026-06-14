@@ -44,6 +44,10 @@ const schema = {
 						<i class="fa-solid fa-chalkboard-user" aria-hidden="true"></i>
 						Dashboard giang vien
 					</a>
+					<a href="/admin" class="btn btn-primary" data-admin-link hidden>
+						<i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+						Admin Center
+					</a>
 					<a href="/marketplace" class="btn btn-primary" data-student-link hidden>
 						<i class="fa-solid fa-store" aria-hidden="true"></i>
 						Mua khoa hoc
@@ -162,6 +166,7 @@ const schema = {
 	const profileStatus = document.querySelector("[data-profile-status]");
 	const profileLink = document.querySelector("[data-profile-link]");
 	const instructorLink = document.querySelector("[data-instructor-link]");
+	const adminLink = document.querySelector("[data-admin-link]");
 	const studentLink = document.querySelector("[data-student-link]");
 	const avatarFile = document.querySelector("[data-avatar-file]");
 	const avatarUrl = document.querySelector("[data-avatar-url]");
@@ -220,7 +225,7 @@ const schema = {
 		setText(intro, "Ban da dang nhap. Hay cap nhat ho so truoc khi hoc tap hoac giang day.");
 		setText(userName, result.user.fullName || "Nguoi dung");
 		setText(userEmail, result.user.email || "");
-		setText(userRole, result.user.role === "instructor" ? "Vai tro: giang vien" : "Vai tro: hoc vien");
+		setText(userRole, result.user.role === "admin" ? "Vai tro: admin" : result.user.role === "instructor" ? "Vai tro: giang vien" : "Vai tro: hoc vien");
 		setText(userInitial, (result.user.fullName || "SV").slice(0, 2).toUpperCase());
 		setAvatarPreview(null, result.user.fullName || "SV");
 
@@ -228,6 +233,7 @@ const schema = {
 			profileLink.href = `/ho-so/${result.user.id}`;
 		}
 		if (instructorLink instanceof HTMLElement) instructorLink.hidden = result.user.role !== "instructor";
+		if (adminLink instanceof HTMLElement) adminLink.hidden = result.user.role !== "admin";
 		if (studentLink instanceof HTMLElement) studentLink.hidden = result.user.role !== "student";
 		if (userBox instanceof HTMLElement) userBox.hidden = false;
 		if (logoutButton instanceof HTMLElement) logoutButton.hidden = false;
@@ -292,24 +298,29 @@ const schema = {
 
 <style>
 	.account-section {
-		padding: 74px 0 34px;
+		padding: 44px 0 34px;
+		background:
+			radial-gradient(circle at 0% 0%, rgb(96 165 250 / 0.14), transparent 24rem),
+			linear-gradient(180deg, #f8fafc 0%, #ffffff 56%, #f8fafc 100%);
 	}
 
 	.account-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);
-		gap: 28px;
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+		gap: 18px;
 		align-items: start;
 	}
 
 	.account-panel {
-		padding: 30px;
+		padding: 24px;
+		border-radius: 24px;
+		box-shadow: 0 18px 42px rgb(37 99 235 / 0.08);
 	}
 
 	.account-panel h1 {
 		margin: 0;
-		font-size: clamp(2.2rem, 4vw, 4rem);
-		line-height: 1.06;
+		font-size: clamp(2rem, 3.3vw, 3.35rem);
+		line-height: 1.08;
 		letter-spacing: 0;
 	}
 
@@ -323,19 +334,19 @@ const schema = {
 		display: flex;
 		align-items: center;
 		gap: 14px;
-		margin-top: 24px;
-		padding: 16px;
+		margin-top: 20px;
+		padding: 14px;
 		border: 1px solid var(--line);
-		border-radius: var(--radius);
-		background: var(--soft);
+		border-radius: 20px;
+		background: linear-gradient(180deg, #ffffff, #f8fafc);
 	}
 
 	.avatar {
-		width: 52px;
-		height: 52px;
+		width: 50px;
+		height: 50px;
 		display: inline-grid;
 		place-items: center;
-		border-radius: 8px;
+		border-radius: 16px;
 		background: linear-gradient(135deg, var(--primary), var(--secondary));
 		color: #fff;
 		font-weight: 900;
@@ -355,15 +366,15 @@ const schema = {
 	.account-actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 12px;
-		margin-top: 24px;
+		gap: 10px;
+		margin-top: 20px;
 	}
 
 	.profile-form {
 		display: grid;
-		gap: 14px;
-		margin-top: 24px;
-		padding-top: 24px;
+		gap: 13px;
+		margin-top: 22px;
+		padding-top: 22px;
 		border-top: 1px solid var(--line);
 	}
 
@@ -375,20 +386,20 @@ const schema = {
 		display: flex;
 		align-items: center;
 		gap: 16px;
-		padding: 16px;
+		padding: 14px;
 		border: 1px solid var(--line);
 		border-radius: var(--radius-lg);
-		background: var(--soft);
+		background: linear-gradient(180deg, #ffffff, #f8fafc);
 	}
 
 	.avatar-preview {
-		width: 86px;
-		height: 86px;
+		width: 78px;
+		height: 78px;
 		display: grid;
 		place-items: center;
 		overflow: hidden;
 		flex: 0 0 auto;
-		border-radius: 22px;
+		border-radius: 20px;
 		background: linear-gradient(135deg, var(--primary), var(--secondary));
 		color: #fff;
 		font-size: 1.45rem;
@@ -416,7 +427,7 @@ const schema = {
 		gap: 9px;
 		min-height: 42px;
 		padding: 10px 14px;
-		border-radius: var(--radius);
+		border-radius: 999px;
 		background: var(--primary);
 		color: #fff;
 		font-weight: 900;
@@ -432,15 +443,28 @@ const schema = {
 
 	.account-links {
 		display: grid;
-		gap: 14px;
+		gap: 12px;
+		position: sticky;
+		top: 90px;
 	}
 
 	.account-link {
 		display: flex;
 		gap: 14px;
-		padding: 18px;
+		padding: 16px;
+		border-radius: 22px;
 		color: inherit;
 		text-decoration: none;
+		transition:
+			transform 300ms ease,
+			border-color 300ms ease,
+			box-shadow 300ms ease;
+	}
+
+	.account-link:hover {
+		transform: translateY(-3px);
+		border-color: rgb(37 99 235 / 0.22);
+		box-shadow: var(--shadow-md);
 	}
 
 	.account-link i {
@@ -449,7 +473,7 @@ const schema = {
 		display: inline-grid;
 		place-items: center;
 		flex: 0 0 auto;
-		border-radius: 8px;
+		border-radius: 14px;
 		background: rgb(37 99 235 / 0.1);
 		color: var(--primary);
 	}
@@ -467,6 +491,10 @@ const schema = {
 	@media (max-width: 860px) {
 		.account-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.account-links {
+			position: static;
 		}
 	}
 

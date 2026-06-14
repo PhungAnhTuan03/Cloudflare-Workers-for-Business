@@ -3,12 +3,19 @@ import Navbar from "../components/Navbar.astro";
 import { courseCategories, site } from "../lib/site-data";
 import Base from "./Base.astro";
 
+type ContentContext = {
+	collection: string;
+	id: string;
+	slug?: string | null;
+};
+
 interface Props {
 	title?: string;
 	pageTitle?: string;
 	description?: string;
 	canonical?: string;
 	image?: string;
+	content?: ContentContext;
 	schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -17,121 +24,164 @@ const props = Astro.props;
 
 <Base {...props}>
 	<Navbar />
-	<main>
+	<main id="main-content">
 		<slot />
 	</main>
 	<footer class="site-footer">
 		<div class="container footer-grid">
 			<div class="footer-brand">
-				<a href="/" class="footer-logo">
+				<a href="/" class="footer-logo" aria-label={`${site.name} homepage`}>
 					<span><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></span>
 					<strong>{site.name}</strong>
 				</a>
 				<p>
-					Dao tao cong nghe thuc chien cho hoc vien, nguoi di lam va doanh nghiep muon nang cap
-					nang luc so.
+					Đào tạo công nghệ thực chiến cho học viên, người đi làm và doanh nghiệp muốn nâng cấp năng lực số.
 				</p>
-				<div class="footer-socials" aria-label="Mang xa hoi">
-					<a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
-					<a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
-					<a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
-					<a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
+				<div class="footer-contact">
+					<a href={`tel:${site.phone.replaceAll(" ", "")}`}>{site.phone}</a>
+					<a href={`mailto:${site.email}`}>{site.email}</a>
+				</div>
+				<div class="footer-socials" aria-label="Mạng xã hội">
+					<a href="/marketplace" aria-label="Marketplace"><i class="fa-solid fa-store" aria-hidden="true"></i></a>
+					<a href="/tin-tuc" aria-label="Tin tuc"><i class="fa-solid fa-newspaper" aria-hidden="true"></i></a>
+					<a href="/tra-cuu-chung-nhan" aria-label="Tra cuu chung nhan"><i class="fa-solid fa-certificate" aria-hidden="true"></i></a>
+					<a href="/lien-he" aria-label="Lien he"><i class="fa-solid fa-headset" aria-hidden="true"></i></a>
 				</div>
 			</div>
 
 			<div>
-				<h2>Khoa hoc</h2>
-				{courseCategories.map((category) => <a href={category.href}>{category.title}</a>)}
+				<h2>Khóa học</h2>
+				{courseCategories.slice(0, 6).map((category) => <a href={category.href}>{category.title}</a>)}
 			</div>
 
 			<div>
 				<h2>Academy</h2>
-				<a href="/gioi-thieu">Gioi thieu</a>
-				<a href="/#giang-vien">Giang vien</a>
+				<a href="/#gioi-thieu">Giới thiệu</a>
+				<a href="/#giang-vien">Giảng viên</a>
 				<a href="/marketplace">Marketplace</a>
-				<a href="/tin-tuc">Tin tuc</a>
-				<a href="/lien-he">Lien he</a>
+				<a href="/tin-tuc">Tin tức</a>
+				<a href="/lien-he">Liên hệ</a>
 			</div>
 
 			<div>
-				<h2>Lien he</h2>
+				<h2>Liên hệ</h2>
 				<p>{site.address}</p>
-				<a href={`tel:${site.phone.replaceAll(" ", "")}`}>{site.phone}</a>
-				<a href={`mailto:${site.email}`}>{site.email}</a>
-				<a href="/dang-ky-tu-van" class="btn btn-accent footer-cta">Dang ky tu van</a>
+				<a href="/chinh-sach-bao-mat">Chính sách bảo mật</a>
+				<a href="/dieu-khoan-su-dung">Điều khoản sử dụng</a>
+				<a href="/dang-ky-tu-van" class="btn btn-accent footer-cta">Đăng ký tư vấn</a>
+				<a href="/tra-cuu-chung-nhan" class="footer-cert">Tra cứu chứng nhận</a>
 			</div>
 		</div>
 		<div class="container footer-bottom">
-			<span>© 2026 {site.name}. All rights reserved.</span>
-			<span>Built on Astro, EmDash CMS and Cloudflare Workers.</span>
+			<span>&copy; 2026 {site.name}. All rights reserved.</span>
+			<span>Hệ thống học tập vận hành trên Astro, EmDash CMS và Cloudflare Workers.</span>
 		</div>
 	</footer>
 </Base>
 
+<script>
+const revealTargets = document.querySelectorAll(
+		".section, .page-hero, .home-hero, .course-hero, .market-section, .account-section, .cart-section, .article-hero, .messenger-page, .profile-page, .lms-page, .teacher-page, .admin-page, .course-view, .cms-section",
+	);
+
+	for (const target of revealTargets) target.classList.add("reveal");
+
+	if ("IntersectionObserver" in window) {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						entry.target.classList.add("is-visible");
+						observer.unobserve(entry.target);
+					}
+				}
+			},
+			{ threshold: 0.12 },
+		);
+
+		for (const target of revealTargets) observer.observe(target);
+	} else {
+		for (const target of revealTargets) target.classList.add("is-visible");
+	}
+</script>
+
 <style>
 	.site-footer {
-		margin-top: 70px;
-		padding: 64px 0 24px;
+		margin-top: clamp(48px, 6vw, 84px);
+		padding: clamp(48px, 7vw, 76px) 0 24px;
+		border-top: 1px solid var(--line);
 		background:
-			linear-gradient(135deg, rgb(37 99 235 / 0.14), transparent 38%),
-			#0f172a;
-		color: #cbd5e1;
+			radial-gradient(circle at 18% 0%, rgb(215 53 42 / 0.12), transparent 26rem),
+			linear-gradient(180deg, #f2f0e8 0%, #fffdfa 100%);
+		color: var(--muted);
 	}
 
 	.footer-grid {
 		display: grid;
-		grid-template-columns: 1.5fr repeat(3, minmax(0, 1fr));
-		gap: 34px;
+		grid-template-columns: minmax(0, 1.45fr) repeat(3, minmax(0, 1fr));
+		gap: clamp(24px, 4vw, 42px);
+		align-items: start;
 	}
 
 	.footer-logo {
 		display: inline-flex;
 		align-items: center;
-		gap: 10px;
-		color: #fff;
+		gap: 11px;
+		color: var(--ink);
 		text-decoration: none;
 	}
 
 	.footer-logo span {
-		width: 38px;
-		height: 38px;
+		width: 42px;
+		height: 42px;
 		display: inline-grid;
 		place-items: center;
-		border-radius: 10px;
+		border-radius: 14px;
 		background: linear-gradient(135deg, var(--primary), var(--secondary));
-		box-shadow: 0 14px 30px rgb(37 99 235 / 0.28);
+		color: #fff;
+		box-shadow: 0 14px 30px rgb(17 17 17 / 0.14);
 	}
 
 	.footer-brand p {
-		max-width: 360px;
-		color: #94a3b8;
+		max-width: 380px;
+		margin: 18px 0 0;
+		color: var(--muted);
+	}
+
+	.footer-contact {
+		display: grid;
+		gap: 4px;
+		margin-top: 18px;
 	}
 
 	.site-footer h2 {
 		margin: 0 0 14px;
-		color: #fff;
-		font-size: 1rem;
+		color: var(--ink);
+		font-size: 0.98rem;
+		letter-spacing: 0.02em;
 	}
 
 	.site-footer a {
 		display: block;
+		width: fit-content;
 		margin: 9px 0;
-		color: #cbd5e1;
+		color: #475569;
+		font-weight: 700;
 		text-decoration: none;
 		transition:
-			color 300ms ease,
-			transform 300ms ease;
+			color 180ms ease,
+			transform 180ms ease;
 	}
 
 	.site-footer a:hover {
-		color: #fff;
+		color: var(--primary);
 		transform: translateX(2px);
 	}
 
 	.footer-socials {
 		display: flex;
 		gap: 10px;
-		margin-top: 18px;
+		margin-top: 20px;
 	}
 
 	.footer-socials a {
@@ -140,24 +190,28 @@ const props = Astro.props;
 		display: inline-grid;
 		place-items: center;
 		margin: 0;
-		border: 1px solid rgb(255 255 255 / 0.12);
-		border-radius: 999px;
-		transition:
-			transform 300ms ease,
-			background 300ms ease,
-			border-color 300ms ease;
+		border: 1px solid var(--line);
+		border-radius: 12px;
+		background: #fff;
+		color: var(--ink-soft);
 	}
 
 	.footer-socials a:hover {
-		transform: translateY(-3px);
-		border-color: rgb(255 255 255 / 0.28);
-		background: rgb(255 255 255 / 0.08);
+		transform: translateY(-2px);
+		border-color: rgb(215 53 42 / 0.24);
+		background: rgb(215 53 42 / 0.08);
 	}
 
 	.footer-cta {
 		display: inline-flex !important;
-		margin-top: 14px !important;
-		color: #111827 !important;
+		width: fit-content;
+		margin-top: 12px !important;
+		color: #fff !important;
+	}
+
+	.footer-cert {
+		color: var(--primary) !important;
+		font-weight: 900 !important;
 	}
 
 	.footer-bottom {
@@ -166,8 +220,8 @@ const props = Astro.props;
 		gap: 18px;
 		margin-top: 42px;
 		padding-top: 22px;
-		border-top: 1px solid rgb(255 255 255 / 0.12);
-		color: #94a3b8;
+		border-top: 1px solid var(--line);
+		color: var(--muted);
 		font-size: 0.9rem;
 	}
 
@@ -185,5 +239,82 @@ const props = Astro.props;
 		.footer-grid {
 			grid-template-columns: 1fr;
 		}
+
+		.footer-cta {
+			width: 100%;
+		}
+	}
+
+	.site-footer {
+		border-top: 1px solid rgb(17 17 17 / 0.16);
+		background:
+			linear-gradient(rgb(17 17 17 / 0.035) 1px, transparent 1px),
+			linear-gradient(90deg, rgb(17 17 17 / 0.035) 1px, transparent 1px),
+			linear-gradient(180deg, #111111 0%, #1a1815 100%);
+		background-size: 42px 42px, 42px 42px, auto;
+		color: rgb(242 240 232 / 0.74);
+	}
+
+	.footer-logo,
+	.site-footer h2 {
+		color: #fff;
+	}
+
+	.footer-logo span {
+		border-radius: 8px;
+		background: var(--primary);
+		box-shadow: none;
+	}
+
+	.footer-brand p,
+	.site-footer p,
+	.footer-bottom {
+		color: rgb(242 240 232 / 0.68);
+	}
+
+	.site-footer a {
+		color: rgb(242 240 232 / 0.76);
+	}
+
+	.site-footer a:hover {
+		color: #fff;
+	}
+
+	.footer-socials a {
+		border-color: rgb(255 255 255 / 0.16);
+		border-radius: 6px;
+		background: rgb(255 255 255 / 0.08);
+		color: #fff;
+	}
+
+	.footer-socials a:hover {
+		border-color: rgb(215 53 42 / 0.5);
+		background: rgb(215 53 42 / 0.18);
+	}
+
+	.footer-bottom {
+		border-top-color: rgb(255 255 255 / 0.14);
+		font-family: var(--font-mono);
+	}
+
+	.footer-cert {
+		color: #fff !important;
+	}
+
+	.site-footer .footer-cta {
+		border-color: rgb(255 255 255 / 0.22) !important;
+		background: var(--primary) !important;
+		color: #fff !important;
+		box-shadow:
+			0 16px 34px rgb(215 53 42 / 0.28),
+			inset 0 1px 0 rgb(255 255 255 / 0.22) !important;
+	}
+
+	.site-footer .footer-cta:hover {
+		border-color: rgb(255 255 255 / 0.36) !important;
+		background: #f2f0e8 !important;
+		color: #111111 !important;
+		transform: translateY(-2px);
+		box-shadow: 0 18px 38px rgb(242 240 232 / 0.16) !important;
 	}
 </style>

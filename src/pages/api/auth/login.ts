@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
-import { createSession, findUserByEmail, publicUser, validateLoginPayload, verifyPassword } from "../../../lib/auth";
+import { createSession, findUserByEmail, publicUser, roleHomePath, validateLoginPayload, verifyPassword } from "../../../lib/auth";
 import { getClientIp, json, rateLimit, readJson } from "../../../lib/business-api";
 import type { LoginPayload } from "../../../lib/auth";
 
@@ -40,7 +40,7 @@ export const POST: APIRoute = async ({ request }) => {
 		JSON.stringify({
 			ok: true,
 			user: publicUser(user),
-			redirectTo: "/tai-khoan",
+			redirectTo: roleHomePath(user.role),
 			message: "Dang nhap thanh cong.",
 		}),
 		{

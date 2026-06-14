@@ -22,7 +22,18 @@ function json(data: unknown, status = 200): Response {
 export const POST: APIRoute = async ({ request }) => {
 	const { MEDIA, SITE_URL } = env;
 
-	const formData = await request.formData();
+	const contentType = request.headers.get("content-type") || "";
+	if (!contentType.toLowerCase().includes("multipart/form-data")) {
+		return json({ error: "Yêu cầu upload phải dùng multipart/form-data" }, 400);
+	}
+
+	let formData: FormData;
+	try {
+		formData = await request.formData();
+	} catch {
+		return json({ error: "Không đọc được dữ liệu upload" }, 400);
+	}
+
 	const file = formData.get("file") as File | null;
 
 	if (!file) {

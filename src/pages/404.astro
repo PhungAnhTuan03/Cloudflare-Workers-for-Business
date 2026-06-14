@@ -1,9 +1,68 @@
 ---
-import Base from "../layouts/Base.astro";
+import Layout from "../layouts/Layout.astro";
+import { site } from "../lib/site-data";
+
+Astro.response.status = 404;
 ---
 
-<Base title="Not Found">
-	<h1>Page not found</h1>
-	<p>The page you're looking for doesn't exist.</p>
-	<a href="/">Go home</a>
-</Base>
+<Layout
+	title={`Không tìm thấy trang - ${site.name}`}
+	description="Trang bạn đang tìm không tồn tại hoặc đã được di chuyển."
+>
+	<section class="not-found-section cms-section">
+		<div class="container not-found-card card">
+			<span class="page-kicker">
+				<i class="fa-solid fa-compass" aria-hidden="true"></i>
+				404
+			</span>
+			<h1>Trang này đang ngoài lộ trình học.</h1>
+			<p>
+				Đường dẫn có thể đã thay đổi. Bạn có thể quay về trang chủ, xem marketplace khóa học hoặc gửi thông tin
+				để tư vấn viên hỗ trợ.
+			</p>
+			<div class="actions">
+				<a href="/" class="btn btn-primary">Về trang chủ</a>
+				<a href="/marketplace" class="btn btn-secondary">Xem khóa học</a>
+				<a href="/dang-ky-tu-van" class="btn btn-accent">Đăng ký tư vấn</a>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.not-found-section {
+		padding: clamp(54px, 9vw, 104px) 0 44px;
+		background:
+			radial-gradient(circle at 0% 0%, rgb(215 53 42 / 0.14), transparent 24rem),
+			linear-gradient(180deg, #f2f0e8 0%, #fffdfa 70%);
+	}
+
+	.not-found-card {
+		max-width: 860px;
+		padding: clamp(24px, 5vw, 44px);
+		background:
+			radial-gradient(circle at 100% 0%, rgb(215 53 42 / 0.12), transparent 24rem),
+			rgb(255 255 255 / 0.9);
+		border-left: 5px solid var(--primary) !important;
+	}
+
+	.not-found-card h1 {
+		margin: 0;
+		font-size: clamp(2.2rem, 5vw, 4.6rem);
+		line-height: 1.04;
+		letter-spacing: 0;
+	}
+
+	.not-found-card p {
+		max-width: 680px;
+		margin: 16px 0 0;
+		color: var(--muted);
+	}
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 28px;
+	}
+</style>

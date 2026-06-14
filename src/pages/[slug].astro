@@ -1,12 +1,7 @@
 ---
-import {
-	getEmDashEntry,
-	getSeoMeta,
-	decodeSlug,
-	getSiteSettings,
-} from "emdash";
+import { decodeSlug, getEmDashEntry, getSeoMeta, getSiteSettings } from "emdash";
 import { PortableText } from "emdash/ui";
-import Base from "../layouts/Base.astro";
+import Layout from "../layouts/Layout.astro";
 import { resolveStarterSiteIdentity } from "../utils/site-identity";
 
 const slug = decodeSlug(Astro.params.slug);
@@ -31,16 +26,88 @@ const seo = getSeoMeta(page, {
 });
 ---
 
-<Base
+<Layout
 	title={seo.title}
 	pageTitle={seo.ogTitle}
 	description={seo.description ?? undefined}
 	canonical={seo.canonical ?? undefined}
 	content={{ collection: "pages", id: page.data.id, slug }}
 >
-	<article>
-		<h1 {...page.edit.title}>{page.data.title}</h1>
+	<section class="page-hero">
+		<div class="container">
+			<span class="page-kicker">
+				<i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+				Trang nội dung
+			</span>
+			<h1 class="page-title" {...page.edit.title}>{page.data.title}</h1>
+		</div>
+	</section>
 
-		<PortableText value={page.data.content} />
-	</article>
-</Base>
+	<section class="section tight cms-section">
+		<div class="container cms-page-layout">
+			<article class="cms-page-content card" {...page.edit.content}>
+				<PortableText value={page.data.content} />
+			</article>
+			<aside class="cms-page-side card">
+				<h2>Cần hỗ trợ?</h2>
+				<p>Đội ngũ tư vấn có thể giúp bạn chọn khóa học, cơ sở hoặc lộ trình phù hợp.</p>
+				<a class="btn btn-primary" href="/dang-ky-tu-van">Đăng ký tư vấn</a>
+				<a class="btn btn-secondary" href="/khoa-hoc">Xem khóa học</a>
+			</aside>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.cms-page-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: 22px;
+		align-items: start;
+	}
+
+	.cms-page-content {
+		padding: clamp(24px, 4vw, 42px);
+	}
+
+	.cms-page-content :global(h2),
+	.cms-page-content :global(h3) {
+		margin: 1.7em 0 0.55em;
+		line-height: 1.2;
+	}
+
+	.cms-page-content :global(p),
+	.cms-page-content :global(li) {
+		color: #334155;
+		font-size: 1.02rem;
+		line-height: 1.85;
+	}
+
+	.cms-page-side {
+		position: sticky;
+		top: 92px;
+		display: grid;
+		gap: 12px;
+		padding: 20px;
+	}
+
+	.cms-page-side h2 {
+		margin: 0;
+		font-size: 1.12rem;
+	}
+
+	.cms-page-side p {
+		margin: 0;
+		color: var(--muted);
+	}
+
+	@media (max-width: 900px) {
+		.cms-page-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.cms-page-side {
+			position: static;
+		}
+	}
+</style>

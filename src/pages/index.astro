@@ -1,10 +1,12 @@
 ---
+import ContactForm from "../components/ContactForm.astro";
 import Layout from "../layouts/Layout.astro";
 import {
 	articles,
 	courseCategories,
 	courses,
 	instructors,
+	locations,
 	reasons,
 	roadmap,
 	site,
@@ -12,7 +14,9 @@ import {
 	testimonials,
 } from "../lib/site-data";
 
-const featuredCourses = courses.slice(0, 4);
+const featuredCourses = courses.slice(0, 6);
+const featuredInstructors = instructors.slice(0, 6);
+const featuredLocations = locations.slice(0, 4);
 const organizationSchema = {
 	"@context": "https://schema.org",
 	"@type": "EducationalOrganization",
@@ -30,48 +34,62 @@ const organizationSchema = {
 
 <Layout
 	title={`${site.name} - Trung tâm đào tạo công nghệ thực chiến`}
-	description="Học tin học văn phòng, AI, lập trình, thiết kế đồ họa, AutoCAD và Digital Marketing với mentor thực chiến, dự án thật và lộ trình rõ ràng."
+	description="Học tin học văn phòng, AI, lập trình, thiết kế đồ họa, vẽ kỹ thuật, kế toán và Digital Marketing với mentor thực chiến, nhiều cơ sở và lộ trình rõ ràng."
 	schema={organizationSchema}
 >
 	<section class="home-hero">
-		<div class="container hero-grid">
+		<div class="container hero-shell">
 			<div class="hero-copy">
-				<p class="page-kicker"><i class="fa-solid fa-bolt"></i> Học để làm được việc thật</p>
-				<h1 class="page-title">
-					Nâng cấp kỹ năng công nghệ với lộ trình rõ ràng và mentor theo sát.
-				</h1>
+				<p class="page-kicker"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Học để dùng được trong công việc</p>
+				<h1 class="page-title">Nâng cấp kỹ năng số bằng lộ trình rõ, lớp học gọn và mentor theo sát.</h1>
 				<p class="page-lead">
-					Sao Việt Tech Academy đào tạo thực chiến cho người đi làm, sinh viên và
-					doanh nghiệp: học nhanh, làm dự án thật, có sản phẩm để chứng minh năng lực.
+					Sao Việt Tech Academy đào tạo thực hành cho người đi làm, sinh viên và doanh nghiệp:
+					tin học văn phòng, AI, lập trình, thiết kế, vẽ kỹ thuật, kế toán và marketing số.
 				</p>
 				<div class="hero-actions">
 					<a href="/dang-ky-tu-van" class="btn btn-primary">
-						<i class="fa-solid fa-paper-plane"></i>
+						<i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
 						Đăng ký học
 					</a>
-					<a href="/khoa-hoc" class="btn btn-secondary">
-						<i class="fa-solid fa-layer-group"></i>
+					<a href="#khoa-hoc" class="btn btn-secondary">
+						<i class="fa-solid fa-layer-group" aria-hidden="true"></i>
 						Xem khóa học
 					</a>
 				</div>
-				<div class="hero-trust">
-					<span><i class="fa-solid fa-circle-check"></i> Khai giảng hằng tuần</span>
-					<span><i class="fa-solid fa-circle-check"></i> Học online hoặc offline</span>
-					<span><i class="fa-solid fa-circle-check"></i> Có chứng nhận hoàn thành</span>
+			</div>
+
+			<div class="hero-media-panel">
+				<img
+					src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=82"
+					alt="Lớp học công nghệ với học viên và mentor"
+					loading="eager"
+				/>
+				<div class="hero-proof">
+					<strong>13 cơ sở</strong>
+					<span>TP. Hồ Chí Minh, Bình Dương, Đồng Nai và Vũng Tàu</span>
 				</div>
 			</div>
 
-			<div class="hero-media" aria-label="Học viên trong lớp đào tạo công nghệ">
-				<img
-					src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=82"
-					alt="Nhóm học viên đang học công nghệ cùng giảng viên"
-					loading="eager"
-				/>
-				<div class="hero-floating-card">
-					<strong>92%</strong>
-					<span>học viên hoàn thành mục tiêu sau khóa học</span>
+			<form class="course-finder" action="/marketplace" method="get" role="search">
+				<div class="finder-field finder-main">
+					<label for="home-search">Tìm khóa học</label>
+					<div>
+						<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+						<input id="home-search" name="q" placeholder="Nhập kỹ năng, khóa học hoặc giảng viên..." />
+					</div>
 				</div>
-			</div>
+				<div class="finder-field">
+					<label for="home-category">Danh mục</label>
+					<select id="home-category" name="field">
+						<option value="">Tất cả</option>
+						{courseCategories.map((category) => <option value={category.id}>{category.title}</option>)}
+					</select>
+				</div>
+				<button class="btn btn-primary" type="submit">
+					<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+					Tìm lộ trình
+				</button>
+			</form>
 		</div>
 	</section>
 
@@ -86,148 +104,140 @@ const organizationSchema = {
 		</div>
 	</section>
 
-	<section id="gioi-thieu" class="section about-home-section">
-		<div class="container about-home-grid">
-			<div class="about-home-media">
+	<section id="gioi-thieu" class="section about-section">
+		<div class="container about-grid">
+			<div class="about-media">
 				<img
 					src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=1200&q=82"
-					alt="Lop hoc cong nghe hien dai tai Sao Viet Tech Academy"
+					alt="Không gian học công nghệ hiện đại"
 					loading="lazy"
 				/>
 			</div>
-			<div class="about-home-copy">
-				<p class="section-eyebrow">Ve Sao Viet Tech Academy</p>
-				<h2 class="section-title">Mot moi truong hoc cong nghe gon, thuc te va co dinh huong.</h2>
+			<div class="about-copy">
+				<p class="section-eyebrow">Về Sao Việt Tech Academy</p>
+				<h2 class="section-title">Một trung tâm học công nghệ thực tế, dễ bắt đầu và dễ theo đuổi.</h2>
 				<p class="section-lead">
-					Chung toi xay chuong trinh dao tao cho nguoi can dung ky nang ngay trong cong viec:
-					tu tin hoc van phong, AI, lap trinh den thiet ke va marketing so.
+					Chương trình được thiết kế cho người cần dùng kỹ năng ngay trong công việc. Mỗi khóa học có bài tập,
+					mentor review, đầu ra rõ ràng và hướng dẫn chọn cơ sở/lịch học phù hợp.
 				</p>
 				<div class="about-points">
-					<div>
-						<i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
-						<strong>Hoc bang du an that</strong>
-						<span>Moi module deu co bai tap va san pham dau ra ro rang.</span>
-					</div>
-					<div>
-						<i class="fa-solid fa-user-check" aria-hidden="true"></i>
-						<strong>Mentor theo sat</strong>
-						<span>Giang vien review bai, sua loi va goi y lo trinh tiep theo.</span>
-					</div>
+					{reasons.map((reason) => (
+						<div>
+							<i class={reason.icon} aria-hidden="true"></i>
+							<strong>{reason.title}</strong>
+							<span>{reason.description}</span>
+						</div>
+					))}
 				</div>
-				<a href="/dang-ky-tu-van" class="btn btn-primary">Nhan tu van lo trinh</a>
 			</div>
 		</div>
 	</section>
 
-	<section class="section">
+	<section class="section category-section">
 		<div class="container">
 			<div class="section-head">
 				<div>
 					<p class="section-eyebrow">Danh mục đào tạo</p>
 					<h2 class="section-title">Chọn đúng kỹ năng cho mục tiêu tiếp theo.</h2>
 				</div>
-				<a href="/khoa-hoc" class="btn btn-ghost">Tất cả khóa học</a>
+				<a href="#khoa-hoc" class="btn btn-ghost">Xem khóa học bên dưới</a>
 			</div>
 			<div class="category-grid">
-				{courseCategories.map((category) => (
-					<a href={category.href} class="category-card">
+				{courseCategories.map((category, index) => (
+					<a href={category.href} class:list={["category-card", index === 0 && "is-featured"]}>
 						<div class="category-icon" style={`--accent-color: ${category.accent}`}>
-							<i class={category.icon}></i>
+							<i class={category.icon} aria-hidden="true"></i>
 						</div>
 						<h3>{category.title}</h3>
 						<p>{category.description}</p>
-						<span>Xem chi tiết <i class="fa-solid fa-arrow-right"></i></span>
+						<span>Xem khóa học <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
 					</a>
 				))}
 			</div>
 		</div>
 	</section>
 
-	<section class="section featured-section">
+	<section id="khoa-hoc" class="section featured-section">
 		<div class="container">
 			<div class="section-head center">
 				<p class="section-eyebrow">Khóa học nổi bật</p>
-				<h2 class="section-title">Các chương trình đang được học viên chọn nhiều.</h2>
+				<h2 class="section-title">Khóa học đã được đưa thẳng lên trang chủ để bạn chọn nhanh hơn.</h2>
 				<p class="section-lead">
-					Mỗi khóa được thiết kế theo outcome rõ ràng, có bài tập, mentor review và sản phẩm cuối khóa.
+					Không cần mở thêm mục “Khóa học” trên header. Bạn có thể tìm, so sánh và vào marketplace ngay từ đây.
 				</p>
 			</div>
 			<div class="course-grid">
-				{featuredCourses.map((course) => (
-					<a href={`/khoa-hoc/${course.slug}`} class="course-card">
-						<img src={course.image} alt={course.title} loading="lazy" />
-						<div class="course-body">
-							<div class="course-meta">
-								<span><i class="fa-solid fa-star"></i> {course.rating}</span>
-								<span>{course.students} học viên</span>
+				{featuredCourses.map((course) => {
+					const category = courseCategories.find((item) => item.id === course.categoryId);
+					return (
+						<a href={`/khoa-hoc/${course.slug}`} class="course-card">
+							<div class="course-image">
+								<img src={course.image} alt={course.title} loading="lazy" />
 							</div>
-							<h3>{course.title}</h3>
-							<p>{course.description}</p>
-							<div class="course-bottom">
-								<strong>{course.price}</strong>
-								<span>{course.duration}</span>
+							<div class="course-body">
+								<div class="course-meta">
+									<span>{category?.title}</span>
+									<span><i class="fa-solid fa-star" aria-hidden="true"></i> {course.rating}</span>
+								</div>
+								<h3>{course.title}</h3>
+								<p>{course.description}</p>
+								<div class="course-bottom">
+									<strong>{course.price}</strong>
+									<span>{course.duration}</span>
+								</div>
 							</div>
-						</div>
-					</a>
-				))}
+						</a>
+					);
+				})}
+			</div>
+			<div class="home-course-actions">
+				<a href="/marketplace" class="btn btn-primary">
+					<i class="fa-solid fa-store" aria-hidden="true"></i>
+					Xem marketplace khóa học
+				</a>
+				<a href="/dang-ky-tu-van" class="btn btn-secondary">Nhận tư vấn lộ trình</a>
 			</div>
 		</div>
 	</section>
 
-	<section class="section why-section">
-		<div class="container why-grid">
+	<section class="section roadmap-section">
+		<div class="container roadmap-grid">
 			<div>
-				<p class="section-eyebrow">Tại sao chọn chúng tôi</p>
-				<h2 class="section-title">Không học lan man. Mỗi buổi đều tiến gần hơn tới kỹ năng thật.</h2>
-				<p class="section-lead">
-					Chúng tôi ưu tiên thực hành, phản hồi cá nhân và đầu ra đo được thay vì chỉ hoàn thành giáo trình.
-				</p>
-			</div>
-			<div class="reason-grid">
-				{reasons.map((reason) => (
-					<div class="reason-card">
-						<i class={reason.icon}></i>
-						<h3>{reason.title}</h3>
-						<p>{reason.description}</p>
-					</div>
-				))}
-			</div>
-		</div>
-	</section>
-
-	<section class="section">
-		<div class="container">
-			<div class="section-head center">
 				<p class="section-eyebrow">Lộ trình học</p>
-				<h2 class="section-title">Từ tư vấn đến portfolio trong một quy trình gọn gàng.</h2>
+				<h2 class="section-title">Từ tư vấn đầu vào đến sản phẩm cuối khóa.</h2>
+				<p class="section-lead">
+					Quy trình học được giữ gọn: xác định mục tiêu, học nền tảng, thực hành có mentor và hoàn thiện đầu ra.
+				</p>
 			</div>
 			<div class="timeline">
 				{roadmap.map((item) => (
 					<div class="timeline-item">
 						<span>{item.step}</span>
-						<h3>{item.title}</h3>
-						<p>{item.description}</p>
+						<div>
+							<h3>{item.title}</h3>
+							<p>{item.description}</p>
+						</div>
 					</div>
 				))}
 			</div>
 		</div>
 	</section>
 
-	<section class="section testimonial-section">
-		<div id="giang-vien" class="container instructor-home-block">
+	<section class="section mentor-section" id="giang-vien">
+		<div class="container">
 			<div class="section-head">
 				<div>
-					<p class="section-eyebrow">Doi ngu giang vien</p>
-					<h2 class="section-title">Hoc cung mentor co kinh nghiem trien khai thuc te.</h2>
+					<p class="section-eyebrow">Đội ngũ giảng viên</p>
+					<h2 class="section-title">Học cùng mentor có kinh nghiệm triển khai thực tế.</h2>
 					<p class="section-lead">
-						Giang vien huong dan quy trinh lam viec, review san pham va giup hoc vien hieu tieu chuan dau ra trong moi truong doanh nghiep.
+						Giảng viên hướng dẫn quy trình làm việc, review sản phẩm và giúp học viên hiểu tiêu chuẩn đầu ra.
 					</p>
 				</div>
-				<a href="/dang-ky-tu-van" class="btn btn-secondary">Gap mentor tu van</a>
+				<a href="/dang-ky-tu-van" class="btn btn-secondary">Gặp mentor tư vấn</a>
 			</div>
-			<div class="instructor-home-grid">
-				{instructors.map((instructor) => (
-					<article class="instructor-home-card">
+			<div class="mentor-grid">
+				{featuredInstructors.map((instructor) => (
+					<article class="mentor-card">
 						<img src={instructor.image} alt={instructor.name} loading="lazy" />
 						<div>
 							<span>{instructor.experience}</span>
@@ -235,52 +245,64 @@ const organizationSchema = {
 							<p class="mentor-role">{instructor.role}</p>
 							<p>{instructor.bio}</p>
 							<div class="mentor-skills">
-								{instructor.skills.map((skill) => <small>{skill}</small>)}
+								{instructor.skills.slice(0, 3).map((skill) => <small>{skill}</small>)}
 							</div>
 						</div>
 					</article>
 				))}
 			</div>
 		</div>
+	</section>
 
-		<div class="container">
-			<div class="section-head">
-				<div>
-					<p class="section-eyebrow">Feedback học viên</p>
-					<h2 class="section-title">Những câu chuyện học xong dùng được ngay.</h2>
+	<section class="section proof-section">
+		<div class="container proof-grid">
+			<div class="testimonial-panel">
+				<p class="section-eyebrow">Feedback học viên</p>
+				<h2 class="section-title">Học xong dùng được ngay trong công việc.</h2>
+				<div class="testimonial-track">
+					{testimonials.map((item) => (
+						<figure class="testimonial-card">
+							<div class="rating"><i class="fa-solid fa-star" aria-hidden="true"></i> {item.rating}</div>
+							<blockquote>{item.content}</blockquote>
+							<figcaption>
+								<strong>{item.name}</strong>
+								<span>{item.role}</span>
+							</figcaption>
+						</figure>
+					))}
 				</div>
-				<a href="/hoc-vien" class="btn btn-secondary">Xem thêm đánh giá</a>
 			</div>
-			<div class="testimonial-track">
-				{testimonials.map((item) => (
-					<figure class="testimonial-card">
-						<div class="rating"><i class="fa-solid fa-star"></i> {item.rating}</div>
-						<blockquote>{item.content}</blockquote>
-						<figcaption>
-							<strong>{item.name}</strong>
-							<span>{item.role}</span>
-						</figcaption>
-					</figure>
-				))}
+			<div class="branch-panel">
+				<p class="section-eyebrow">Cơ sở gần bạn</p>
+				<h2>Học tại trung tâm hoặc nhận tư vấn online.</h2>
+				<div class="branch-list">
+					{featuredLocations.map((location) => (
+						<a href="/lien-he">
+							<strong>{location.name}</strong>
+							<span>{location.address}</span>
+						</a>
+					))}
+				</div>
 			</div>
 		</div>
 	</section>
 
-	<section class="section">
+	<section class="section article-section">
 		<div class="container">
 			<div class="section-head">
 				<div>
-					<p class="section-eyebrow">Tin tức & hướng dẫn</p>
+					<p class="section-eyebrow">Tin tức và hướng dẫn</p>
 					<h2 class="section-title">Cập nhật xu hướng học tập và công nghệ.</h2>
 				</div>
 				<a href="/tin-tuc" class="btn btn-ghost">Tất cả bài viết</a>
 			</div>
 			<div class="article-grid">
 				{articles.map((article) => (
-					<a href="/tin-tuc" class="article-card">
+					<a href={`/tin-tuc/${article.slug}`} class="article-card">
 						<img src={article.image} alt={article.title} loading="lazy" />
 						<div>
-							<span>{article.category} · {article.date}</span>
+							<span>{article.category}</span>
+							<span>{article.date}</span>
 							<h3>{article.title}</h3>
 							<p>{article.description}</p>
 						</div>
@@ -294,225 +316,182 @@ const organizationSchema = {
 		<div class="container consult-grid">
 			<div>
 				<p class="section-eyebrow">Đăng ký tư vấn</p>
-				<h2 class="section-title">Chưa biết nên bắt đầu từ đâu? Để mentor gợi ý lộ trình.</h2>
+				<h2 class="section-title">Chưa biết nên bắt đầu từ đâu? Để đội ngũ tư vấn gợi ý lộ trình.</h2>
 				<p class="section-lead">
-					Gửi thông tin, đội ngũ tư vấn sẽ liên hệ để đề xuất khóa học phù hợp với mục tiêu và lịch học của bạn.
+					Gửi thông tin, chúng tôi sẽ liên hệ để đề xuất khóa học, cơ sở, lịch học và học phí phù hợp.
 				</p>
 			</div>
-			<form class="lead-form card" action="/api/contact" method="POST" data-contact-form>
-				<div class="form-honeypot" aria-hidden="true">
-					<label for="home-website">Website</label>
-					<input id="home-website" name="website" tabindex="-1" autocomplete="off" />
-				</div>
-				<div class="form-grid">
-					<div class="field">
-						<label for="home-name">Họ tên</label>
-						<input id="home-name" name="name" autocomplete="name" required />
-					</div>
-					<div class="field">
-						<label for="home-phone">Số điện thoại</label>
-						<input id="home-phone" name="phone" autocomplete="tel" required />
-					</div>
-					<div class="field">
-						<label for="home-email">Email</label>
-						<input id="home-email" type="email" name="email" autocomplete="email" required />
-					</div>
-					<div class="field">
-						<label for="home-course">Khóa học quan tâm</label>
-						<select id="home-course" name="subject">
-							{courses.map((course) => <option value={course.title}>{course.title}</option>)}
-						</select>
-					</div>
-					<div class="field full">
-						<label for="home-message">Mục tiêu học tập</label>
-						<textarea id="home-message" name="message" rows="4" required>Muốn được tư vấn lộ trình học phù hợp.</textarea>
-					</div>
-				</div>
-				<button type="submit" class="btn btn-primary">Gửi thông tin tư vấn</button>
-				<p class="form-status" aria-live="polite"></p>
-			</form>
+			<div class="consult-form card">
+				<ContactForm
+					formId="home-consult-form"
+					submitLabel="Gửi thông tin tư vấn"
+					defaultSubject="Tư vấn khóa học"
+					defaultMessage="Tôi muốn được tư vấn lộ trình học phù hợp."
+				/>
+			</div>
 		</div>
 	</section>
 </Layout>
 
-<script>
-	document.querySelectorAll("[data-contact-form]").forEach((formElement) => {
-		if (!(formElement instanceof HTMLFormElement)) return;
-		const status = formElement.querySelector(".form-status");
-
-		formElement.addEventListener("submit", async (event) => {
-			event.preventDefault();
-			const button = formElement.querySelector("button[type='submit']");
-			if (button instanceof HTMLButtonElement) button.disabled = true;
-			if (status instanceof HTMLElement) {
-				status.dataset.state = "";
-				status.textContent = "Đang gửi thông tin...";
-			}
-
-			try {
-				const body = new URLSearchParams();
-				for (const [key, value] of new FormData(formElement).entries()) {
-					if (typeof value === "string") body.append(key, value);
-				}
-				const response = await fetch("/api/contact", {
-					method: "POST",
-					body,
-					headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-				});
-				const result = (await response.json().catch(() => ({}))) as { message?: string };
-				if (!response.ok) throw new Error(result.message || "Không gửi được thông tin.");
-				if (status instanceof HTMLElement) {
-					status.dataset.state = "success";
-					status.textContent = result.message || "Gửi thành công. Chúng tôi sẽ liên hệ lại sớm.";
-				}
-				formElement.reset();
-			} catch (error) {
-				if (status instanceof HTMLElement) {
-					status.dataset.state = "error";
-					status.textContent = error instanceof Error ? error.message : "Lỗi kết nối, vui lòng thử lại.";
-				}
-			} finally {
-				if (button instanceof HTMLButtonElement) button.disabled = false;
-			}
-		});
-	});
-</script>
-
 <style>
 	.home-hero {
-		padding: 86px 0 64px;
+		position: relative;
 		overflow: hidden;
+		padding: clamp(58px, 8vw, 96px) 0 34px;
+		background:
+			radial-gradient(circle at 76% 8%, rgb(96 165 250 / 0.2), transparent 28rem),
+			linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 	}
 
-	.hero-grid {
+	.hero-shell {
 		display: grid;
-		grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-		gap: 48px;
+		grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+		gap: clamp(28px, 5vw, 56px);
 		align-items: center;
 	}
 
-	.hero-actions,
-	.hero-trust {
+	.hero-copy {
+		min-width: 0;
+	}
+
+	.home-hero .page-title {
+		max-width: 880px;
+		font-size: clamp(2.45rem, 5.3vw, 4.75rem);
+		line-height: 1.02;
+	}
+
+	.home-hero .page-lead {
+		max-width: 690px;
+	}
+
+	.hero-actions {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 12px;
-		margin-top: 26px;
+		margin-top: 28px;
 	}
 
-	.hero-trust {
-		color: var(--muted);
-		font-size: 0.92rem;
-		font-weight: 700;
-	}
-
-	.hero-trust i {
-		color: var(--success);
-	}
-
-	.hero-media {
+	.hero-media-panel {
 		position: relative;
-		border-radius: 8px;
 		overflow: hidden;
-		box-shadow: var(--shadow-md);
-		aspect-ratio: 5 / 4;
-		max-height: 560px;
+		min-height: 420px;
+		border: 1px solid rgb(37 99 235 / 0.12);
+		border-radius: 28px;
+		background: #fff;
+		box-shadow: var(--shadow-blue);
 	}
 
-	.hero-media img {
+	.hero-media-panel::after {
+		position: absolute;
+		inset: 0;
+		content: "";
+		background: linear-gradient(180deg, transparent 48%, rgb(15 23 42 / 0.18));
+		pointer-events: none;
+	}
+
+	.hero-media-panel img {
 		width: 100%;
 		height: 100%;
+		min-height: 420px;
 		object-fit: cover;
-		object-position: center;
+		filter: saturate(0.92) contrast(1.02);
+		transition: transform 700ms ease;
 	}
 
-	.hero-floating-card {
+	.hero-media-panel:hover img {
+		transform: scale(1.035);
+	}
+
+	.hero-proof {
 		position: absolute;
 		right: 18px;
 		bottom: 18px;
-		width: min(230px, calc(100% - 36px));
+		z-index: 1;
+		width: min(280px, calc(100% - 36px));
 		padding: 16px;
-		border: 1px solid rgb(255 255 255 / 0.5);
-		border-radius: 8px;
+		border: 1px solid rgb(255 255 255 / 0.64);
+		border-radius: 18px;
 		background: rgb(255 255 255 / 0.92);
 		box-shadow: var(--shadow-sm);
 	}
 
-	.hero-floating-card strong {
+	.hero-proof strong,
+	.hero-proof span {
 		display: block;
-		color: var(--primary);
-		font-size: 2rem;
-		line-height: 1;
 	}
 
-	.hero-floating-card span {
+	.hero-proof strong {
+		color: var(--primary);
+		font-size: 1.4rem;
+		line-height: 1.1;
+	}
+
+	.hero-proof span {
+		margin-top: 4px;
 		color: var(--muted);
 		font-size: 0.92rem;
 		font-weight: 700;
 	}
 
-	.stats-band {
-		padding: 28px 0;
-		border-block: 1px solid rgb(37 99 235 / 0.08);
-		background:
-			linear-gradient(135deg, rgb(37 99 235 / 0.08), rgb(96 165 250 / 0.16)),
-			#f8fafc;
-		color: var(--ink);
-	}
-
-	.about-home-section {
-		background: #fff;
-	}
-
-	.about-home-grid {
+	.course-finder {
+		grid-column: 1 / -1;
 		display: grid;
-		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-		gap: 46px;
-		align-items: center;
-	}
-
-	.about-home-media {
-		overflow: hidden;
-		border-radius: 24px;
-		box-shadow: var(--shadow-md);
-		aspect-ratio: 4 / 3;
-		background: var(--surface-2);
-	}
-
-	.about-home-media img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: center;
-	}
-
-	.about-home-copy {
-		min-width: 0;
-	}
-
-	.about-points {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 14px;
-		margin: 24px 0;
-	}
-
-	.about-points div {
-		display: grid;
-		gap: 6px;
-		padding: 18px;
+		grid-template-columns: minmax(260px, 1fr) minmax(180px, 260px) auto;
+		gap: 12px;
+		align-items: end;
+		margin-top: 8px;
+		padding: 16px;
 		border: 1px solid var(--line);
-		border-radius: 18px;
-		background: var(--soft);
+		border-radius: 22px;
+		background: rgb(255 255 255 / 0.94);
+		box-shadow: var(--shadow-md);
 	}
 
-	.about-points i {
-		color: var(--primary);
-		font-size: 1.4rem;
+	.finder-field {
+		display: grid;
+		gap: 7px;
 	}
 
-	.about-points span {
+	.finder-field label {
+		color: var(--ink-soft);
+		font-size: 0.86rem;
+		font-weight: 900;
+	}
+
+	.finder-field > div {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		min-height: 48px;
+		padding: 0 14px;
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		background: #fff;
 		color: var(--muted);
-		font-size: 0.92rem;
+	}
+
+	.finder-field input,
+	.finder-field select {
+		width: 100%;
+		min-height: 48px;
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		background: #fff;
+		color: var(--ink);
+		padding: 0 14px;
+		outline: none;
+	}
+
+	.finder-field > div input {
+		min-height: auto;
+		padding: 0;
+		border: 0;
+	}
+
+	.stats-band {
+		padding: 22px 0;
+		border-block: 1px solid rgb(37 99 235 / 0.08);
+		background: #fff;
 	}
 
 	.stats-grid {
@@ -523,10 +502,9 @@ const organizationSchema = {
 
 	.stat-card {
 		padding: 18px;
-		border: 1px solid rgb(37 99 235 / 0.12);
+		border: 1px solid var(--line);
 		border-radius: 18px;
-		background: rgb(255 255 255 / 0.86);
-		box-shadow: var(--shadow-sm);
+		background: linear-gradient(180deg, #fff, #f8fbff);
 	}
 
 	.stat-card strong,
@@ -543,30 +521,121 @@ const organizationSchema = {
 	.stat-card span {
 		margin-top: 8px;
 		color: var(--muted);
-		font-weight: 700;
+		font-weight: 800;
 	}
 
-	.category-grid,
-	.course-grid,
-	.article-grid {
+	.about-section,
+	.mentor-section,
+	.article-section {
+		background: #fff;
+	}
+
+	.about-grid,
+	.roadmap-grid,
+	.consult-grid,
+	.proof-grid {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 22px;
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+		gap: clamp(30px, 5vw, 54px);
+		align-items: center;
+	}
+
+	.about-media {
+		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 26px;
+		background: var(--soft-blue);
+		box-shadow: var(--shadow-sm);
+		aspect-ratio: 4 / 3;
+	}
+
+	.about-media img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.about-points {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+		margin-top: 26px;
+	}
+
+	.about-points div,
+	.timeline-item,
+	.branch-panel {
+		border: 1px solid var(--line);
+		border-radius: 18px;
+		background: #fff;
+		box-shadow: var(--shadow-xs);
+	}
+
+	.about-points div {
+		display: grid;
+		gap: 7px;
+		padding: 18px;
+	}
+
+	.about-points i {
+		color: var(--primary);
+		font-size: 1.35rem;
+	}
+
+	.about-points strong {
+		color: var(--ink);
+	}
+
+	.about-points span {
+		color: var(--muted);
+		font-size: 0.92rem;
+	}
+
+	.category-section,
+	.featured-section,
+	.roadmap-section,
+	.proof-section,
+	.consult-section {
+		background: linear-gradient(180deg, #f8fafc, #ffffff);
+	}
+
+	.category-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-auto-flow: dense;
+		gap: 16px;
 	}
 
 	.category-card {
-		padding: 24px;
+		min-height: 220px;
+		display: grid;
+		align-content: start;
+		padding: 22px;
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 22px;
 		background: #fff;
+		color: inherit;
 		text-decoration: none;
-		box-shadow: var(--shadow-sm);
+		box-shadow: var(--shadow-xs);
+		transition:
+			transform 220ms ease,
+			box-shadow 220ms ease,
+			border-color 220ms ease;
+	}
+
+	.category-card.is-featured {
+		grid-column: span 2;
+		background:
+			radial-gradient(circle at 92% 0%, rgb(96 165 250 / 0.22), transparent 16rem),
+			#fff;
 	}
 
 	.category-card:hover,
 	.course-card:hover,
-	.article-card:hover {
+	.article-card:hover,
+	.mentor-card:hover {
 		transform: translateY(-4px);
+		border-color: rgb(37 99 235 / 0.2);
 		box-shadow: var(--shadow-md);
 	}
 
@@ -575,224 +644,222 @@ const organizationSchema = {
 		height: 52px;
 		display: grid;
 		place-items: center;
-		border-radius: 8px;
+		border-radius: 16px;
 		background: color-mix(in srgb, var(--accent-color) 12%, white);
 		color: var(--accent-color);
 	}
 
 	.category-card h3,
-	.reason-card h3 {
+	.course-card h3,
+	.mentor-card h3,
+	.article-card h3 {
 		margin: 18px 0 8px;
+		line-height: 1.2;
 	}
 
 	.category-card p,
-	.reason-card p,
+	.course-card p,
+	.mentor-card p,
 	.article-card p,
-	.course-card p {
+	.timeline-item p {
 		color: var(--muted);
 	}
 
 	.category-card span {
+		margin-top: auto;
 		color: var(--primary);
-		font-weight: 800;
+		font-weight: 900;
 	}
 
-	.featured-section,
-	.why-section,
-	.testimonial-section,
-	.consult-section {
-		background: var(--surface-2);
+	.course-grid,
+	.mentor-grid,
+	.article-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 18px;
 	}
 
 	.course-card,
+	.mentor-card,
 	.article-card {
 		overflow: hidden;
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 22px;
 		background: #fff;
 		color: inherit;
 		text-decoration: none;
-		box-shadow: var(--shadow-sm);
-		transition: transform 180ms ease, box-shadow 180ms ease;
+		box-shadow: var(--shadow-xs);
+		transition:
+			transform 220ms ease,
+			box-shadow 220ms ease,
+			border-color 220ms ease;
 	}
 
-	.instructor-home-block {
-		margin-bottom: 72px;
+	.course-card {
+		display: flex;
+		flex-direction: column;
 	}
 
-	.instructor-home-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 22px;
-	}
-
-	.instructor-home-card {
+	.course-image {
 		overflow: hidden;
-		border: 1px solid var(--line);
-		border-radius: 20px;
-		background: #fff;
-		box-shadow: var(--shadow-sm);
-		transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+		aspect-ratio: 16 / 10;
+		background: var(--soft-blue);
 	}
 
-	.instructor-home-card:hover {
-		transform: translateY(-4px);
-		border-color: rgb(37 99 235 / 0.18);
-		box-shadow: var(--shadow-md);
+	.course-image img,
+	.article-card img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 700ms ease;
 	}
 
-	.instructor-home-card img {
+	.course-card:hover img,
+	.article-card:hover img {
+		transform: scale(1.04);
+	}
+
+	.course-body,
+	.article-card > div {
+		padding: 18px;
+	}
+
+	.course-body {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+	}
+
+	.course-meta,
+	.course-bottom {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 10px;
+		color: var(--muted);
+		font-size: 0.86rem;
+		font-weight: 900;
+	}
+
+	.course-meta span:first-child {
+		color: var(--primary);
+	}
+
+	.course-meta i,
+	.rating i {
+		color: var(--accent);
+	}
+
+	.course-bottom {
+		align-items: center;
+		margin-top: auto;
+		padding-top: 16px;
+	}
+
+	.course-bottom strong {
+		color: var(--primary);
+		font-size: 1.18rem;
+	}
+
+	.home-course-actions {
+		display: flex;
+		justify-content: center;
+		gap: 12px;
+		margin-top: 28px;
+	}
+
+	.timeline {
+		display: grid;
+		gap: 14px;
+	}
+
+	.timeline-item {
+		display: grid;
+		grid-template-columns: 54px minmax(0, 1fr);
+		gap: 14px;
+		padding: 18px;
+	}
+
+	.timeline-item span {
+		width: 44px;
+		height: 44px;
+		display: inline-grid;
+		place-items: center;
+		border-radius: 14px;
+		background: var(--primary);
+		color: #fff;
+		font-weight: 900;
+	}
+
+	.timeline-item h3 {
+		margin: 0 0 4px;
+	}
+
+	.timeline-item p {
+		margin: 0;
+	}
+
+	.mentor-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.mentor-card img {
 		width: 100%;
 		aspect-ratio: 4 / 3;
 		object-fit: cover;
-		object-position: center;
-		background: var(--surface-2);
+		background: var(--soft-blue);
 	}
 
-	.instructor-home-card > div {
-		padding: 20px;
+	.mentor-card > div {
+		padding: 18px;
 	}
 
-	.instructor-home-card span {
+	.mentor-card span {
 		color: var(--primary);
-		font-size: 0.82rem;
+		font-size: 0.78rem;
 		font-weight: 900;
 		text-transform: uppercase;
 	}
 
-	.instructor-home-card h3 {
-		margin: 8px 0 4px;
-		font-size: 1.35rem;
-	}
-
-	.instructor-home-card p {
-		color: var(--muted);
-	}
-
 	.mentor-role {
-		margin-top: 0;
-		font-weight: 800;
-		color: #334155 !important;
+		margin: 0;
+		color: var(--ink-soft) !important;
+		font-weight: 900;
 	}
 
 	.mentor-skills {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
-		margin-top: 16px;
+		margin-top: 14px;
 	}
 
 	.mentor-skills small {
-		padding: 7px 10px;
+		padding: 6px 9px;
 		border-radius: 999px;
 		background: rgb(37 99 235 / 0.08);
 		color: var(--primary);
-		font-weight: 800;
-	}
-
-	.course-card img,
-	.article-card img {
-		width: 100%;
-		aspect-ratio: 16 / 10;
-		object-fit: cover;
-	}
-
-	.course-body,
-	.article-card > div {
-		padding: 20px;
-	}
-
-	.course-meta,
-	.course-bottom {
-		display: flex;
-		justify-content: space-between;
-		gap: 12px;
-		color: var(--muted);
-		font-size: 0.9rem;
-		font-weight: 800;
-	}
-
-	.course-meta i {
-		color: var(--accent);
-	}
-
-	.course-bottom {
-		align-items: center;
-		margin-top: 16px;
-	}
-
-	.course-bottom strong {
-		color: var(--primary);
-		font-size: 1.2rem;
-	}
-
-	.why-grid {
-		display: grid;
-		grid-template-columns: 0.9fr 1.1fr;
-		gap: 42px;
-		align-items: start;
-	}
-
-	.reason-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 16px;
-	}
-
-	.reason-card {
-		padding: 22px;
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		background: #fff;
-	}
-
-	.reason-card i {
-		color: var(--primary);
-		font-size: 1.6rem;
-	}
-
-	.timeline {
-		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 16px;
-	}
-
-	.timeline-item {
-		position: relative;
-		padding: 24px;
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		background: #fff;
-	}
-
-	.timeline-item span {
-		display: inline-grid;
-		place-items: center;
-		width: 42px;
-		height: 42px;
-		border-radius: 8px;
-		background: var(--primary);
-		color: #fff;
 		font-weight: 900;
 	}
 
-	.timeline-item p {
-		color: var(--muted);
+	.proof-grid {
+		align-items: start;
 	}
 
 	.testimonial-track {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 18px;
+		gap: 14px;
+		margin-top: 24px;
 	}
 
 	.testimonial-card {
 		margin: 0;
-		padding: 24px;
+		padding: 20px;
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 18px;
 		background: #fff;
-		box-shadow: var(--shadow-sm);
+		box-shadow: var(--shadow-xs);
 	}
 
 	.rating,
@@ -802,9 +869,8 @@ const organizationSchema = {
 	}
 
 	.testimonial-card blockquote {
-		margin: 16px 0;
+		margin: 14px 0;
 		color: #334155;
-		font-size: 1.04rem;
 	}
 
 	.testimonial-card figcaption strong,
@@ -816,55 +882,330 @@ const organizationSchema = {
 		color: var(--muted);
 	}
 
-	.consult-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
-		gap: 38px;
-		align-items: start;
-	}
-
-	.lead-form {
+	.branch-panel {
 		padding: 24px;
 	}
 
-	.lead-form .btn {
-		width: 100%;
-		margin-top: 16px;
+	.branch-panel h2 {
+		margin: 0 0 18px;
+		font-size: clamp(1.6rem, 2.6vw, 2.35rem);
+		line-height: 1.08;
 	}
 
-	@media (max-width: 920px) {
-		.hero-grid,
-		.why-grid,
-		.consult-grid,
-		.about-home-grid {
-			grid-template-columns: 1fr;
-		}
+	.branch-list {
+		display: grid;
+		gap: 10px;
+	}
 
+	.branch-list a {
+		display: grid;
+		gap: 4px;
+		padding: 14px;
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		background: var(--soft);
+		text-decoration: none;
+	}
+
+	.branch-list span {
+		color: var(--muted);
+		font-size: 0.92rem;
+	}
+
+	.article-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.article-card img {
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+	}
+
+	.consult-grid {
+		align-items: start;
+	}
+
+	.consult-form {
+		padding: 24px;
+	}
+
+	@media (max-width: 1100px) {
 		.category-grid,
-		.course-grid,
-		.article-grid,
-		.instructor-home-grid,
-		.testimonial-track,
-		.timeline {
+		.course-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 
-	@media (max-width: 620px) {
-		.hero-media {
-			aspect-ratio: 4 / 3;
+	@media (max-width: 920px) {
+		.hero-shell,
+		.about-grid,
+		.roadmap-grid,
+		.consult-grid,
+		.proof-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.course-finder {
+			grid-template-columns: 1fr;
+		}
+
+		.mentor-grid,
+		.article-grid,
+		.testimonial-track {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 640px) {
+		.hero-media-panel,
+		.hero-media-panel img {
+			min-height: 340px;
 		}
 
 		.stats-grid,
 		.category-grid,
 		.course-grid,
+		.mentor-grid,
 		.article-grid,
-		.instructor-home-grid,
-		.reason-grid,
 		.testimonial-track,
-		.timeline,
 		.about-points {
 			grid-template-columns: 1fr;
 		}
+
+		.category-card.is-featured {
+			grid-column: auto;
+		}
+
+		.home-course-actions {
+			display: grid;
+		}
+	}
+
+	.hero-copy {
+		position: relative;
+		padding-left: clamp(0px, 2vw, 18px);
+	}
+
+	.hero-copy::before {
+		position: absolute;
+		top: 6px;
+		bottom: 10px;
+		left: 0;
+		width: 4px;
+		content: "";
+		background: var(--primary);
+	}
+
+	.hero-media-panel {
+		isolation: isolate;
+		transform: rotate(-1.2deg);
+		transition:
+			transform 520ms var(--motion-ease),
+			box-shadow 520ms var(--motion-ease);
+	}
+
+	.hero-media-panel:hover {
+		transform: rotate(0deg) translateY(-3px);
+	}
+
+	.hero-media-panel::before {
+		position: absolute;
+		inset: 14px;
+		z-index: 1;
+		content: "";
+		border: 1px solid rgb(255 255 255 / 0.58);
+		pointer-events: none;
+	}
+
+	.hero-proof {
+		border-radius: 8px;
+	}
+
+	.course-finder {
+		border-left: 5px solid var(--primary);
+	}
+
+	.stat-card {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.stat-card::after {
+		position: absolute;
+		right: 14px;
+		bottom: 12px;
+		width: 52px;
+		height: 10px;
+		content: "";
+		background: repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 8px);
+		opacity: 0.12;
+	}
+
+	.article-grid {
+		align-items: stretch;
+	}
+
+	.article-card > div {
+		display: grid;
+		align-content: center;
+	}
+
+	.article-card > div > span + span {
+		margin-left: 10px;
+		color: var(--muted);
+	}
+
+	@media (max-width: 920px) {
+		.hero-copy {
+			padding-left: 0;
+		}
+
+		.hero-copy::before {
+			display: none;
+		}
+
+		.hero-media-panel {
+			margin-top: 0;
+			transform: none;
+		}
+
+	}
+
+	/* Equal card system requested after visual QA: no staggered cards, no uneven rows. */
+	.course-grid,
+	.mentor-grid {
+		align-items: stretch;
+		gap: 18px;
+	}
+
+	.course-card,
+	.mentor-card {
+		height: 100%;
+		min-height: 0;
+		display: grid;
+		grid-template-rows: auto 1fr;
+		border-radius: 8px !important;
+	}
+
+	.course-image,
+	.mentor-card > img {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		background:
+			linear-gradient(rgb(17 17 17 / 0.05) 1px, transparent 1px),
+			linear-gradient(90deg, rgb(17 17 17 / 0.05) 1px, transparent 1px),
+			#d9d4c9 !important;
+		background-size: 18px 18px, 18px 18px, auto !important;
+	}
+
+	.course-image img,
+	.mentor-card > img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.course-body,
+	.mentor-card > div {
+		display: grid;
+		grid-template-rows: auto auto auto 1fr auto;
+		align-content: start;
+		padding: 18px;
+	}
+
+	.course-card h3,
+	.mentor-card h3 {
+		display: -webkit-box;
+		min-height: 2.55em;
+		margin: 12px 0 8px;
+		overflow: hidden;
+		font-size: 1.08rem;
+		line-height: 1.28;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.course-card p,
+	.mentor-card > div > p:not(.mentor-role) {
+		display: -webkit-box;
+		min-height: 4.8em;
+		margin: 0;
+		overflow: hidden;
+		line-height: 1.6;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+	}
+
+	.course-meta {
+		min-height: 24px;
+		align-items: center;
+	}
+
+	.course-bottom,
+	.mentor-skills {
+		align-self: end;
+		margin-top: 16px;
+	}
+
+	.mentor-role {
+		min-height: 1.35em;
+		margin: 0 0 6px;
+	}
+
+	.mentor-skills {
+		min-height: 32px;
+		align-content: end;
+	}
+
+	.mentor-skills small {
+		border-radius: 4px !important;
+	}
+
+	@media (max-width: 920px) {
+		.course-card,
+		.mentor-card {
+			height: auto;
+		}
+	}
+
+	.article-grid {
+		align-items: stretch;
+	}
+
+	.article-card {
+		height: 100%;
+		display: grid;
+		grid-template-rows: auto 1fr;
+		border-radius: 8px !important;
+	}
+
+	.article-card img {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+	}
+
+	.article-card > div {
+		display: grid;
+		grid-template-rows: auto auto 1fr;
+		align-content: start;
+		min-height: 190px;
+	}
+
+	.article-card h3 {
+		display: -webkit-box;
+		min-height: 2.7em;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.article-card p {
+		display: -webkit-box;
+		overflow: hidden;
+		line-height: 1.6;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
 	}
 </style>

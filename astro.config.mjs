@@ -79,6 +79,10 @@ function suppressKnownDevWarnings() {
 
 export default defineConfig({
 	output: "server",
+	server: {
+		host: "127.0.0.1",
+		port: 4322,
+	},
 	adapter: cloudflare({
 		sessionKVBindingName: "SESSION",
 		imageService: "cloudflare-binding",
@@ -96,7 +100,7 @@ export default defineConfig({
 		}),
 	],
 	vite: {
-		cacheDir: ".astro/vite-cache",
+		cacheDir: ".astro/vite-cache-local",
 		plugins: [tailwindcss(), syncWorkerOptimizeDeps(), suppressKnownDevWarnings()],
 		optimizeDeps: {
 			exclude: workerOptimizerExcludes,
@@ -109,6 +113,9 @@ export default defineConfig({
 			},
 		},
 		server: {
+			host: "127.0.0.1",
+			port: 4322,
+			strictPort: true,
 			hmr: false,
 			watch: {
 				ignored: [

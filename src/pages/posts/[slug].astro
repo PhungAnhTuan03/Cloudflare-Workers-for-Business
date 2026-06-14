@@ -1,105 +1,235 @@
 ---
-import { decodeSlug, getEmDashEntry, getEntryTerms } from "emdash";
+import { decodeSlug, getEmDashEntry, getEntryTerms, getSeoMeta, getSiteSettings } from "emdash";
 import { Image, PortableText } from "emdash/ui";
 import Layout from "../../layouts/Layout.astro";
+import { resolveStarterSiteIdentity } from "../../utils/site-identity";
 
 const slug = decodeSlug(Astro.params.slug);
 
 if (!slug) {
-  return Astro.redirect("/404");
+	return Astro.redirect("/404");
 }
 
 const { entry: post, cacheHint } = await getEmDashEntry("posts", slug);
 
 if (!post) {
-  return Astro.redirect("/404");
+	return Astro.redirect("/404");
 }
 
 Astro.cache.set(cacheHint);
 
 const [categories, tags] = await Promise.all([
-  getEntryTerms("posts", post.data.id, "category"),
-  getEntryTerms("posts", post.data.id, "tag"),
+	getEntryTerms("posts", post.data.id, "category"),
+	getEntryTerms("posts", post.data.id, "tag"),
 ]);
 
+const { siteTitle } = resolveStarterSiteIdentity(await getSiteSettings());
+const seo = getSeoMeta(post, {
+	siteTitle,
+	siteUrl: Astro.url.origin,
+	path: `/posts/${slug}`,
+});
+
 const formattedDate = post.data.publishedAt
-  ? new Intl.DateTimeFormat("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }).format(post.data.publishedAt)
-  : "Chua co ngay";
+	? new Intl.DateTimeFormat("vi-VN", {
+			day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+		}).format(post.data.publishedAt)
+	: "Chưa có ngày";
 ---
 
-<Layout>
-  <article class="post-container">
-    <div class="container">
-      <div class="post-header">
-        {post.data.featured_image && (
-          <div class="post-image" {...post.edit.featured_image}>
-            <Image image={post.data.featured_image} />
-          </div>
-        )}
-        <h1 {...post.edit.title}>{post.data.title}</h1>
-        <div class="post-meta">
-          <time datetime={post.data.publishedAt?.toISOString()}>{formattedDate}</time>
-          {
-            categories.map((category) => (
-              <a href={`/category/${category.slug}`} class="post-category">
-                {category.label}
-              </a>
-            ))
-          }
-          <div class="post-tags">
-            {tags.map((tag) => <a href={`/tag/${tag.slug}`} class="tag">#{tag.label}</a>)}
-          </div>
-        </div>
-      </div>
-      <div class="post-content" {...post.edit.content}>
-        <PortableText value={post.data.content ?? []} />
-      </div>
-    </div>
-  </article>
+<Layout
+	title={seo.title}
+	pageTitle={seo.ogTitle}
+	description={seo.description ?? undefined}
+	canonical={seo.canonical ?? undefined}
+	image={post.data.featured_image?.src}
+	content={{ collection: "posts", id: post.data.id, slug }}
+>
+	<article class="cms-article cms-section">
+		<header class="article-top">
+			<div class="container article-top-grid">
+				<div>
+					<nav class="breadcrumb" aria-label="Breadcrumb">
+						<a href="/">Trang chủ</a>
+						<span>/</span>
+						<a href="/posts">Blog</a>
+					</nav>
+					<div class="post-meta">
+						<time datetime={post.data.publishedAt?.toISOString()}>{formattedDate}</time>
+						{categories.map((category) => (
+							<a href={`/category/${category.slug}`}>{category.label}</a>
+						))}
+					</div>
+					<h1 {...post.edit.title}>{post.data.title}</h1>
+					{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
+				</div>
+				{
+					post.data.featured_image && (
+						<div class="article-image" {...post.edit.featured_image}>
+							<Image image={post.data.featured_image} />
+						</div>
+					)
+				}
+			</div>
+		</header>
+
+		<section class="section tight">
+			<div class="container article-layout">
+				<div class="post-content card" {...post.edit.content}>
+					<PortableText value={post.data.content ?? []} />
+				</div>
+				<aside class="article-side card">
+					<h2>Chủ đề</h2>
+					<div class="tag-list">
+						{tags.length ? tags.map((tag) => <a href={`/tag/${tag.slug}`}>#{tag.label}</a>) : <span>Chưa có tag</span>}
+					</div>
+					<a class="btn btn-primary" href="/dang-ky-tu-van">Nhận tư vấn học tập</a>
+				</aside>
+			</div>
+		</section>
+	</article>
 </Layout>
 
-<style is:global>
-  .post-container {
-    padding: 60px 0;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  .post-image {
-    margin-bottom: 28px;
-    overflow: hidden;
-    border-radius: 8px;
-  }
-  .post-header {
-    margin-bottom: 2rem;
-  }
-  .post-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    color: var(--text-muted);
-    margin: 1rem 0;
-  }
-  .post-category,
-  .tag {
-    background: var(--border-color);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: inherit;
-    text-decoration: none;
-  }
-  .post-content {
-    line-height: 1.8;
-  }
-  .post-content h2 {
-    text-align: left;
-    margin: 2rem 0 1rem;
-  }
-  .post-content h2:after {
-    margin-left: 0;
-  }
+<style>
+	.article-top {
+		padding: clamp(54px, 8vw, 92px) 0 38px;
+		border-bottom: 1px solid var(--line);
+		background:
+			radial-gradient(circle at 92% 8%, rgb(96 165 250 / 0.18), transparent 24rem),
+			#fff;
+	}
+
+	.article-top-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 460px);
+		gap: 34px;
+		align-items: center;
+	}
+
+	.breadcrumb,
+	.post-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.breadcrumb {
+		margin-bottom: 18px;
+		color: var(--muted);
+		font-weight: 900;
+	}
+
+	.breadcrumb a,
+	.post-meta a {
+		color: var(--primary);
+		text-decoration: none;
+	}
+
+	.post-meta {
+		margin-bottom: 14px;
+		color: var(--muted);
+		font-size: 0.88rem;
+		font-weight: 900;
+	}
+
+	.article-top h1 {
+		margin: 0;
+		font-size: clamp(2.15rem, 5vw, 4.4rem);
+		line-height: 1.04;
+		letter-spacing: 0;
+		text-wrap: balance;
+	}
+
+	.article-top p {
+		max-width: 760px;
+		margin: 16px 0 0;
+		color: var(--muted);
+		font-size: 1.08rem;
+	}
+
+	.article-image {
+		overflow: hidden;
+		border-radius: 26px;
+		box-shadow: var(--shadow-md);
+	}
+
+	.article-image :global(img) {
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		object-fit: cover;
+	}
+
+	.article-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: 22px;
+		align-items: start;
+	}
+
+	.post-content {
+		padding: clamp(24px, 4vw, 42px);
+	}
+
+	.post-content :global(h2),
+	.post-content :global(h3) {
+		margin: 1.7em 0 0.55em;
+		line-height: 1.2;
+		letter-spacing: 0;
+	}
+
+	.post-content :global(p),
+	.post-content :global(li) {
+		color: #334155;
+		font-size: 1.02rem;
+		line-height: 1.85;
+	}
+
+	.post-content :global(a) {
+		color: var(--primary);
+		font-weight: 800;
+	}
+
+	.article-side {
+		position: sticky;
+		top: 92px;
+		display: grid;
+		gap: 16px;
+		padding: 20px;
+	}
+
+	.article-side h2 {
+		margin: 0;
+		font-size: 1.1rem;
+	}
+
+	.tag-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.tag-list a,
+	.tag-list span {
+		display: inline-flex;
+		padding: 7px 10px;
+		border-radius: 999px;
+		background: rgb(37 99 235 / 0.08);
+		color: var(--primary);
+		font-size: 0.84rem;
+		font-weight: 900;
+		text-decoration: none;
+	}
+
+	@media (max-width: 900px) {
+		.article-top-grid,
+		.article-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.article-side {
+			position: static;
+		}
+	}
 </style>

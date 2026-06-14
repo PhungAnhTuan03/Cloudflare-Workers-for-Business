@@ -1,0 +1,385 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../lib/site-data";
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "WebPage",
+	name: "Tra cứu chứng nhận",
+	url: `${site.url}/tra-cuu-chung-nhan`,
+	description: "Tra cứu trạng thái chứng nhận hoàn thành khóa học tại Sao Việt Tech Academy.",
+};
+---
+
+<Layout
+	title={`Tra cứu chứng nhận - ${site.name}`}
+	description="Nhập mã chứng nhận để kiểm tra thông tin học viên, khóa học, ngày cấp và trạng thái chứng nhận."
+	canonical={`${site.url}/tra-cuu-chung-nhan`}
+	schema={schema}
+>
+	<section class="certificate-section">
+		<div class="container certificate-grid">
+			<div class="certificate-copy">
+				<span class="page-kicker">
+					<i class="fa-solid fa-certificate" aria-hidden="true"></i>
+					Tra cứu chứng nhận
+				</span>
+				<h1>Xác thực chứng nhận hoàn thành khóa học trong vài giây.</h1>
+				<p>
+					Nhập mã chứng nhận được cấp sau khóa học để kiểm tra thông tin học viên, khóa học, ngày cấp và trạng
+					thái hiệu lực. Mã thường gồm chữ, số và dấu gạch ngang.
+				</p>
+				<div class="trust-list">
+					<div>
+						<i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+						<span>Dữ liệu xác minh trực tiếp từ hệ thống trung tâm.</span>
+					</div>
+					<div>
+						<i class="fa-solid fa-clock" aria-hidden="true"></i>
+						<span>Trả kết quả nhanh, phù hợp cho nhà tuyển dụng hoặc học viên cần đối chiếu.</span>
+					</div>
+					<div>
+						<i class="fa-solid fa-headset" aria-hidden="true"></i>
+						<span>Nếu mã chưa xuất hiện, đội ngũ tư vấn có thể hỗ trợ kiểm tra thủ công.</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="lookup-card card">
+				<div class="lookup-head">
+					<div class="lookup-icon">
+						<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+					</div>
+					<div>
+						<h2>Nhập mã chứng nhận</h2>
+						<p>Ví dụ: SVTECH-2026-001</p>
+					</div>
+				</div>
+
+				<form class="lookup-form" data-certificate-form>
+					<div class="field">
+						<label for="certificate-code">Mã chứng nhận</label>
+						<input
+							id="certificate-code"
+							name="code"
+							placeholder="SVTECH-2026-001"
+							autocomplete="off"
+							inputmode="text"
+							required
+						/>
+					</div>
+					<button class="btn btn-primary" type="submit">
+						<i class="fa-solid fa-search" aria-hidden="true"></i>
+						Tra cứu
+					</button>
+					<p class="form-status" data-certificate-status aria-live="polite"></p>
+				</form>
+
+				<div class="certificate-result" data-certificate-result hidden></div>
+			</div>
+		</div>
+	</section>
+
+	<section class="section tight">
+		<div class="container support-panel card">
+			<div>
+				<p class="section-eyebrow">Cần hỗ trợ?</p>
+				<h2 class="section-title">Không tìm thấy mã hoặc thông tin chưa đúng?</h2>
+				<p>
+					Hãy gửi thông tin cho trung tâm. Đội ngũ tư vấn sẽ kiểm tra hồ sơ học tập, khóa học và thời gian cấp
+					chứng nhận cho bạn.
+				</p>
+			</div>
+			<div class="support-actions">
+				<a href="/lien-he" class="btn btn-secondary">Liên hệ trung tâm</a>
+				<a href="/dang-ky-tu-van" class="btn btn-accent">Gửi yêu cầu hỗ trợ</a>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	type Certificate = {
+		code: string;
+		student_name: string;
+		course_name: string;
+		issued_at: string;
+		expires_at?: string | null;
+		status: string;
+	};
+
+	type VerifyResult = {
+		ok?: boolean;
+		message?: string;
+		certificate?: Certificate;
+	};
+
+	const form = document.querySelector("[data-certificate-form]");
+	const status = document.querySelector("[data-certificate-status]");
+	const resultBox = document.querySelector("[data-certificate-result]");
+
+	function setText(target: Element | null, value: string) {
+		if (target instanceof HTMLElement) target.textContent = value;
+	}
+
+	function escapeHtml(value: string) {
+		return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] || char);
+	}
+
+	function formatDate(value?: string | null) {
+		if (!value) return "Không có";
+		const date = new Date(value);
+		if (Number.isNaN(date.getTime())) return value;
+		return new Intl.DateTimeFormat("vi-VN", { dateStyle: "medium" }).format(date);
+	}
+
+	function statusLabel(value: string) {
+		if (value === "valid") return "Hợp lệ";
+		if (value === "revoked") return "Đã thu hồi";
+		if (value === "expired") return "Hết hiệu lực";
+		return value || "Chưa xác định";
+	}
+
+	function renderCertificate(certificate: Certificate) {
+		if (!(resultBox instanceof HTMLElement)) return;
+		resultBox.hidden = false;
+		resultBox.innerHTML = `
+			<div class="result-badge ${certificate.status === "valid" ? "valid" : "warning"}">
+				<i class="fa-solid ${certificate.status === "valid" ? "fa-circle-check" : "fa-triangle-exclamation"}" aria-hidden="true"></i>
+				<span>${escapeHtml(statusLabel(certificate.status))}</span>
+			</div>
+			<div class="result-grid">
+				<div>
+					<span>Mã chứng nhận</span>
+					<strong>${escapeHtml(certificate.code)}</strong>
+				</div>
+				<div>
+					<span>Học viên</span>
+					<strong>${escapeHtml(certificate.student_name)}</strong>
+				</div>
+				<div>
+					<span>Khóa học</span>
+					<strong>${escapeHtml(certificate.course_name)}</strong>
+				</div>
+				<div>
+					<span>Ngày cấp</span>
+					<strong>${escapeHtml(formatDate(certificate.issued_at))}</strong>
+				</div>
+				<div>
+					<span>Ngày hết hạn</span>
+					<strong>${escapeHtml(formatDate(certificate.expires_at))}</strong>
+				</div>
+			</div>
+		`;
+	}
+
+	if (form instanceof HTMLFormElement) {
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const code = String(new FormData(form).get("code") || "").trim().toUpperCase();
+			if (!code) {
+				setText(status, "Vui lòng nhập mã chứng nhận.");
+				return;
+			}
+
+			setText(status, "Đang tra cứu chứng nhận...");
+			if (resultBox instanceof HTMLElement) resultBox.hidden = true;
+
+			const response = await fetch(`/api/business/certificates/verify?code=${encodeURIComponent(code)}`);
+			const result = (await response.json()) as VerifyResult;
+			if (!response.ok || !result.ok || !result.certificate) {
+				setText(status, result.message || "Không tìm thấy chứng nhận.");
+				return;
+			}
+
+			setText(status, "Đã tìm thấy chứng nhận.");
+			renderCertificate(result.certificate);
+		});
+	}
+</script>
+
+<style>
+	.certificate-section {
+		padding: clamp(48px, 8vw, 92px) 0 34px;
+		background:
+			radial-gradient(circle at 0% 0%, rgb(96 165 250 / 0.16), transparent 24rem),
+			linear-gradient(180deg, #f8fafc 0%, #ffffff 64%);
+	}
+
+	.certificate-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(340px, 500px);
+		gap: clamp(28px, 5vw, 56px);
+		align-items: center;
+	}
+
+	.certificate-copy h1 {
+		max-width: 860px;
+		margin: 0;
+		font-size: clamp(2.35rem, 5.4vw, 5rem);
+		line-height: 1;
+		letter-spacing: 0;
+	}
+
+	.certificate-copy p {
+		max-width: 700px;
+		margin: 18px 0 0;
+		color: var(--muted);
+		font-size: 1.06rem;
+	}
+
+	.trust-list {
+		display: grid;
+		gap: 12px;
+		margin-top: 28px;
+	}
+
+	.trust-list div {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		max-width: 620px;
+		padding: 14px;
+		border: 1px solid rgb(37 99 235 / 0.12);
+		border-radius: 18px;
+		background: #fff;
+		box-shadow: var(--shadow-xs);
+	}
+
+	.trust-list i {
+		width: 38px;
+		height: 38px;
+		display: grid;
+		place-items: center;
+		flex: 0 0 auto;
+		border-radius: 14px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.trust-list span {
+		color: #334155;
+		font-weight: 800;
+	}
+
+	.lookup-card {
+		padding: clamp(20px, 4vw, 30px);
+		background:
+			radial-gradient(circle at 100% 0%, rgb(245 158 11 / 0.14), transparent 18rem),
+			#fff;
+	}
+
+	.lookup-head {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 20px;
+	}
+
+	.lookup-icon {
+		width: 52px;
+		height: 52px;
+		display: grid;
+		place-items: center;
+		border-radius: 18px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.lookup-head h2 {
+		margin: 0;
+		font-size: 1.25rem;
+	}
+
+	.lookup-head p {
+		margin: 3px 0 0;
+		color: var(--muted);
+	}
+
+	.lookup-form {
+		display: grid;
+		gap: 14px;
+	}
+
+	.certificate-result {
+		display: grid;
+		gap: 16px;
+		margin-top: 22px;
+		padding-top: 20px;
+		border-top: 1px solid var(--line);
+	}
+
+	.result-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		width: fit-content;
+		padding: 8px 12px;
+		border-radius: 999px;
+		font-weight: 900;
+	}
+
+	.result-badge.valid {
+		background: rgb(16 185 129 / 0.12);
+		color: #047857;
+	}
+
+	.result-badge.warning {
+		background: rgb(245 158 11 / 0.14);
+		color: #92400e;
+	}
+
+	.result-grid {
+		display: grid;
+		gap: 10px;
+	}
+
+	.result-grid div {
+		padding: 12px;
+		border: 1px solid var(--line);
+		border-radius: 16px;
+		background: linear-gradient(180deg, #fff, #f8fbff);
+	}
+
+	.result-grid span,
+	.result-grid strong {
+		display: block;
+	}
+
+	.result-grid span {
+		color: var(--muted);
+		font-size: 0.84rem;
+		font-weight: 800;
+	}
+
+	.result-grid strong {
+		margin-top: 3px;
+	}
+
+	.support-panel {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 24px;
+		align-items: center;
+		padding: clamp(22px, 4vw, 34px);
+	}
+
+	.support-panel p {
+		max-width: 760px;
+		margin: 14px 0 0;
+		color: var(--muted);
+	}
+
+	.support-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	@media (max-width: 920px) {
+		.certificate-grid,
+		.support-panel {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

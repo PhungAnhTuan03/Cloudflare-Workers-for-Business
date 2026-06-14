@@ -6,40 +6,64 @@ const courseId = Astro.params.id || "";
 ---
 
 <Layout
-	title={`Khoa hoc giang vien - ${site.name}`}
-	description="Trang xem chi tiet khoa hoc, bai giang va tai lieu cua giang vien."
+	title={`Khóa học giảng viên - ${site.name}`}
+	description="Trang xem chi tiết khóa học, bài giảng và tài liệu của giảng viên."
 >
 	<section class="course-view" data-course-root data-course-id={courseId}>
 		<div class="container course-shell">
-			<div class="course-head card">
-				<span class="page-kicker">
-					<i class="fa-solid fa-book-open" aria-hidden="true"></i>
-					Khoa hoc giang vien
-				</span>
-				<h1 data-course-title>Dang tai khoa hoc...</h1>
-				<p data-course-description></p>
-				<div class="course-meta">
-					<span data-instructor-name></span>
-					<strong data-course-price></strong>
+			<section class="course-head card">
+				<div>
+					<span class="page-kicker">
+						<i class="fa-solid fa-book-open" aria-hidden="true"></i>
+						Khóa học giảng viên
+					</span>
+					<h1 data-course-title>Đang tải khóa học...</h1>
+					<p data-course-description>Vui lòng chờ trong giây lát.</p>
+					<div class="course-meta">
+						<span data-instructor-name>Giảng viên</span>
+						<strong data-course-price></strong>
+					</div>
+					<p class="form-status" data-course-status aria-live="polite"></p>
 				</div>
-				<div class="course-actions">
-					<button class="btn btn-primary" type="button" data-buy hidden>Mua khoa hoc</button>
-					<a class="btn btn-secondary" href="#" data-message-link hidden>
-						<i class="fa-solid fa-message" aria-hidden="true"></i>
-						Nhan tin giang vien
-					</a>
-				</div>
-				<p class="form-status" data-course-status></p>
-			</div>
+
+				<aside class="enroll-card">
+					<div class="enroll-icon">
+						<i class="fa-solid fa-lock-open" aria-hidden="true"></i>
+					</div>
+					<strong>Mở quyền học</strong>
+					<p>Mua khóa học để xem bài giảng, tài liệu và nhắn tin riêng với giảng viên.</p>
+					<div class="course-actions">
+						<button class="btn btn-primary" type="button" data-buy hidden>
+							<i class="fa-solid fa-bolt" aria-hidden="true"></i>
+							Mua khóa học
+						</button>
+						<a class="btn btn-secondary" href="#" data-message-link hidden>
+							<i class="fa-solid fa-message" aria-hidden="true"></i>
+							Nhắn tin giảng viên
+						</a>
+						<a class="btn btn-ghost" href="/marketplace">Quay lại marketplace</a>
+					</div>
+				</aside>
+			</section>
 
 			<div class="content-grid">
 				<section class="content-panel card">
-					<h2>Bai giang</h2>
-					<div data-lesson-list></div>
+					<div class="panel-head">
+						<div>
+							<h2>Bài giảng</h2>
+							<p>Nội dung học do giảng viên đăng trực tiếp lên hệ thống.</p>
+						</div>
+					</div>
+					<div data-lesson-list class="lesson-list"></div>
 				</section>
 				<section class="content-panel card">
-					<h2>Tai lieu</h2>
-					<div data-material-list></div>
+					<div class="panel-head">
+						<div>
+							<h2>Tài liệu</h2>
+							<p>File, link và tài nguyên bổ trợ cho khóa học.</p>
+						</div>
+					</div>
+					<div data-material-list class="material-list"></div>
 				</section>
 			</div>
 		</div>
@@ -72,8 +96,7 @@ const courseId = Astro.params.id || "";
 	};
 
 	const courseRoot = document.querySelector("[data-course-root]");
-	const courseId =
-		courseRoot instanceof HTMLElement ? courseRoot.dataset.courseId || "" : "";
+	const courseId = courseRoot instanceof HTMLElement ? courseRoot.dataset.courseId || "" : "";
 	const title = document.querySelector("[data-course-title]");
 	const description = document.querySelector("[data-course-description]");
 	const instructorName = document.querySelector("[data-instructor-name]");
@@ -88,9 +111,33 @@ const courseId = Astro.params.id || "";
 		if (target instanceof HTMLElement) target.textContent = value;
 	}
 
+	function escapeHtml(value: string) {
+		return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] || char);
+	}
+
+	function formatCurrency(value: number) {
+		return `${Number(value || 0).toLocaleString("vi-VN")}đ`;
+	}
+
 	function renderLocked() {
-		setText(lessonList, "Ban can mua khoa hoc de xem bai giang.");
-		setText(materialList, "Ban can mua khoa hoc de xem tai lieu.");
+		if (lessonList instanceof HTMLElement) {
+			lessonList.innerHTML = `
+				<div class="locked-state">
+					<i class="fa-solid fa-lock" aria-hidden="true"></i>
+					<strong>Bạn cần mua khóa học để xem bài giảng.</strong>
+					<p>Nội dung học được bảo vệ để đảm bảo quyền lợi của giảng viên và học viên đã mua.</p>
+				</div>
+			`;
+		}
+		if (materialList instanceof HTMLElement) {
+			materialList.innerHTML = `
+				<div class="locked-state">
+					<i class="fa-solid fa-lock" aria-hidden="true"></i>
+					<strong>Tài liệu sẽ mở sau khi mua khóa học.</strong>
+					<p>Sau checkout, tài liệu xuất hiện ngay trong trang này và dashboard học viên.</p>
+				</div>
+			`;
+		}
 		if (buyButton instanceof HTMLElement) buyButton.hidden = false;
 		if (messageLink instanceof HTMLElement) messageLink.hidden = true;
 	}
@@ -103,15 +150,18 @@ const courseId = Astro.params.id || "";
 			lessonList.innerHTML = lessons.length
 				? lessons
 						.map(
-							(lesson) => `
+							(lesson, index) => `
 								<article class="lesson-item">
-									<h3>${lesson.title}</h3>
-									<p>${lesson.content}</p>
+									<span>${String(index + 1).padStart(2, "0")}</span>
+									<div>
+										<h3>${escapeHtml(lesson.title)}</h3>
+										<p>${escapeHtml(lesson.content)}</p>
+									</div>
 								</article>
 							`,
 						)
 						.join("")
-				: "<p class='empty'>Giang vien chua dang bai giang nao.</p>";
+				: "<p class='empty'>Giảng viên chưa đăng bài giảng nào.</p>";
 		}
 
 		if (materialList instanceof HTMLElement) {
@@ -119,17 +169,17 @@ const courseId = Astro.params.id || "";
 				? materials
 						.map(
 							(material) => `
-								<a class="material-item" href="${material.file_url}" target="_blank" rel="noreferrer">
+								<a class="material-item" href="${escapeHtml(material.file_url)}" target="_blank" rel="noreferrer">
 									<i class="fa-solid fa-file-lines" aria-hidden="true"></i>
 									<span>
-										<strong>${material.title}</strong>
-										<small>${material.file_type || "Tai lieu"}</small>
+										<strong>${escapeHtml(material.title)}</strong>
+										<small>${escapeHtml(material.file_type || "Tài liệu")}</small>
 									</span>
 								</a>
 							`,
 						)
 						.join("")
-				: "<p class='empty'>Giang vien chua dang tai lieu nao.</p>";
+				: "<p class='empty'>Giảng viên chưa đăng tài liệu nào.</p>";
 		}
 	}
 
@@ -138,15 +188,16 @@ const courseId = Astro.params.id || "";
 		const result = (await response.json()) as ApiResult;
 
 		if (!response.ok || !result.ok || !result.course) {
-			setText(title, "Khong tim thay khoa hoc");
-			setText(status, result.message || "Khoa hoc khong ton tai.");
+			setText(title, "Không tìm thấy khóa học");
+			setText(description, "Khóa học không tồn tại hoặc chưa được xuất bản.");
+			setText(status, result.message || "Khóa học không tồn tại.");
 			return;
 		}
 
 		setText(title, result.course.title);
 		setText(description, result.course.description);
-		setText(instructorName, `Giang vien: ${result.course.instructor_name}`);
-		setText(price, `${Number(result.course.price).toLocaleString("vi-VN")}d`);
+		setText(instructorName, `Giảng viên: ${result.course.instructor_name}`);
+		setText(price, formatCurrency(Number(result.course.price)));
 
 		if (result.canViewContent) {
 			if (buyButton instanceof HTMLElement) buyButton.hidden = true;
@@ -162,95 +213,213 @@ const courseId = Astro.params.id || "";
 
 	if (buyButton instanceof HTMLButtonElement) {
 		buyButton.addEventListener("click", async () => {
+			buyButton.disabled = true;
+			setText(status, "Đang mở quyền học...");
 			const response = await fetch(`/api/marketplace/courses/${courseId}/purchase`, { method: "POST" });
 			const result = (await response.json()) as ApiResult;
-			setText(status, result.message || (response.ok ? "Da mua khoa hoc." : "Khong mua duoc."));
+			setText(status, result.message || (response.ok ? "Đã mua khóa học." : "Không mua được."));
 			if (response.ok) await loadCourse();
+			buyButton.disabled = false;
 		});
 	}
 
-	loadCourse();
+	loadCourse().catch(() => {
+		setText(title, "Không tải được khóa học");
+		setText(status, "Vui lòng thử lại sau.");
+	});
 </script>
 
 <style>
 	.course-view {
-		padding: 74px 0 34px;
+		padding: clamp(38px, 6vw, 72px) 0 34px;
+		background:
+			radial-gradient(circle at 0% 0%, rgb(96 165 250 / 0.14), transparent 24rem),
+			linear-gradient(180deg, #f8fafc 0%, #ffffff 58%, #f8fafc 100%);
 	}
 
 	.course-shell {
 		display: grid;
-		gap: 24px;
+		gap: 20px;
 	}
 
-	.course-head,
-	.content-panel {
-		padding: 24px;
+	.course-head {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+		gap: 24px;
+		align-items: stretch;
+		padding: clamp(22px, 4vw, 34px);
+		background:
+			radial-gradient(circle at 90% 8%, rgb(96 165 250 / 0.18), transparent 24rem),
+			#fff;
 	}
 
 	.course-head h1 {
+		max-width: 860px;
 		margin: 0;
-		font-size: clamp(2.2rem, 4vw, 4rem);
-		line-height: 1.06;
+		font-size: clamp(2rem, 4.4vw, 4.35rem);
+		line-height: 1.04;
+		letter-spacing: 0;
 	}
 
-	.course-head p,
-	.empty {
+	.course-head p {
+		max-width: 760px;
 		color: var(--muted);
 	}
 
 	.course-meta {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 12px;
+		gap: 10px;
 		margin-top: 18px;
 	}
 
 	.course-meta span,
 	.course-meta strong {
-		padding: 8px 10px;
+		padding: 9px 12px;
 		border: 1px solid var(--line);
-		border-radius: var(--radius);
-		background: var(--soft);
+		border-radius: 999px;
+		background: #fff;
+	}
+
+	.course-meta strong {
+		color: var(--primary);
+	}
+
+	.enroll-card {
+		display: grid;
+		align-content: start;
+		gap: 12px;
+		padding: 20px;
+		border: 1px solid rgb(37 99 235 / 0.14);
+		border-radius: 24px;
+		background: linear-gradient(180deg, #ffffff, #f8fbff);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.enroll-icon {
+		width: 48px;
+		height: 48px;
+		display: grid;
+		place-items: center;
+		border-radius: 16px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.enroll-card strong {
+		font-size: 1.15rem;
+	}
+
+	.enroll-card p {
+		margin: 0;
 	}
 
 	.course-actions {
-		display: flex;
-		flex-wrap: wrap;
+		display: grid;
 		gap: 10px;
-		margin-top: 18px;
+		margin-top: 8px;
+	}
+
+	.course-actions .btn {
+		width: 100%;
 	}
 
 	.content-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(300px, 0.85fr);
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 0.82fr);
 		gap: 20px;
+		align-items: start;
+	}
+
+	.content-panel {
+		padding: clamp(20px, 3vw, 26px);
+	}
+
+	.panel-head {
+		margin-bottom: 16px;
+	}
+
+	.panel-head h2 {
+		margin: 0;
+		font-size: 1.22rem;
+	}
+
+	.panel-head p {
+		margin: 5px 0 0;
+		color: var(--muted);
+	}
+
+	.lesson-list,
+	.material-list {
+		display: grid;
+		gap: 12px;
 	}
 
 	.lesson-item,
-	.material-item {
-		display: block;
-		margin-top: 12px;
-		padding: 14px;
+	.material-item,
+	.locked-state {
 		border: 1px solid var(--line);
-		border-radius: var(--radius);
-		background: var(--soft);
-		color: inherit;
-		text-decoration: none;
+		border-radius: 20px;
+		background: linear-gradient(180deg, #fff, #f8fbff);
+		box-shadow: var(--shadow-xs);
+	}
+
+	.lesson-item {
+		display: grid;
+		grid-template-columns: 46px minmax(0, 1fr);
+		gap: 14px;
+		padding: 16px;
+	}
+
+	.lesson-item > span {
+		width: 46px;
+		height: 46px;
+		display: grid;
+		place-items: center;
+		border-radius: 16px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+		font-weight: 900;
 	}
 
 	.lesson-item h3 {
-		margin: 0 0 8px;
+		margin: 0 0 7px;
+		font-size: 1.02rem;
+	}
+
+	.lesson-item p {
+		margin: 0;
+		color: var(--muted);
 	}
 
 	.material-item {
 		display: flex;
 		gap: 12px;
 		align-items: flex-start;
+		padding: 14px;
+		color: inherit;
+		text-decoration: none;
+		transition:
+			transform 220ms ease,
+			border-color 220ms ease,
+			box-shadow 220ms ease;
+	}
+
+	.material-item:hover {
+		transform: translateY(-2px);
+		border-color: rgb(37 99 235 / 0.2);
+		box-shadow: var(--shadow-sm);
 	}
 
 	.material-item i {
-		color: var(--primary);
-		margin-top: 4px;
+		width: 40px;
+		height: 40px;
+		display: grid;
+		place-items: center;
+		flex: 0 0 auto;
+		border-radius: 14px;
+		background: rgb(245 158 11 / 0.14);
+		color: var(--accent);
 	}
 
 	.material-item strong,
@@ -262,8 +431,40 @@ const courseId = Astro.params.id || "";
 		color: var(--muted);
 	}
 
-	@media (max-width: 860px) {
+	.locked-state {
+		display: grid;
+		justify-items: center;
+		gap: 8px;
+		min-height: 210px;
+		padding: 28px;
+		text-align: center;
+	}
+
+	.locked-state i {
+		width: 48px;
+		height: 48px;
+		display: grid;
+		place-items: center;
+		border-radius: 16px;
+		background: rgb(37 99 235 / 0.1);
+		color: var(--primary);
+	}
+
+	.locked-state p {
+		max-width: 360px;
+		margin: 0;
+		color: var(--muted);
+	}
+
+	@media (max-width: 900px) {
+		.course-head,
 		.content-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.lesson-item {
 			grid-template-columns: 1fr;
 		}
 	}

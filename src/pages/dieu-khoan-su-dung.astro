@@ -1,0 +1,74 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../lib/site-data";
+---
+
+<Layout
+	title={`Điều khoản sử dụng - ${site.name}`}
+	description="Điều khoản sử dụng website, marketplace khóa học và dashboard học tập của Sao Việt Tech Academy."
+	canonical={`${site.url}/dieu-khoan-su-dung`}
+>
+	<section class="page-hero policy-hero">
+		<div class="container">
+			<span class="page-kicker">
+				<i class="fa-solid fa-file-signature" aria-hidden="true"></i>
+				Quy định sử dụng
+			</span>
+			<h1 class="page-title">Điều khoản sử dụng</h1>
+			<p class="page-lead">
+				Các điều khoản này giúp việc đăng ký tư vấn, mua khóa học và truy cập nội dung học tập trên {site.name} rõ ràng hơn.
+			</p>
+		</div>
+	</section>
+
+	<section class="section policy-section">
+		<div class="container policy-list card">
+			<section>
+				<h2>Tài khoản và thông tin đăng ký</h2>
+				<p>Người dùng cần cung cấp thông tin chính xác khi đăng ký tư vấn, tạo tài khoản học viên hoặc mua khóa học trên marketplace.</p>
+			</section>
+			<section>
+				<h2>Quyền truy cập khóa học</h2>
+				<p>Nội dung khóa học được mở theo tài khoản và đơn hàng hợp lệ. Không chia sẻ tài khoản, tài liệu hoặc đường dẫn học tập cho người khác khi chưa được cho phép.</p>
+			</section>
+			<section>
+				<h2>Nội dung và hành vi sử dụng</h2>
+				<p>Không đăng tải nội dung gây hại, spam, vi phạm bản quyền hoặc cản trở trải nghiệm học tập của học viên và giảng viên khác.</p>
+			</section>
+			<section>
+				<h2>Hỗ trợ và cập nhật</h2>
+				<p>Chúng tôi có thể cập nhật điều khoản khi hệ thống thêm tính năng mới. Nếu cần hỗ trợ, vui lòng liên hệ {site.email} hoặc {site.phone}.</p>
+			</section>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.policy-list {
+		display: grid;
+		gap: 0;
+		max-width: 920px;
+		padding: 0;
+		overflow: hidden;
+	}
+
+	.policy-list section {
+		padding: clamp(22px, 3vw, 30px);
+		border-left: 5px solid var(--primary);
+	}
+
+	.policy-list section + section {
+		border-top: 1px solid rgb(17 17 17 / 0.16);
+	}
+
+	.policy-list h2 {
+		margin: 0 0 10px;
+		font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+		line-height: 1.12;
+	}
+
+	.policy-list p {
+		margin: 0;
+		color: var(--muted);
+	}
+</style>
