@@ -318,3 +318,97 @@ const revealTargets = document.querySelectorAll(
 		box-shadow: 0 18px 38px rgb(242 240 232 / 0.16) !important;
 	}
 </style>
+
+<style>
+	.site-footer {
+		margin-top: clamp(56px, 7vw, 96px);
+		padding: 64px 0 28px;
+		border-top: 1px solid var(--line);
+		background: var(--soft);
+		background-image: none;
+		color: var(--muted);
+	}
+
+	.footer-grid {
+		gap: clamp(28px, 4vw, 48px);
+	}
+
+	.footer-logo,
+	.site-footer h2 {
+		color: var(--ink);
+	}
+
+	.footer-logo span {
+		border-radius: 10px;
+		background: var(--ink);
+		box-shadow: none;
+	}
+
+	.footer-logo strong,
+	.site-footer h2 {
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+
+	.footer-brand p,
+	.site-footer p,
+	.footer-bottom {
+		color: var(--muted);
+	}
+
+	.site-footer a {
+		color: var(--ink-soft);
+		font-weight: 400;
+	}
+
+	.site-footer a:hover {
+		color: var(--primary);
+		transform: none;
+	}
+
+	.footer-socials a {
+		width: 44px;
+		height: 44px;
+		border-color: var(--line);
+		border-radius: 50%;
+		background: var(--surface);
+		color: var(--ink);
+	}
+
+	.footer-socials a:hover {
+		border-color: #b7d6f5;
+		background: var(--surface);
+		color: var(--primary);
+		transform: none;
+	}
+
+	.site-footer .footer-cta {
+		min-height: 44px;
+		padding: 10px 20px;
+		border-color: var(--primary) !important;
+		border-radius: 9999px !important;
+		background: var(--primary) !important;
+		color: #fff !important;
+		box-shadow: none !important;
+	}
+
+	.site-footer .footer-cta:hover {
+		border-color: var(--primary-strong) !important;
+		background: var(--primary-strong) !important;
+		color: #fff !important;
+		transform: none;
+		box-shadow: none !important;
+	}
+
+	.footer-cert {
+		color: var(--primary) !important;
+		font-weight: 600 !important;
+	}
+
+	.footer-bottom {
+		border-top-color: var(--line);
+		font-family: var(--font-sans);
+		font-size: 0.75rem;
+		line-height: 1.5;
+	}
+</style>

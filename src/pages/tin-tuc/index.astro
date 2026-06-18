@@ -33,13 +33,12 @@ const schema = {
 	<section class="section news-section">
 		<div class="container news-layout">
 			<div class="news-grid">
-				{articles.map((article, index) => (
-					<article class:list={["news-card", "card", index === 0 && "is-image-only"]} id={article.slug}>
+				{articles.map((article) => (
+					<article class="news-card card" id={article.slug}>
 						<a href={`/tin-tuc/${article.slug}`} class="news-image" aria-label={`Đọc ${article.title}`}>
 							<img src={article.image} alt={article.title} loading="lazy" />
 						</a>
-						{index !== 0 && (
-							<div class="news-card-body">
+						<div class="news-card-body">
 								<div class="news-meta">
 									<span>{article.category}</span>
 									<span>{article.date}</span>
@@ -50,8 +49,7 @@ const schema = {
 									Đọc bài viết
 									<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 								</a>
-							</div>
-						)}
+						</div>
 					</article>
 				))}
 			</div>
@@ -324,6 +322,154 @@ const schema = {
 		.news-card.is-image-only .news-image,
 		.news-card.is-image-only img {
 			min-height: auto;
+		}
+	}
+</style>
+
+<style>
+	.news-section {
+		padding-top: clamp(56px, 7vw, 88px);
+		background: var(--surface) !important;
+	}
+
+	.news-layout {
+		grid-template-columns: minmax(0, 1fr) minmax(260px, 300px);
+		gap: 24px;
+	}
+
+	.news-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+		gap: 20px;
+		align-items: stretch;
+	}
+
+	.news-card,
+	.news-card.is-image-only {
+		min-height: 0 !important;
+		height: 100% !important;
+		display: grid !important;
+		grid-template-columns: 1fr !important;
+		grid-template-rows: auto 1fr !important;
+		padding: 0;
+		border: 1px solid var(--line) !important;
+		border-radius: 18px !important;
+		background: var(--surface) !important;
+		background-image: none !important;
+		box-shadow: none !important;
+	}
+
+	.news-card:hover {
+		border-color: #b7d6f5 !important;
+		box-shadow: none !important;
+		transform: translateY(-2px);
+	}
+
+	.news-image,
+	.news-card.is-image-only .news-image {
+		min-height: 0 !important;
+		aspect-ratio: 16 / 10 !important;
+		border: 0;
+		border-bottom: 1px solid var(--line);
+		border-radius: 0;
+		background: var(--soft);
+	}
+
+	.news-image::before,
+	.news-image::after,
+	.news-card.is-image-only .news-image::before,
+	.news-card.is-image-only .news-image::after {
+		display: none;
+	}
+
+	.news-card img,
+	.news-card.is-image-only img {
+		min-height: 0 !important;
+		aspect-ratio: 16 / 10 !important;
+		object-fit: cover;
+		filter: none;
+	}
+
+	.news-card-body {
+		display: grid;
+		grid-template-rows: auto auto minmax(3.2em, 1fr) auto;
+		align-content: start;
+		gap: 12px;
+		padding: 22px;
+	}
+
+	.news-meta {
+		font-family: var(--font-sans);
+		font-size: 0.8125rem;
+		font-weight: 400;
+	}
+
+	.news-card h2 {
+		min-height: 2.5em;
+		font-size: 1.35rem;
+		font-weight: 600;
+		line-height: 1.25;
+		letter-spacing: -0.02em;
+	}
+
+	.news-card p {
+		min-height: 3.2em;
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+
+	.read-link {
+		min-height: 44px;
+		font-weight: 400;
+	}
+
+	.read-link i {
+		width: auto;
+		height: auto;
+		border: 0;
+	}
+
+	.news-sidebar {
+		top: 84px;
+		padding: 22px;
+		border: 1px solid var(--line) !important;
+		border-radius: 18px !important;
+		background: var(--soft) !important;
+		background-image: none !important;
+		box-shadow: none !important;
+	}
+
+	.news-sidebar h2 {
+		font-weight: 600;
+	}
+
+	.news-sidebar a {
+		min-height: 48px;
+		border-top-color: var(--line);
+		font-weight: 400;
+	}
+
+	.news-sidebar a:hover {
+		color: var(--primary);
+		transform: none;
+	}
+
+	.news-sidebar a i {
+		color: var(--primary) !important;
+	}
+
+	@media (max-width: 1080px) {
+		.news-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.news-sidebar {
+			position: static;
+		}
+	}
+
+	@media (max-width: 700px) {
+		.news-grid {
+			grid-template-columns: 1fr !important;
 		}
 	}
 </style>

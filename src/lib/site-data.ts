@@ -746,7 +746,3 @@ export function getCategoryById(id: string): CourseCategory | undefined {
 export function getInstructorById(id: string): Instructor | undefined {
 	return instructors.find((instructor) => instructor.id === id);
 }
-
-export function getLocationBySlug(slug?: string): Location | undefined {
-	return locations.find((location) => location.slug === slug);
-}

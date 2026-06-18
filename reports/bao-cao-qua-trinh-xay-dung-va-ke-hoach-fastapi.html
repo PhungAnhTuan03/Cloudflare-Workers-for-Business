@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Báo cáo quá trình xây dựng website và kế hoạch chuyển backend FastAPI</title>
+		<style>
+			:root {
+				--ink: #0f172a;
+				--muted: #64748b;
+				--line: #dbe4f0;
+				--blue: #2563eb;
+				--sky: #0ea5e9;
+				--amber: #f59e0b;
+				--bg: #f8fafc;
+				--panel: #ffffff;
+				--soft: #eff6ff;
+				--green: #059669;
+				--red: #dc2626;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				background:
+					radial-gradient(circle at 12% 0%, rgb(14 165 233 / 0.16), transparent 28rem),
+					linear-gradient(180deg, #eef6ff 0%, var(--bg) 38%, #fff 100%);
+				color: var(--ink);
+				font-family:
+					"Be Vietnam Pro",
+					"Segoe UI",
+					system-ui,
+					-apple-system,
+					sans-serif;
+				line-height: 1.68;
+			}
+
+			.report {
+				width: min(1120px, calc(100% - 40px));
+				margin: 0 auto;
+				padding: 40px 0 72px;
+			}
+
+			.hero {
+				position: relative;
+				overflow: hidden;
+				padding: 46px;
+				border-radius: 34px;
+				background:
+					radial-gradient(circle at 86% 18%, rgb(245 158 11 / 0.25), transparent 18rem),
+					linear-gradient(135deg, #111827 0%, #0f172a 46%, #1d4ed8 100%);
+				color: #fff;
+				box-shadow: 0 28px 80px rgb(15 23 42 / 0.28);
+			}
+
+			.hero h1 {
+				max-width: 900px;
+				margin: 16px 0 14px;
+				font-size: clamp(2.15rem, 5vw, 4.35rem);
+				line-height: 1;
+				letter-spacing: -0.035em;
+			}
+
+			.hero p {
+				max-width: 780px;
+				margin: 0;
+				color: rgb(226 232 240 / 0.94);
+				font-size: 1.05rem;
+			}
+
+			.kicker,
+			.tag {
+				display: inline-flex;
+				align-items: center;
+				border-radius: 999px;
+				font-size: 0.82rem;
+				font-weight: 800;
+			}
+
+			.kicker {
+				padding: 8px 12px;
+				border: 1px solid rgb(255 255 255 / 0.24);
+				background: rgb(255 255 255 / 0.13);
+			}
+
+			.hero-grid {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 14px;
+				margin-top: 24px;
+			}
+
+			.hero-grid div {
+				padding: 16px;
+				border: 1px solid rgb(255 255 255 / 0.18);
+				border-radius: 20px;
+				background: rgb(255 255 255 / 0.11);
+				backdrop-filter: blur(12px);
+			}
+
+			.hero-grid span {
+				display: block;
+				color: rgb(226 232 240 / 0.82);
+				font-size: 0.82rem;
+			}
+
+			.hero-grid strong {
+				display: block;
+				margin-top: 4px;
+			}
+
+			section {
+				margin-top: 28px;
+				padding: 28px;
+				border: 1px solid var(--line);
+				border-radius: 28px;
+				background: rgb(255 255 255 / 0.93);
+				box-shadow: 0 22px 60px rgb(15 23 42 / 0.07);
+			}
+
+			h2 {
+				margin: 0 0 12px;
+				font-size: clamp(1.35rem, 2.5vw, 2rem);
+				line-height: 1.15;
+				letter-spacing: -0.02em;
+			}
+
+			h3 {
+				margin: 22px 0 8px;
+				font-size: 1.08rem;
+			}
+
+			p {
+				margin: 0 0 12px;
+				color: #334155;
+			}
+
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 14px;
+				margin-top: 18px;
+			}
+
+			.grid.three {
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+
+			.card {
+				padding: 18px;
+				border: 1px solid var(--line);
+				border-radius: 22px;
+				background: linear-gradient(180deg, #fff, #f8fafc);
+			}
+
+			.card strong {
+				display: block;
+				margin-bottom: 6px;
+			}
+
+			.card p,
+			.card li {
+				color: var(--muted);
+				font-size: 0.94rem;
+			}
+
+			.tag {
+				margin-bottom: 10px;
+				padding: 6px 10px;
+				background: var(--soft);
+				color: var(--blue);
+			}
+
+			.tag.green {
+				background: rgb(5 150 105 / 0.11);
+				color: var(--green);
+			}
+
+			.tag.amber {
+				background: rgb(245 158 11 / 0.15);
+				color: #92400e;
+			}
+
+			.tag.red {
+				background: rgb(220 38 38 / 0.1);
+				color: var(--red);
+			}
+
+			ul,
+			ol {
+				margin: 12px 0 0;
+				padding-left: 20px;
+			}
+
+			li {
+				margin: 7px 0;
+				color: #334155;
+			}
+
+			table {
+				width: 100%;
+				margin-top: 16px;
+				border-collapse: collapse;
+				overflow: hidden;
+				border: 1px solid var(--line);
+				border-radius: 18px;
+				background: #fff;
+			}
+
+			th,
+			td {
+				padding: 13px 14px;
+				border-bottom: 1px solid var(--line);
+				text-align: left;
+				vertical-align: top;
+			}
+
+			th {
+				background: #f1f5f9;
+				color: #334155;
+				font-size: 0.86rem;
+				text-transform: uppercase;
+				letter-spacing: 0.04em;
+			}
+
+			tr:last-child td {
+				border-bottom: 0;
+			}
+
+			code {
+				padding: 2px 6px;
+				border-radius: 7px;
+				background: #eef2ff;
+				color: #1e3a8a;
+				font-family: "Cascadia Code", Consolas, monospace;
+				font-size: 0.9em;
+			}
+
+			.timeline {
+				display: grid;
+				gap: 14px;
+				margin-top: 18px;
+			}
+
+			.timeline article {
+				display: grid;
+				grid-template-columns: 160px minmax(0, 1fr);
+				gap: 18px;
+				padding: 18px;
+				border: 1px solid var(--line);
+				border-radius: 22px;
+				background: #fff;
+			}
+
+			.timeline time {
+				color: var(--blue);
+				font-weight: 900;
+			}
+
+			.callout {
+				margin-top: 16px;
+				padding: 16px 18px;
+				border-left: 4px solid var(--amber);
+				border-radius: 18px;
+				background: #fffbeb;
+			}
+
+			.footer {
+				margin-top: 28px;
+				color: var(--muted);
+				text-align: center;
+				font-size: 0.92rem;
+			}
+
+			@media print {
+				body {
+					background: #fff;
+				}
+
+				.report {
+					width: 100%;
+					padding: 0;
+				}
+
+				.hero,
+				section {
+					box-shadow: none;
+					break-inside: avoid;
+				}
+			}
+
+			@media (max-width: 820px) {
+				.report {
+					width: min(100% - 24px, 1120px);
+					padding-top: 20px;
+				}
+
+				.hero,
+				section {
+					padding: 22px;
+					border-radius: 24px;
+				}
+
+				.hero-grid,
+				.grid,
+				.grid.three,
+				.timeline article {
+					grid-template-columns: 1fr;
+				}
+
+				table {
+					display: block;
+					overflow-x: auto;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main class="report">
+			<header class="hero">
+				<span class="kicker">Báo cáo quá trình dự án</span>
+				<h1>Quá trình tạo website và kế hoạch chuyển backend sang FastAPI Python</h1>
+				<p>
+					Tài liệu mô tả cách website Sao Việt Tech Academy được xây dựng, các hạng mục đã triển khai,
+					những việc cần làm tiếp và các khó khăn dự kiến khi tách backend sang FastAPI.
+				</p>
+				<div class="hero-grid">
+					<div>
+						<span>Frontend hiện tại</span>
+						<strong>Astro 6 + React 19 + Tailwind CSS 4</strong>
+					</div>
+					<div>
+						<span>Backend hiện tại</span>
+						<strong>Astro API Routes + Cloudflare Workers</strong>
+					</div>
+					<div>
+						<span>Backend dự kiến</span>
+						<strong>FastAPI Python</strong>
+					</div>
+				</div>
+			</header>
+
+			<section>
+				<h2>1. Mục tiêu ban đầu của dự án</h2>
+				<p>
+					Dự án được xây dựng với mục tiêu tạo một website trung tâm đào tạo công nghệ hiện đại, có khả năng
+					làm website marketing, cổng tư vấn, marketplace khóa học, dashboard học viên, dashboard giảng viên,
+					trang profile và trang admin quản trị tổng thể.
+				</p>
+				<div class="grid three">
+					<article class="card">
+						<span class="tag green">Sản phẩm</span>
+						<strong>Website đào tạo công nghệ</strong>
+						<p>Giới thiệu thương hiệu, khóa học, giảng viên, tin tức, liên hệ và đăng ký tư vấn.</p>
+					</article>
+					<article class="card">
+						<span class="tag green">Kinh doanh</span>
+						<strong>Bán khóa học</strong>
+						<p>Giảng viên đăng khóa học, học viên xem marketplace, thêm giỏ hàng, mua khóa và nhắn tin riêng.</p>
+					</article>
+					<article class="card">
+						<span class="tag green">Vận hành</span>
+						<strong>Admin quản trị</strong>
+						<p>Theo dõi lead, người dùng, khóa học, chứng chỉ, chi nhánh, nội dung và dữ liệu vận hành.</p>
+					</article>
+				</div>
+			</section>
+
+			<section>
+				<h2>2. Quá trình xây dựng website</h2>
+				<div class="timeline">
+					<article>
+						<time>Giai đoạn 1</time>
+						<div>
+							<strong>Phân tích yêu cầu và định hướng sản phẩm</strong>
+							<p>
+								Xác định website không chỉ là landing page mà còn là hệ thống marketing, tư vấn,
+								quản lý lead và nền tảng bán khóa học cho giảng viên.
+							</p>
+						</div>
+					</article>
+					<article>
+						<time>Giai đoạn 2</time>
+						<div>
+							<strong>Thiết kế kiến trúc frontend và public website</strong>
+							<p>
+								Xây dựng layout, header, footer, trang chủ, marketplace, tin tức, liên hệ, đăng ký,
+								profile và các trang dashboard theo role.
+							</p>
+						</div>
+					</article>
+					<article>
+						<time>Giai đoạn 3</time>
+						<div>
+							<strong>Xây dựng authentication và phân quyền</strong>
+							<p>
+								Thêm đăng ký, đăng nhập, session, role học viên, giảng viên, admin và điều hướng dashboard theo role.
+							</p>
+						</div>
+					</article>
+					<article>
+						<time>Giai đoạn 4</time>
+						<div>
+							<strong>Marketplace khóa học và dashboard giảng viên</strong>
+							<p>
+								Cho phép giảng viên đăng khóa học vào database, thêm bài giảng, tài liệu, coupon và xem dữ liệu bán hàng.
+							</p>
+						</div>
+					</article>
+					<article>
+						<time>Giai đoạn 5</time>
+						<div>
+							<strong>Dashboard học viên và nhắn tin riêng</strong>
+							<p>
+								Học viên sau khi mua khóa học có thể xem khóa học đã mua, vào bài học, xem tài liệu và nhắn tin với giảng viên.
+							</p>
+						</div>
+					</article>
+					<article>
+						<time>Giai đoạn 6</time>
+						<div>
+							<strong>Hoàn thành trang admin</strong>
+							<p>
+								Admin quản lý lead, khóa học, người dùng, chứng chỉ, chi nhánh, nội dung và các số liệu tổng quan.
+							</p>
+						</div>
+					</article>
+					<article>
+						<time>Giai đoạn 7</time>
+						<div>
+							<strong>Kiểm thử và ổn định local dev</strong>
+							<p>
+								Chạy typecheck, build, smoke test API; sửa lỗi thiếu bảng posts, upload sai content-type và khóa port local về 4322.
+							</p>
+						</div>
+					</article>
+				</div>
+			</section>
+
+			<section>
+				<h2>3. Công nghệ đang sử dụng</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Thành phần</th>
+							<th>Công nghệ</th>
+							<th>Vai trò</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Frontend</td>
+							<td>Astro 6, React 19, TypeScript, Tailwind CSS 4</td>
+							<td>Render website public, dashboard, profile, form và UI tương tác.</td>
+						</tr>
+						<tr>
+							<td>Backend hiện tại</td>
+							<td>Astro API routes trên Cloudflare Workers</td>
+							<td>Xử lý auth, lead, marketplace, cart, purchase, upload, messages, admin.</td>
+						</tr>
+						<tr>
+							<td>Database</td>
+							<td>Cloudflare D1</td>
+							<td>Lưu user, lead, khóa học, mua hàng, tin nhắn, chứng chỉ, chi nhánh.</td>
+						</tr>
+						<tr>
+							<td>Storage</td>
+							<td>Cloudflare R2</td>
+							<td>Lưu avatar, tài liệu, media upload.</td>
+						</tr>
+						<tr>
+							<td>Email</td>
+							<td>Resend</td>
+							<td>Gửi thông báo form tư vấn, đăng ký hoặc liên hệ.</td>
+						</tr>
+						<tr>
+							<td>CMS</td>
+							<td>EmDash CMS</td>
+							<td>Quản lý nội dung, bài viết, trang tĩnh, media và admin editorial.</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section>
+				<h2>4. Những việc đã làm trong dự án</h2>
+				<div class="grid">
+					<article class="card">
+						<span class="tag green">Đã làm</span>
+						<strong>Public website</strong>
+						<ul>
+							<li>Trang chủ, marketplace, tin tức, liên hệ, đăng ký tư vấn.</li>
+							<li>Header gọn, footer, responsive layout.</li>
+							<li>Trang tra cứu chứng nhận và cổng học viên.</li>
+						</ul>
+					</article>
+					<article class="card">
+						<span class="tag green">Đã làm</span>
+						<strong>Authentication</strong>
+						<ul>
+							<li>Đăng ký học viên/giảng viên.</li>
+							<li>Đăng nhập, đăng xuất, session.</li>
+							<li>Role admin, instructor, student.</li>
+						</ul>
+					</article>
+					<article class="card">
+						<span class="tag green">Đã làm</span>
+						<strong>Instructor</strong>
+						<ul>
+							<li>Dashboard giảng viên.</li>
+							<li>Đăng khóa học vào database.</li>
+							<li>Thêm bài giảng, tài liệu, coupon.</li>
+						</ul>
+					</article>
+					<article class="card">
+						<span class="tag green">Đã làm</span>
+						<strong>Student</strong>
+						<ul>
+							<li>Dashboard học viên.</li>
+							<li>Xem khóa học đã mua.</li>
+							<li>Nhắn tin riêng với giảng viên sau khi mua khóa học.</li>
+						</ul>
+					</article>
+					<article class="card">
+						<span class="tag green">Đã làm</span>
+						<strong>Admin</strong>
+						<ul>
+							<li>Dashboard tổng quan.</li>
+							<li>Quản lý lead, user, course.</li>
+							<li>Liên kết EmDash CMS cho nội dung.</li>
+						</ul>
+					</article>
+					<article class="card">
+						<span class="tag green">Đã làm</span>
+						<strong>Ổn định hệ thống</strong>
+						<ul>
+							<li>Smoke test route/API chính.</li>
+							<li>Fix upload và API posts.</li>
+							<li>Khóa dev local về <code>localhost:4322</code>.</li>
+						</ul>
+					</article>
+				</div>
+			</section>
+
+			<section>
+				<h2>5. Những việc cần làm tiếp trước production</h2>
+				<ol>
+					<li>Thiết kế quyền chi tiết hơn cho admin, editor, tư vấn tuyển sinh, kế toán, quản lý đào tạo.</li>
+					<li>Kết nối cổng thanh toán thật, xử lý webhook, trạng thái đơn hàng và hoàn tiền.</li>
+					<li>Thêm quản lý đơn hàng, hóa đơn và báo cáo doanh thu theo thời gian.</li>
+					<li>Chuẩn hóa upload tài liệu, kiểm duyệt file, giới hạn dung lượng theo role.</li>
+					<li>Bổ sung test e2e cho các flow: đăng ký, đăng nhập, đăng khóa học, mua khóa, chat, admin update.</li>
+					<li>Thêm logging, error tracking, backup database và tài liệu vận hành.</li>
+					<li>Tối ưu SEO nâng cao: sitemap động, schema Course/Article/FAQ, internal linking, local landing page.</li>
+				</ol>
+			</section>
+
+			<section>
+				<h2>6. Dự định chuyển backend sang FastAPI Python</h2>
+				<p>
+					Hiện tại backend nằm trong Astro API routes chạy trên Cloudflare Workers. Hướng phát triển tiếp theo là
+					tách backend nghiệp vụ sang FastAPI Python để dễ mở rộng các module phức tạp như thanh toán, báo cáo,
+					AI recommendation, queue xử lý nền, phân quyền nâng cao và tích hợp hệ thống bên ngoài.
+				</p>
+				<div class="grid three">
+					<article class="card">
+						<span class="tag">Mục tiêu</span>
+						<strong>Tách business API</strong>
+						<p>Astro giữ vai trò frontend SSR, FastAPI phụ trách auth, user, course, order, lead, chat, admin API.</p>
+					</article>
+					<article class="card">
+						<span class="tag">Dữ liệu</span>
+						<strong>Chọn database phù hợp</strong>
+						<p>Cân nhắc PostgreSQL cho production để migration, relation, analytics và transaction mạnh hơn D1.</p>
+					</article>
+					<article class="card">
+						<span class="tag">Triển khai</span>
+						<strong>API riêng</strong>
+						<p>Deploy FastAPI trên VPS, Docker, Fly.io, Render, Railway hoặc Cloud Run; frontend gọi qua HTTPS API.</p>
+					</article>
+				</div>
+			</section>
+
+			<section>
+				<h2>7. Kiến trúc đề xuất khi chuyển sang FastAPI</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Lớp hệ thống</th>
+							<th>Hiện tại</th>
+							<th>Sau chuyển đổi</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Frontend</td>
+							<td>Astro SSR + Astro API routes</td>
+							<td>Astro SSR gọi FastAPI qua service client</td>
+						</tr>
+						<tr>
+							<td>Auth</td>
+							<td>Cookie session + KV + D1</td>
+							<td>FastAPI quản lý session/JWT, refresh token, RBAC</td>
+						</tr>
+						<tr>
+							<td>Database</td>
+							<td>Cloudflare D1 SQLite</td>
+							<td>PostgreSQL hoặc tiếp tục D1 qua adapter nếu bắt buộc</td>
+						</tr>
+						<tr>
+							<td>Upload</td>
+							<td>Astro API upload lên R2</td>
+							<td>FastAPI cấp signed URL hoặc upload proxy lên R2/S3</td>
+						</tr>
+						<tr>
+							<td>Email</td>
+							<td>Resend gọi trong Astro API</td>
+							<td>FastAPI background task/queue gọi Resend</td>
+						</tr>
+						<tr>
+							<td>Admin</td>
+							<td>Astro page + API local</td>
+							<td>Astro admin UI gọi FastAPI admin endpoints</td>
+						</tr>
+						<tr>
+							<td>CMS</td>
+							<td>EmDash trong Astro</td>
+							<td>Giữ EmDash cho editorial hoặc tách CMS API riêng tùy phạm vi</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section>
+				<h2>8. Khó khăn khi chuyển đổi backend</h2>
+				<div class="grid">
+					<article class="card">
+						<span class="tag red">Khó khăn</span>
+						<strong>Khác biệt runtime</strong>
+						<p>
+							Cloudflare Workers chạy edge runtime, FastAPI chạy Python server runtime. Các API về request,
+							cookie, crypto, file upload, env và streaming sẽ phải viết lại.
+						</p>
+					</article>
+					<article class="card">
+						<span class="tag red">Khó khăn</span>
+						<strong>Di chuyển authentication</strong>
+						<p>
+							Session hiện dùng cookie và KV. Khi chuyển sang FastAPI cần quyết định dùng JWT hay server session,
+							cách đồng bộ đăng nhập với Astro SSR và chống CSRF.
+						</p>
+					</article>
+					<article class="card">
+						<span class="tag red">Khó khăn</span>
+						<strong>Migration database</strong>
+						<p>
+							D1 dùng SQLite. Nếu chuyển sang PostgreSQL phải chuyển schema, dữ liệu, index, constraint,
+							kiểu thời gian và transaction.
+						</p>
+					</article>
+					<article class="card">
+						<span class="tag red">Khó khăn</span>
+						<strong>R2 và file upload</strong>
+						<p>
+							FastAPI cần cấu hình boto3/S3-compatible client, signed URL, giới hạn dung lượng và bảo mật file.
+						</p>
+					</article>
+					<article class="card">
+						<span class="tag red">Khó khăn</span>
+						<strong>API contract</strong>
+						<p>
+							Frontend hiện đang gọi nhiều Astro API. Cần giữ response shape tương thích hoặc viết adapter để không phá UI.
+						</p>
+					</article>
+					<article class="card">
+						<span class="tag red">Khó khăn</span>
+						<strong>Triển khai và vận hành</strong>
+						<p>
+							FastAPI cần server/container, reverse proxy, domain, SSL, logging, monitoring, scaling và backup riêng.
+						</p>
+					</article>
+				</div>
+			</section>
+
+			<section>
+				<h2>9. Chiến lược chuyển đổi an toàn</h2>
+				<ol>
+					<li>Đóng băng API contract hiện tại bằng tài liệu OpenAPI hoặc file mô tả endpoint.</li>
+					<li>Tạo FastAPI project riêng với module auth, users, leads, courses, orders, messages, admin.</li>
+					<li>Viết database schema bằng SQLAlchemy/Alembic, ưu tiên PostgreSQL nếu làm production dài hạn.</li>
+					<li>Triển khai song song: Astro API cũ vẫn chạy, FastAPI mới chạy ở subdomain như <code>api.example.com</code>.</li>
+					<li>Chuyển từng nhóm API: auth trước, sau đó lead, marketplace, cart, instructor, admin.</li>
+					<li>Frontend Astro gọi qua service layer để có thể đổi backend mà không sửa từng component.</li>
+					<li>Chạy migration dữ liệu thử nghiệm, kiểm tra số lượng record, khóa ngoại và dữ liệu người dùng.</li>
+					<li>Chạy e2e test cho từng flow trước khi tắt API cũ.</li>
+					<li>Sau khi ổn định, chỉ giữ Astro API cho các route nhẹ hoặc proxy cần thiết.</li>
+				</ol>
+			</section>
+
+			<section>
+				<h2>10. Mapping module từ Astro API sang FastAPI</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Module hiện tại</th>
+							<th>FastAPI router đề xuất</th>
+							<th>Ghi chú chuyển đổi</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>/api/auth/*</code></td>
+							<td><code>/auth/register</code>, <code>/auth/login</code>, <code>/auth/me</code></td>
+							<td>Ưu tiên làm đầu tiên vì liên quan toàn hệ thống.</td>
+						</tr>
+						<tr>
+							<td><code>/api/business/leads</code></td>
+							<td><code>/leads</code></td>
+							<td>Giữ validate số điện thoại, email, source path, UTM.</td>
+						</tr>
+						<tr>
+							<td><code>/api/marketplace/courses</code></td>
+							<td><code>/courses</code></td>
+							<td>Chuẩn hóa filter, sort, pagination, SEO slug.</td>
+						</tr>
+						<tr>
+							<td><code>/api/cart</code></td>
+							<td><code>/cart</code>, <code>/checkout</code></td>
+							<td>Cần transaction tốt nếu thêm thanh toán thật.</td>
+						</tr>
+						<tr>
+							<td><code>/api/instructor/*</code></td>
+							<td><code>/instructor/courses</code>, <code>/instructor/materials</code></td>
+							<td>Cần role guard instructor và ownership check.</td>
+						</tr>
+						<tr>
+							<td><code>/api/admin/*</code></td>
+							<td><code>/admin/overview</code>, <code>/admin/users</code>, <code>/admin/leads</code></td>
+							<td>Cần RBAC chi tiết và audit log chặt hơn.</td>
+						</tr>
+						<tr>
+							<td><code>/api/upload</code></td>
+							<td><code>/uploads/presign</code></td>
+							<td>Nên dùng signed URL để giảm tải server Python.</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section>
+				<h2>11. Roadmap đề xuất</h2>
+				<div class="timeline">
+					<article>
+						<time>Tuần 1</time>
+						<div>
+							<strong>Chuẩn hóa tài liệu và API contract</strong>
+							<p>Ghi lại toàn bộ endpoint, request, response, lỗi, phân quyền và bảng dữ liệu hiện tại.</p>
+						</div>
+					</article>
+					<article>
+						<time>Tuần 2</time>
+						<div>
+							<strong>Khởi tạo FastAPI foundation</strong>
+							<p>Tạo cấu trúc project, settings, database, Alembic, auth base, logging, CORS và health check.</p>
+						</div>
+					</article>
+					<article>
+						<time>Tuần 3</time>
+						<div>
+							<strong>Chuyển auth, user, profile</strong>
+							<p>Di chuyển đăng ký, đăng nhập, profile, role và session/JWT.</p>
+						</div>
+					</article>
+					<article>
+						<time>Tuần 4</time>
+						<div>
+							<strong>Chuyển marketplace và instructor</strong>
+							<p>Di chuyển khóa học, bài giảng, tài liệu, giỏ hàng, mua khóa và coupon.</p>
+						</div>
+					</article>
+					<article>
+						<time>Tuần 5</time>
+						<div>
+							<strong>Chuyển admin và reporting</strong>
+							<p>Di chuyển admin overview, lead, user, course, audit log và dashboard báo cáo.</p>
+						</div>
+					</article>
+					<article>
+						<time>Tuần 6</time>
+						<div>
+							<strong>Kiểm thử, migration và cutover</strong>
+							<p>Chạy e2e, migrate dữ liệu, so sánh dữ liệu, deploy staging, sau đó chuyển production.</p>
+						</div>
+					</article>
+				</div>
+			</section>
+
+			<section>
+				<h2>12. Kết luận</h2>
+				<p>
+					Website đã đạt được nền tảng quan trọng: public website, auth theo role, marketplace khóa học,
+					dashboard học viên, dashboard giảng viên và admin center. Việc chuyển backend sang FastAPI là hướng đi hợp lý
+					nếu dự án cần mở rộng logic nghiệp vụ, báo cáo, thanh toán, AI hoặc tích hợp hệ thống bên ngoài.
+				</p>
+				<div class="callout">
+					<strong>Khuyến nghị:</strong> không nên chuyển toàn bộ backend một lần. Nên chuyển từng module theo API contract,
+					chạy song song một thời gian và chỉ cutover khi e2e test cùng dữ liệu migration đã ổn định.
+				</div>
+			</section>
+
+			<p class="footer">Báo cáo được lập cho dự án Sao Việt Tech Academy - ngày 14/06/2026.</p>
+		</main>
+	</body>
+</html>

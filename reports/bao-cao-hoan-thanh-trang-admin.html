@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Báo cáo hoàn thành trang Admin - Sao Việt Tech Academy</title>
+		<style>
+			:root {
+				--ink: #0f172a;
+				--muted: #64748b;
+				--line: #dbe4f0;
+				--blue: #2563eb;
+				--sky: #0ea5e9;
+				--amber: #f59e0b;
+				--bg: #f8fafc;
+				--panel: #ffffff;
+				--soft: #eff6ff;
+				--success: #059669;
+				--danger: #dc2626;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				background:
+					radial-gradient(circle at 10% 0%, rgb(37 99 235 / 0.13), transparent 28rem),
+					linear-gradient(180deg, #eef6ff 0%, var(--bg) 34%, #ffffff 100%);
+				color: var(--ink);
+				font-family:
+					"Be Vietnam Pro",
+					"Segoe UI",
+					system-ui,
+					-apple-system,
+					sans-serif;
+				line-height: 1.65;
+			}
+
+			a {
+				color: var(--blue);
+			}
+
+			.page {
+				width: min(1120px, calc(100% - 40px));
+				margin: 0 auto;
+				padding: 40px 0 72px;
+			}
+
+			.cover {
+				overflow: hidden;
+				position: relative;
+				padding: 44px;
+				border-radius: 32px;
+				background:
+					radial-gradient(circle at 85% 18%, rgb(96 165 250 / 0.36), transparent 19rem),
+					linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #2563eb 100%);
+				color: #fff;
+				box-shadow: 0 28px 80px rgb(30 64 175 / 0.26);
+			}
+
+			.cover::after {
+				position: absolute;
+				right: -90px;
+				bottom: -140px;
+				width: 320px;
+				height: 320px;
+				content: "";
+				border-radius: 999px;
+				background: rgb(255 255 255 / 0.12);
+			}
+
+			.kicker,
+			.badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				border-radius: 999px;
+				font-size: 0.82rem;
+				font-weight: 800;
+			}
+
+			.kicker {
+				padding: 8px 12px;
+				border: 1px solid rgb(255 255 255 / 0.24);
+				background: rgb(255 255 255 / 0.13);
+				color: #fff;
+			}
+
+			.cover h1 {
+				position: relative;
+				z-index: 1;
+				max-width: 820px;
+				margin: 18px 0 14px;
+				font-size: clamp(2.2rem, 5vw, 4.5rem);
+				line-height: 1;
+				letter-spacing: -0.03em;
+			}
+
+			.cover p {
+				position: relative;
+				z-index: 1;
+				max-width: 760px;
+				margin: 0;
+				color: rgb(226 232 240 / 0.92);
+				font-size: 1.05rem;
+			}
+
+			.meta {
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				gap: 14px;
+				margin-top: 22px;
+			}
+
+			.meta div {
+				position: relative;
+				z-index: 1;
+				padding: 16px;
+				border: 1px solid rgb(255 255 255 / 0.18);
+				border-radius: 20px;
+				background: rgb(255 255 255 / 0.12);
+				backdrop-filter: blur(12px);
+			}
+
+			.meta span {
+				display: block;
+				color: rgb(226 232 240 / 0.86);
+				font-size: 0.82rem;
+				font-weight: 700;
+			}
+
+			.meta strong {
+				display: block;
+				margin-top: 4px;
+				font-size: 1rem;
+			}
+
+			section {
+				margin-top: 28px;
+				padding: 28px;
+				border: 1px solid var(--line);
+				border-radius: 28px;
+				background: rgb(255 255 255 / 0.92);
+				box-shadow: 0 22px 60px rgb(15 23 42 / 0.07);
+			}
+
+			h2 {
+				margin: 0 0 12px;
+				font-size: clamp(1.35rem, 2.5vw, 2rem);
+				line-height: 1.15;
+				letter-spacing: -0.02em;
+			}
+
+			h3 {
+				margin: 22px 0 8px;
+				font-size: 1.08rem;
+			}
+
+			p {
+				margin: 0 0 12px;
+				color: #334155;
+			}
+
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 14px;
+				margin-top: 18px;
+			}
+
+			.card {
+				padding: 18px;
+				border: 1px solid var(--line);
+				border-radius: 22px;
+				background: linear-gradient(180deg, #fff, #f8fafc);
+			}
+
+			.card strong {
+				display: block;
+				margin-bottom: 6px;
+				font-size: 1rem;
+			}
+
+			.card p,
+			.card li {
+				color: var(--muted);
+				font-size: 0.94rem;
+			}
+
+			.badge {
+				margin-bottom: 10px;
+				padding: 6px 10px;
+				background: var(--soft);
+				color: var(--blue);
+			}
+
+			.badge.done {
+				background: rgb(5 150 105 / 0.11);
+				color: var(--success);
+			}
+
+			.badge.warn {
+				background: rgb(245 158 11 / 0.14);
+				color: #92400e;
+			}
+
+			ul,
+			ol {
+				margin: 12px 0 0;
+				padding-left: 20px;
+			}
+
+			li {
+				margin: 7px 0;
+				color: #334155;
+			}
+
+			table {
+				width: 100%;
+				margin-top: 16px;
+				border-collapse: collapse;
+				overflow: hidden;
+				border: 1px solid var(--line);
+				border-radius: 18px;
+				background: #fff;
+			}
+
+			th,
+			td {
+				padding: 13px 14px;
+				border-bottom: 1px solid var(--line);
+				text-align: left;
+				vertical-align: top;
+			}
+
+			th {
+				background: #f1f5f9;
+				color: #334155;
+				font-size: 0.86rem;
+				text-transform: uppercase;
+				letter-spacing: 0.04em;
+			}
+
+			tr:last-child td {
+				border-bottom: 0;
+			}
+
+			code {
+				padding: 2px 6px;
+				border-radius: 7px;
+				background: #eef2ff;
+				color: #1e3a8a;
+				font-family: "Cascadia Code", Consolas, monospace;
+				font-size: 0.9em;
+			}
+
+			.callout {
+				margin-top: 16px;
+				padding: 16px 18px;
+				border-left: 4px solid var(--blue);
+				border-radius: 18px;
+				background: #eff6ff;
+			}
+
+			.footer-note {
+				margin-top: 28px;
+				color: var(--muted);
+				text-align: center;
+				font-size: 0.92rem;
+			}
+
+			@media print {
+				body {
+					background: #fff;
+				}
+
+				.page {
+					width: 100%;
+					padding: 0;
+				}
+
+				.cover,
+				section {
+					box-shadow: none;
+					break-inside: avoid;
+				}
+			}
+
+			@media (max-width: 820px) {
+				.page {
+					width: min(100% - 24px, 1120px);
+					padding-top: 20px;
+				}
+
+				.cover,
+				section {
+					padding: 22px;
+					border-radius: 24px;
+				}
+
+				.meta,
+				.grid {
+					grid-template-columns: 1fr;
+				}
+
+				table {
+					display: block;
+					overflow-x: auto;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main class="page">
+			<header class="cover">
+				<span class="kicker">Báo cáo hoàn thành</span>
+				<h1>Trang Admin quản lý website Sao Việt Tech Academy</h1>
+				<p>
+					Báo cáo tổng hợp các hạng mục đã hoàn thành cho trang quản trị, phạm vi chức năng,
+					kiến trúc dữ liệu và tình trạng kiểm thử của dự án.
+				</p>
+				<div class="meta">
+					<div>
+						<span>Dự án</span>
+						<strong>Sao Việt Tech Academy</strong>
+					</div>
+					<div>
+						<span>Nền tảng</span>
+						<strong>Astro + Cloudflare</strong>
+					</div>
+					<div>
+						<span>Ngày báo cáo</span>
+						<strong>14/06/2026</strong>
+					</div>
+					<div>
+						<span>Trạng thái</span>
+						<strong>Đã hoàn thành bản quản trị lõi</strong>
+					</div>
+				</div>
+			</header>
+
+			<section>
+				<h2>1. Tóm tắt điều hành</h2>
+				<p>
+					Website đã được mở rộng từ một website đào tạo/marketing thành một hệ thống có khả năng
+					quản trị vận hành. Trang admin hiện đóng vai trò trung tâm để theo dõi lead tư vấn, khóa học,
+					người dùng, chứng chỉ, chi nhánh, nội dung và nhật ký thao tác.
+				</p>
+				<p>
+					Hệ thống hiện sử dụng Astro 6 ở chế độ server-rendered, Cloudflare Workers làm runtime,
+					Cloudflare D1 làm database, Cloudflare R2 cho lưu trữ media, Resend cho email và EmDash CMS
+					cho quản trị nội dung. Các luồng nghiệp vụ học viên, giảng viên và admin đã được tách role rõ ràng.
+				</p>
+				<div class="callout">
+					<strong>Kết luận:</strong> trang admin đã hoàn thành phần quản trị lõi phục vụ vận hành website,
+					nhưng trước production vẫn nên bổ sung kiểm thử e2e, phân quyền chi tiết hơn và dashboard báo cáo nâng cao.
+				</div>
+			</section>
+
+			<section>
+				<h2>2. Phạm vi đã hoàn thành</h2>
+				<div class="grid">
+					<article class="card">
+						<span class="badge done">Hoàn thành</span>
+						<strong>Admin Center</strong>
+						<p>Trang <code>/admin</code> có dashboard tổng quan, sidebar, thống kê, bảng lead, khóa học, người dùng và liên kết CMS.</p>
+					</article>
+					<article class="card">
+						<span class="badge done">Hoàn thành</span>
+						<strong>Phân quyền role</strong>
+						<p>Hệ thống có các vai trò <code>admin</code>, <code>instructor</code>, <code>student</code>, kèm redirect dashboard theo role.</p>
+					</article>
+					<article class="card">
+						<span class="badge done">Hoàn thành</span>
+						<strong>Quản lý lead</strong>
+						<p>Lead từ form tư vấn được lưu vào database, có trạng thái xử lý, người phụ trách và lịch sử sự kiện.</p>
+					</article>
+					<article class="card">
+						<span class="badge done">Hoàn thành</span>
+						<strong>Quản lý khóa học</strong>
+						<p>Admin xem khóa học do giảng viên đăng, theo dõi trạng thái draft/published, học phí, lượt mua và doanh thu.</p>
+					</article>
+					<article class="card">
+						<span class="badge done">Hoàn thành</span>
+						<strong>Quản lý người dùng</strong>
+						<p>Admin có thể theo dõi danh sách người dùng, role, trạng thái tài khoản và thời điểm tạo tài khoản.</p>
+					</article>
+					<article class="card">
+						<span class="badge done">Hoàn thành</span>
+						<strong>CMS nội dung</strong>
+						<p>Admin có đường dẫn sang EmDash CMS để quản lý bài viết, trang nội dung và các phần editorial.</p>
+					</article>
+				</div>
+			</section>
+
+			<section>
+				<h2>3. Chức năng chi tiết của trang Admin</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Nhóm chức năng</th>
+							<th>Mô tả</th>
+							<th>File/API liên quan</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Tổng quan vận hành</td>
+							<td>Hiển thị tổng người dùng, lead mới, khóa học đang bán, doanh thu, chứng chỉ, chi nhánh active và lớp mở.</td>
+							<td><code>src/pages/admin.astro</code>, <code>src/lib/admin.ts</code></td>
+						</tr>
+						<tr>
+							<td>Lead tư vấn</td>
+							<td>Quản lý pipeline lead theo trạng thái: mới, đã liên hệ, đang tư vấn, đã hẹn lịch, chốt học, thất bại.</td>
+							<td><code>/api/admin/leads</code>, <code>/api/business/admin/leads</code></td>
+						</tr>
+						<tr>
+							<td>Người dùng</td>
+							<td>Quản lý tài khoản học viên, giảng viên, admin; hỗ trợ trạng thái active/suspended.</td>
+							<td><code>/api/admin/users</code>, <code>auth_users</code></td>
+						</tr>
+						<tr>
+							<td>Khóa học marketplace</td>
+							<td>Theo dõi khóa học giảng viên đăng bán, trạng thái đăng bán, doanh thu, lượt mua.</td>
+							<td><code>/api/admin/courses</code>, <code>instructor_courses</code></td>
+						</tr>
+						<tr>
+							<td>Chứng chỉ</td>
+							<td>Có nền tảng dữ liệu để tra cứu chứng nhận theo mã và trạng thái chứng chỉ.</td>
+							<td><code>/api/business/certificates/verify</code>, <code>business_certificates</code></td>
+						</tr>
+						<tr>
+							<td>Audit log</td>
+							<td>Lưu dấu các thao tác quản trị quan trọng như cập nhật lead, khóa học, người dùng.</td>
+							<td><code>business_audit_logs</code>, hàm <code>audit()</code></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section>
+				<h2>4. Kiến trúc hệ thống hiện tại</h2>
+				<div class="grid">
+					<article class="card">
+						<strong>Frontend/Public website</strong>
+						<p>Astro server-rendered pages cho trang chủ, marketplace, tin tức, liên hệ, profile, dashboard học viên và giảng viên.</p>
+					</article>
+					<article class="card">
+						<strong>Business API</strong>
+						<p>Astro API routes xử lý auth, lead, cart, purchase, upload, marketplace, messages, profile và admin actions.</p>
+					</article>
+					<article class="card">
+						<strong>CMS/Editorial</strong>
+						<p>EmDash CMS quản trị bài viết, trang nội dung, schema, media và giao diện admin riêng tại <code>/_emdash/admin</code>.</p>
+					</article>
+				</div>
+				<h3>Luồng dữ liệu chính</h3>
+				<ol>
+					<li>Người dùng truy cập website public và gửi form tư vấn hoặc đăng ký tài khoản.</li>
+					<li>API lưu dữ liệu vào Cloudflare D1 và ghi nhận các thông tin nghiệp vụ cần thiết.</li>
+					<li>Admin đăng nhập bằng tài khoản role admin hoặc email được cấu hình trong <code>ADMIN_EMAIL</code>.</li>
+					<li>Trang admin truy vấn dữ liệu tổng hợp từ các bảng lead, user, course, purchase, certificate, location.</li>
+					<li>Admin có thể quản lý trạng thái lead, khóa học, người dùng và chuyển sang EmDash CMS để xử lý nội dung.</li>
+				</ol>
+			</section>
+
+			<section>
+				<h2>5. Database và bảng nghiệp vụ</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Bảng</th>
+							<th>Vai trò</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>auth_users</code></td>
+							<td>Lưu tài khoản, mật khẩu hash PBKDF2, role, trạng thái và thông tin đăng nhập.</td>
+						</tr>
+						<tr>
+							<td><code>business_leads</code>, <code>business_lead_events</code></td>
+							<td>Lưu lead tư vấn và lịch sử chăm sóc lead.</td>
+						</tr>
+						<tr>
+							<td><code>business_locations</code>, <code>business_cohorts</code></td>
+							<td>Quản lý chi nhánh, lịch khai giảng, lớp học và local SEO.</td>
+						</tr>
+						<tr>
+							<td><code>business_certificates</code></td>
+							<td>Lưu chứng chỉ và phục vụ tra cứu chứng nhận.</td>
+						</tr>
+						<tr>
+							<td><code>instructor_courses</code>, <code>course_lessons</code>, <code>course_materials</code></td>
+							<td>Quản lý khóa học do giảng viên đăng bán, bài giảng và tài liệu.</td>
+						</tr>
+						<tr>
+							<td><code>course_purchases</code>, <code>cart_items</code>, <code>coupons</code></td>
+							<td>Quản lý mua khóa học, giỏ hàng và mã giảm giá.</td>
+						</tr>
+						<tr>
+							<td><code>private_messages</code></td>
+							<td>Nhắn tin riêng giữa học viên và giảng viên sau khi học viên mua khóa học.</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section>
+				<h2>6. API Admin và nghiệp vụ liên quan</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Endpoint</th>
+							<th>Mục đích</th>
+							<th>Bảo vệ</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>GET /api/admin/overview</code></td>
+							<td>Lấy số liệu dashboard admin.</td>
+							<td>Admin only</td>
+						</tr>
+						<tr>
+							<td><code>PATCH /api/admin/users</code></td>
+							<td>Cập nhật role hoặc trạng thái người dùng.</td>
+							<td>Admin only</td>
+						</tr>
+						<tr>
+							<td><code>PATCH /api/admin/courses</code></td>
+							<td>Cập nhật trạng thái khóa học.</td>
+							<td>Admin only</td>
+						</tr>
+						<tr>
+							<td><code>PATCH /api/admin/leads</code></td>
+							<td>Cập nhật trạng thái lead, người phụ trách, ghi chú chăm sóc.</td>
+							<td>Admin only</td>
+						</tr>
+						<tr>
+							<td><code>POST /api/business/leads</code></td>
+							<td>Nhận form đăng ký tư vấn từ website public.</td>
+							<td>Public + validate input</td>
+						</tr>
+						<tr>
+							<td><code>GET /api/marketplace/courses</code></td>
+							<td>Danh sách khóa học marketplace cho học viên.</td>
+							<td>Public</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section>
+				<h2>7. Bảo mật và phân quyền</h2>
+				<ul>
+					<li>Đăng ký public chỉ cho phép role học viên hoặc giảng viên; role admin không mở public.</li>
+					<li>Admin được xác định bằng role <code>admin</code> hoặc email cấu hình trong biến môi trường <code>ADMIN_EMAIL</code>.</li>
+					<li>Mật khẩu được hash bằng PBKDF2 SHA-256 với 100000 iterations, phù hợp giới hạn Web Crypto hiện tại.</li>
+					<li>Session sử dụng cookie <code>sv_auth</code> kết hợp Cloudflare KV binding <code>SESSION</code>.</li>
+					<li>Các API admin gọi hàm kiểm tra quyền trước khi cập nhật dữ liệu.</li>
+					<li>Hệ thống audit log ghi lại thao tác admin quan trọng để hỗ trợ truy vết.</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>8. Kiểm thử đã thực hiện</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Hạng mục</th>
+							<th>Kết quả</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Typecheck Astro</td>
+							<td>Đã chạy <code>npm run typecheck</code>, kết quả 0 errors, 0 warnings, 0 hints.</td>
+						</tr>
+						<tr>
+							<td>Build production</td>
+							<td>Đã chạy <code>npm run build</code>, build Cloudflare server hoàn tất.</td>
+						</tr>
+						<tr>
+							<td>Smoke test public route</td>
+							<td>Các route chính như <code>/</code>, <code>/marketplace</code>, <code>/tin-tuc</code>, <code>/lien-he</code> trả HTTP 200.</td>
+						</tr>
+						<tr>
+							<td>Protected route</td>
+							<td><code>/admin</code>, <code>/hoc-vien/dashboard</code>, <code>/giang-vien/dashboard</code> redirect khi chưa đăng nhập.</td>
+						</tr>
+						<tr>
+							<td>API stability</td>
+							<td>Đã sửa lỗi <code>/api/posts</code> thiếu bảng posts và <code>/api/upload</code> trả 500 khi sai content-type.</td>
+						</tr>
+						<tr>
+							<td>Local dev port</td>
+							<td>Đã khóa local dev về <code>http://localhost:4322/</code> và thêm script tự dọn port cũ.</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section>
+				<h2>9. Hạn chế còn lại và đề xuất nâng cấp</h2>
+				<div class="grid">
+					<article class="card">
+						<span class="badge warn">Cần làm tiếp</span>
+						<strong>Phân quyền chi tiết</strong>
+						<p>Tách rõ quyền admin tổng, editor, tư vấn tuyển sinh, kế toán, quản lý đào tạo.</p>
+					</article>
+					<article class="card">
+						<span class="badge warn">Cần làm tiếp</span>
+						<strong>Thanh toán thật</strong>
+						<p>Kết nối cổng thanh toán Việt Nam, trạng thái giao dịch, hóa đơn và đối soát.</p>
+					</article>
+					<article class="card">
+						<span class="badge warn">Cần làm tiếp</span>
+						<strong>Kiểm thử e2e</strong>
+						<p>Bổ sung Playwright cho flow đăng ký, đăng nhập, đăng khóa học, mua khóa học và chat.</p>
+					</article>
+					<article class="card">
+						<span class="badge warn">Cần làm tiếp</span>
+						<strong>Báo cáo nâng cao</strong>
+						<p>Thêm biểu đồ doanh thu, nguồn lead, tỷ lệ chuyển đổi, hiệu quả giảng viên và cohort.</p>
+					</article>
+					<article class="card">
+						<span class="badge warn">Cần làm tiếp</span>
+						<strong>Quản lý media</strong>
+						<p>Chuẩn hóa upload avatar, thumbnail khóa học, tài liệu và chính sách kiểm duyệt file.</p>
+					</article>
+					<article class="card">
+						<span class="badge warn">Cần làm tiếp</span>
+						<strong>Observability</strong>
+						<p>Bổ sung log lỗi, alert, dashboard uptime, tracking Core Web Vitals và API latency.</p>
+					</article>
+				</div>
+			</section>
+
+			<section>
+				<h2>10. Kết luận</h2>
+				<p>
+					Trang admin đã hoàn thành vai trò quản trị lõi cho website đào tạo công nghệ. Hệ thống hiện có nền tảng
+					đủ tốt để quản lý lead, người dùng, khóa học, giảng viên, học viên, chứng chỉ và nội dung. Với các bước
+					nâng cấp tiếp theo về phân quyền, thanh toán, kiểm thử và báo cáo dữ liệu, dự án có thể tiến gần hơn tới
+					một nền tảng vận hành thực tế cho trung tâm đào tạo.
+				</p>
+			</section>
+
+			<p class="footer-note">Báo cáo được lập cho dự án Sao Việt Tech Academy - phiên bản local ngày 14/06/2026.</p>
+		</main>
+	</body>
+</html>

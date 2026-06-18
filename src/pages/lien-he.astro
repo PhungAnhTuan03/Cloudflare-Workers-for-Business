@@ -537,3 +537,162 @@ const schema = {
 		}
 	}
 </style>
+
+<style>
+	.contact-hero {
+		padding-top: clamp(64px, 8vw, 96px);
+		background: var(--surface) !important;
+	}
+
+	.contact-card,
+	.contact-form-panel,
+	.branch-card,
+	.support-item {
+		border: 1px solid var(--line) !important;
+		border-radius: 18px !important;
+		background: var(--surface) !important;
+		background-image: none !important;
+		box-shadow: none !important;
+	}
+
+	.contact-card,
+	.contact-form-panel {
+		border-left: 1px solid var(--line) !important;
+	}
+
+	.contact-card h2,
+	.contact-form-panel h2 {
+		font-weight: 600;
+		letter-spacing: -0.02em;
+	}
+
+	.branch-section {
+		padding-top: clamp(64px, 7vw, 96px);
+		background: var(--soft) !important;
+	}
+
+	.branch-section .section-head {
+		margin-bottom: 32px;
+		padding-bottom: 0;
+		border-bottom: 0;
+	}
+
+	.branch-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 20px;
+		align-items: stretch;
+	}
+
+	.branch-card,
+	.branch-card:nth-child(6n + 1),
+	.branch-card:nth-child(6n + 2),
+	.branch-card:nth-child(6n + 4),
+	.branch-card:nth-child(6n + 5),
+	.branch-card:nth-child(3n + 2) {
+		grid-column: auto;
+		min-height: 230px;
+		display: grid;
+		grid-template-rows: auto auto 1fr auto;
+		gap: 12px;
+		align-content: stretch;
+		padding: 22px;
+		transform: none;
+	}
+
+	.branch-card::before,
+	.branch-card::after {
+		display: none;
+	}
+
+	.branch-card:hover,
+	.branch-card:nth-child(3n + 2):hover {
+		border-color: #b7d6f5 !important;
+		box-shadow: none !important;
+		transform: translateY(-2px);
+	}
+
+	.branch-card span {
+		padding: 0;
+		border: 0;
+		border-radius: 0 !important;
+		background: transparent !important;
+		color: var(--primary) !important;
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+
+	.branch-card h3 {
+		max-width: none;
+		min-height: 2.6em;
+		margin: 0;
+		font-size: 1.15rem;
+		font-weight: 600;
+		line-height: 1.3;
+		letter-spacing: -0.02em;
+	}
+
+	.branch-card p {
+		margin: 0;
+		line-height: 1.6;
+		-webkit-line-clamp: 3;
+	}
+
+	.branch-card a {
+		min-height: 44px;
+		align-self: end;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		color: var(--primary);
+		font-weight: 600;
+	}
+
+	.branch-card a:hover {
+		border-color: transparent;
+		color: var(--primary-strong);
+		transform: none;
+	}
+
+	.contact-section {
+		background: var(--surface) !important;
+	}
+
+	.support-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.support-item {
+		grid-template-columns: 44px 1fr;
+		border-left: 1px solid var(--line) !important;
+		padding: 18px;
+	}
+
+	.support-item i {
+		border-radius: 50%;
+		background: var(--soft);
+		color: var(--primary);
+	}
+
+	@media (max-width: 1040px) {
+		.branch-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.support-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.contact-hero,
+		.branch-section {
+			padding-top: 56px;
+		}
+
+		.branch-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

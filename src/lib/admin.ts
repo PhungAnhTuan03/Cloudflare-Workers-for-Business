@@ -50,161 +50,160 @@ async function rows<T>(db: D1Database, sql: string, binds: (string | number)[] =
 }
 
 export async function getAdminDashboardData(db: D1Database) {
-	await ensureAuthSchema(db);
-	await ensureLearningSchema(db);
+	await Promise.all([ensureAuthSchema(db), ensureLearningSchema(db)]);
 
 	const [
-		totalUsers,
-		totalStudents,
-		totalInstructors,
-		totalAdmins,
-		totalLeads,
-		newLeads,
-		wonLeads,
-		totalCourses,
-		publishedCourses,
-		draftCourses,
-		totalPurchases,
-		totalRevenue,
-		totalMessages,
-		totalCertificates,
-		activeLocations,
-		openCohorts,
+		[
+			totalUsers,
+			totalStudents,
+			totalInstructors,
+			totalAdmins,
+			totalLeads,
+			newLeads,
+			wonLeads,
+			totalCourses,
+			publishedCourses,
+			draftCourses,
+			totalPurchases,
+			totalRevenue,
+			totalMessages,
+			totalCertificates,
+			activeLocations,
+			openCohorts,
+		],
+		[leadStatuses, recentLeads, recentCourses, recentUsers, recentCertificates, locations, auditLogs],
 	] = await Promise.all([
-		countValue(db, "SELECT COUNT(*) AS value FROM auth_users"),
-		countValue(db, "SELECT COUNT(*) AS value FROM auth_users WHERE role = 'student'"),
-		countValue(db, "SELECT COUNT(*) AS value FROM auth_users WHERE role = 'instructor'"),
-		countValue(db, "SELECT COUNT(*) AS value FROM auth_users WHERE role = 'admin'"),
-		countValue(db, "SELECT COUNT(*) AS value FROM business_leads"),
-		countValue(db, "SELECT COUNT(*) AS value FROM business_leads WHERE status = 'new'"),
-		countValue(db, "SELECT COUNT(*) AS value FROM business_leads WHERE status = 'won'"),
-		countValue(db, "SELECT COUNT(*) AS value FROM instructor_courses"),
-		countValue(db, "SELECT COUNT(*) AS value FROM instructor_courses WHERE status = 'published'"),
-		countValue(db, "SELECT COUNT(*) AS value FROM instructor_courses WHERE status = 'draft'"),
-		countValue(db, "SELECT COUNT(*) AS value FROM course_purchases WHERE status = 'active'"),
-		countValue(db, "SELECT COALESCE(SUM(amount), 0) AS value FROM course_purchases WHERE status = 'active'"),
-		countValue(db, "SELECT COUNT(*) AS value FROM private_messages"),
-		countValue(db, "SELECT COUNT(*) AS value FROM business_certificates"),
-		countValue(db, "SELECT COUNT(*) AS value FROM business_locations WHERE is_active = 1"),
-		countValue(db, "SELECT COUNT(*) AS value FROM business_cohorts WHERE status IN ('open', 'waitlist')"),
+		Promise.all([
+			countValue(db, "SELECT COUNT(*) AS value FROM auth_users"),
+			countValue(db, "SELECT COUNT(*) AS value FROM auth_users WHERE role = 'student'"),
+			countValue(db, "SELECT COUNT(*) AS value FROM auth_users WHERE role = 'instructor'"),
+			countValue(db, "SELECT COUNT(*) AS value FROM auth_users WHERE role = 'admin'"),
+			countValue(db, "SELECT COUNT(*) AS value FROM business_leads"),
+			countValue(db, "SELECT COUNT(*) AS value FROM business_leads WHERE status = 'new'"),
+			countValue(db, "SELECT COUNT(*) AS value FROM business_leads WHERE status = 'won'"),
+			countValue(db, "SELECT COUNT(*) AS value FROM instructor_courses"),
+			countValue(db, "SELECT COUNT(*) AS value FROM instructor_courses WHERE status = 'published'"),
+			countValue(db, "SELECT COUNT(*) AS value FROM instructor_courses WHERE status = 'draft'"),
+			countValue(db, "SELECT COUNT(*) AS value FROM course_purchases WHERE status = 'active'"),
+			countValue(db, "SELECT COALESCE(SUM(amount), 0) AS value FROM course_purchases WHERE status = 'active'"),
+			countValue(db, "SELECT COUNT(*) AS value FROM private_messages"),
+			countValue(db, "SELECT COUNT(*) AS value FROM business_certificates"),
+			countValue(db, "SELECT COUNT(*) AS value FROM business_locations WHERE is_active = 1"),
+			countValue(db, "SELECT COUNT(*) AS value FROM business_cohorts WHERE status IN ('open', 'waitlist')"),
+		]),
+		Promise.all([
+			rows<{ status: string; value: number }>(
+				db,
+				`SELECT status, COUNT(*) AS value
+				FROM business_leads
+				GROUP BY status
+				ORDER BY value DESC`,
+			),
+			rows<{
+				public_id: string;
+				full_name: string;
+				phone: string;
+				email: string | null;
+				course_slug: string | null;
+				location_slug: string | null;
+				status: string;
+				assigned_to: string | null;
+				created_at: string;
+			}>(
+				db,
+				`SELECT public_id, full_name, phone, email, course_slug, location_slug, status, assigned_to, created_at
+				FROM business_leads
+				ORDER BY created_at DESC
+				LIMIT 8`,
+			),
+			rows<{
+				public_id: string;
+				title: string;
+				price: number;
+				status: string;
+				created_at: string;
+				instructor_name: string;
+				purchase_count: number;
+				revenue: number;
+			}>(
+				db,
+				`SELECT
+					c.public_id,
+					c.title,
+					c.price,
+					c.status,
+					c.created_at,
+					u.full_name AS instructor_name,
+					COALESCE(p.purchase_count, 0) AS purchase_count,
+					COALESCE(p.revenue, 0) AS revenue
+				FROM instructor_courses c
+				JOIN auth_users u ON u.id = c.instructor_id
+				LEFT JOIN (
+					SELECT course_id, COUNT(*) AS purchase_count, COALESCE(SUM(amount), 0) AS revenue
+					FROM course_purchases
+					WHERE status = 'active'
+					GROUP BY course_id
+				) p ON p.course_id = c.id
+				ORDER BY c.created_at DESC
+				LIMIT 8`,
+			),
+			rows<{
+				public_id: string;
+				full_name: string;
+				email: string;
+				phone: string | null;
+				role: string;
+				status: string;
+				created_at: string;
+			}>(
+				db,
+				`SELECT public_id, full_name, email, phone, role, status, created_at
+				FROM auth_users
+				ORDER BY created_at DESC
+				LIMIT 10`,
+			),
+			rows<{
+				code: string;
+				student_name: string;
+				course_name: string;
+				issued_at: string;
+				status: string;
+			}>(
+				db,
+				`SELECT code, student_name, course_name, issued_at, status
+				FROM business_certificates
+				ORDER BY issued_at DESC
+				LIMIT 5`,
+			),
+			rows<{
+				slug: string;
+				name: string;
+				address: string;
+				province: string;
+				phone: string | null;
+				is_active: number;
+			}>(
+				db,
+				`SELECT slug, name, address, province, phone, is_active
+				FROM business_locations
+				ORDER BY is_active DESC, province ASC, id ASC
+				LIMIT 8`,
+			),
+			rows<{
+				action: string;
+				entity_type: string;
+				entity_id: string;
+				actor_id: string | null;
+				created_at: string;
+			}>(
+				db,
+				`SELECT action, entity_type, entity_id, actor_id, created_at
+				FROM business_audit_logs
+				ORDER BY created_at DESC
+				LIMIT 6`,
+			),
+		]),
 	]);
-
-	const leadStatuses = await rows<{ status: string; value: number }>(
-		db,
-		`SELECT status, COUNT(*) AS value
-		FROM business_leads
-		GROUP BY status
-		ORDER BY value DESC`,
-	);
-
-	const recentLeads = await rows<{
-		public_id: string;
-		full_name: string;
-		phone: string;
-		email: string | null;
-		course_slug: string | null;
-		location_slug: string | null;
-		status: string;
-		assigned_to: string | null;
-		created_at: string;
-	}>(
-		db,
-		`SELECT public_id, full_name, phone, email, course_slug, location_slug, status, assigned_to, created_at
-		FROM business_leads
-		ORDER BY created_at DESC
-		LIMIT 8`,
-	);
-
-	const recentCourses = await rows<{
-		public_id: string;
-		title: string;
-		price: number;
-		status: string;
-		created_at: string;
-		instructor_name: string;
-		purchase_count: number;
-		revenue: number;
-	}>(
-		db,
-		`SELECT
-			c.public_id,
-			c.title,
-			c.price,
-			c.status,
-			c.created_at,
-			u.full_name AS instructor_name,
-			COALESCE(p.purchase_count, 0) AS purchase_count,
-			COALESCE(p.revenue, 0) AS revenue
-		FROM instructor_courses c
-		JOIN auth_users u ON u.id = c.instructor_id
-		LEFT JOIN (
-			SELECT course_id, COUNT(*) AS purchase_count, COALESCE(SUM(amount), 0) AS revenue
-			FROM course_purchases
-			WHERE status = 'active'
-			GROUP BY course_id
-		) p ON p.course_id = c.id
-		ORDER BY c.created_at DESC
-		LIMIT 8`,
-	);
-
-	const recentUsers = await rows<{
-		public_id: string;
-		full_name: string;
-		email: string;
-		phone: string | null;
-		role: string;
-		status: string;
-		created_at: string;
-	}>(
-		db,
-		`SELECT public_id, full_name, email, phone, role, status, created_at
-		FROM auth_users
-		ORDER BY created_at DESC
-		LIMIT 10`,
-	);
-
-	const recentCertificates = await rows<{
-		code: string;
-		student_name: string;
-		course_name: string;
-		issued_at: string;
-		status: string;
-	}>(
-		db,
-		`SELECT code, student_name, course_name, issued_at, status
-		FROM business_certificates
-		ORDER BY issued_at DESC
-		LIMIT 5`,
-	);
-
-	const locations = await rows<{
-		slug: string;
-		name: string;
-		address: string;
-		province: string;
-		phone: string | null;
-		is_active: number;
-	}>(
-		db,
-		`SELECT slug, name, address, province, phone, is_active
-		FROM business_locations
-		ORDER BY is_active DESC, province ASC, id ASC
-		LIMIT 8`,
-	);
-
-	const auditLogs = await rows<{
-		action: string;
-		entity_type: string;
-		entity_id: string;
-		actor_id: string | null;
-		created_at: string;
-	}>(
-		db,
-		`SELECT action, entity_type, entity_id, actor_id, created_at
-		FROM business_audit_logs
-		ORDER BY created_at DESC
-		LIMIT 6`,
-	);
 
 	return {
 		stats: {
@@ -235,22 +234,22 @@ export async function getAdminDashboardData(db: D1Database) {
 	};
 }
 
-export function parseManagedRole(value: unknown) {
+function parseManagedRole(value: unknown) {
 	const role = clean(value);
 	return allowedManagedRoles.has(role) ? role : null;
 }
 
-export function parseUserStatus(value: unknown) {
+function parseUserStatus(value: unknown) {
 	const status = clean(value);
 	return allowedUserStatuses.has(status) ? status : null;
 }
 
-export function parseCourseStatus(value: unknown) {
+function parseCourseStatus(value: unknown) {
 	const status = clean(value);
 	return allowedCourseStatuses.has(status) ? status : null;
 }
 
-export function parseAdminLeadStatus(value: unknown) {
+function parseAdminLeadStatus(value: unknown) {
 	const status = clean(value);
 	return allowedLeadStatuses.has(status) ? status : null;
 }

@@ -1,5 +1,5 @@
 import type { AuthUser } from "./auth";
-import { ensureAuthSchema, getCurrentUser } from "./auth";
+import { ensureAuthSchema } from "./auth";
 import { clean, publicId } from "./business-api";
 
 export type InstructorCourse = {
@@ -133,12 +133,10 @@ const schemaSql = [
 
 export async function ensureLearningSchema(db: D1Database): Promise<void> {
 	await ensureAuthSchema(db);
-	for (const sql of schemaSql) {
-		await db.prepare(sql).run();
-	}
+	await db.batch(schemaSql.map((sql) => db.prepare(sql)));
 }
 
-export function slugify(value: string): string {
+function slugify(value: string): string {
 	return value
 		.normalize("NFD")
 		.replace(/[\u0300-\u036f]/g, "")
@@ -146,16 +144,6 @@ export function slugify(value: string): string {
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/(^-|-$)/g, "")
 		.slice(0, 80);
-}
-
-export async function requireCurrentUser(
-	db: D1Database,
-	kv: KVNamespace,
-	request: Request,
-): Promise<AuthUser> {
-	const user = await getCurrentUser(db, kv, request);
-	if (!user) throw new Error("Ban can dang nhap.");
-	return user;
 }
 
 export function requireInstructor(user: AuthUser): void {
@@ -205,7 +193,7 @@ export async function upsertProfile(
 	return getProfileForViewer(db, user.public_id, user);
 }
 
-export async function hasPurchasedFromInstructor(
+async function hasPurchasedFromInstructor(
 	db: D1Database,
 	studentId: number,
 	instructorId: number,
@@ -326,7 +314,7 @@ export async function createInstructorCourse(
 	return course;
 }
 
-export async function getCourseByPublicId(
+async function getCourseByPublicId(
 	db: D1Database,
 	coursePublicId: string,
 ): Promise<InstructorCourse | null> {
@@ -526,7 +514,7 @@ export async function createInstructorCoupon(
 		.run();
 }
 
-export async function validateCouponForCourse(db: D1Database, code: string, courseId: number) {
+async function validateCouponForCourse(db: D1Database, code: string, courseId: number) {
 	await ensureLearningSchema(db);
 	const now = new Date().toISOString();
 	const coupon = await db
@@ -551,7 +539,7 @@ export async function validateCouponForCourse(db: D1Database, code: string, cour
 	return coupon ?? null;
 }
 
-export function discountedPrice(price: number, coupon?: { discount_type: string; discount_value: number } | null) {
+function discountedPrice(price: number, coupon?: { discount_type: string; discount_value: number } | null) {
 	if (!coupon) return price;
 	if (coupon.discount_type === "fixed") return Math.max(0, price - Number(coupon.discount_value));
 	return Math.max(0, Math.round(price * (1 - Number(coupon.discount_value) / 100)));
@@ -569,21 +557,24 @@ export async function applyCouponToCart(db: D1Database, user: AuthUser, code: st
 		.bind(user.id)
 		.all<{ cart_item_id: number; course_id: number }>();
 
-	let applied = 0;
-	for (const item of items.results ?? []) {
-		const coupon = await validateCouponForCourse(db, code, item.course_id);
-		if (coupon) {
-			await db.prepare("UPDATE cart_items SET coupon_id = ? WHERE id = ?").bind(coupon.id, item.cart_item_id).run();
-			applied += 1;
-		}
-	}
+	const coupons = await Promise.all(
+		(items.results ?? []).map(async (item) => ({
+			item,
+			coupon: await validateCouponForCourse(db, code, item.course_id),
+		})),
+	);
+	const couponUpdates = coupons.flatMap(({ item, coupon }) =>
+		coupon ? [db.prepare("UPDATE cart_items SET coupon_id = ? WHERE id = ?").bind(coupon.id, item.cart_item_id)] : [],
+	);
 
-	if (!applied) throw new Error("Coupon khong hop le voi cac khoa hoc trong gio.");
+	if (couponUpdates.length) await db.batch(couponUpdates);
+
+	if (!couponUpdates.length) throw new Error("Coupon khong hop le voi cac khoa hoc trong gio.");
 }
 
 export async function checkoutCart(db: D1Database, user: AuthUser) {
-	await ensureLearningSchema(db);
 	if (user.role !== "student") throw new Error("Chi hoc vien moi checkout khoa hoc.");
+	await ensureLearningSchema(db);
 
 	const cart = await db
 		.prepare(
@@ -616,6 +607,7 @@ export async function checkoutCart(db: D1Database, user: AuthUser) {
 	const items = cart.results ?? [];
 	if (!items.length) throw new Error("Gio hang dang trong.");
 
+	const purchaseStatements: D1PreparedStatement[] = [];
 	for (const item of items) {
 		const finalPrice = discountedPrice(
 			Number(item.price),
@@ -623,24 +615,26 @@ export async function checkoutCart(db: D1Database, user: AuthUser) {
 				? { discount_type: item.discount_type, discount_value: item.discount_value }
 				: null,
 		);
-		await db
-			.prepare(
-				`INSERT INTO course_purchases (student_id, course_id, instructor_id, amount, currency, status, created_at)
+		purchaseStatements.push(
+			db
+				.prepare(
+					`INSERT INTO course_purchases (student_id, course_id, instructor_id, amount, currency, status, created_at)
 				VALUES (?, ?, ?, ?, ?, 'active', ?)
 				ON CONFLICT(student_id, course_id) DO UPDATE SET status = 'active'`,
-			)
-			.bind(user.id, item.course_id, item.instructor_id, finalPrice, item.currency, new Date().toISOString())
-			.run();
+				)
+				.bind(user.id, item.course_id, item.instructor_id, finalPrice, item.currency, new Date().toISOString()),
+		);
 		if (item.coupon_id) {
-			await db.prepare("UPDATE coupons SET used_count = used_count + 1 WHERE id = ?").bind(item.coupon_id).run();
+			purchaseStatements.push(db.prepare("UPDATE coupons SET used_count = used_count + 1 WHERE id = ?").bind(item.coupon_id));
 		}
 	}
 
+	if (purchaseStatements.length) await db.batch(purchaseStatements);
 	await db.prepare("DELETE FROM cart_items WHERE user_id = ?").bind(user.id).run();
 	return items.length;
 }
 
-export async function hasPurchasedCourse(
+async function hasPurchasedCourse(
 	db: D1Database,
 	studentId: number,
 	courseId: number,
@@ -767,8 +761,8 @@ export async function addMaterial(
 }
 
 export async function purchaseCourse(db: D1Database, student: AuthUser, coursePublicId: string) {
-	await ensureLearningSchema(db);
 	if (student.role !== "student") throw new Error("Chi hoc vien moi mua khoa hoc.");
+	await ensureLearningSchema(db);
 	const course = await getCourseByPublicId(db, coursePublicId);
 	if (!course || course.status !== "published") throw new Error("Khong tim thay khoa hoc dang ban.");
 
@@ -784,7 +778,7 @@ export async function purchaseCourse(db: D1Database, student: AuthUser, coursePu
 	return course;
 }
 
-export async function canAccessCourseThread(db: D1Database, user: AuthUser, course: InstructorCourse) {
+async function canAccessCourseThread(db: D1Database, user: AuthUser, course: InstructorCourse) {
 	if (user.id === course.instructor_id) return true;
 	if (user.role !== "student") return false;
 

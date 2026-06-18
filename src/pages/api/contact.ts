@@ -77,11 +77,9 @@ async function ensureContactsTable(db: D1Database): Promise<void> {
 		.all<{ name: string }>();
 	const columns = new Set((results ?? []).map((column) => column.name));
 
-	for (const migration of contactColumnMigrations) {
-		if (!columns.has(migration.name)) {
-			await db.prepare(migration.sql).run();
-			columns.add(migration.name);
-		}
+	const missingMigrations = contactColumnMigrations.filter((migration) => !columns.has(migration.name));
+	if (missingMigrations.length) {
+		await db.batch(missingMigrations.map((migration) => db.prepare(migration.sql)));
 	}
 
 	await db.prepare(createContactsCreatedAtIndexSql).run();

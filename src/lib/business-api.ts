@@ -83,7 +83,7 @@ export function publicId(prefix: string): string {
 	return `${prefix}_${suffix}`;
 }
 
-export function validateLeadPayload(payload: LeadPayload): {
+function validateLeadPayload(payload: LeadPayload): {
 	ok: true;
 	value: Required<Pick<LeadPayload, "fullName" | "phone">> & LeadPayload;
 } | { ok: false; message: string } {

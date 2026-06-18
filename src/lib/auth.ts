@@ -80,21 +80,15 @@ function timingSafeEqual(a: string, b: string): boolean {
 	return result === 0;
 }
 
-export function normalizeEmail(email: unknown): string {
+function normalizeEmail(email: unknown): string {
 	return clean(email).toLowerCase();
 }
 
-export function normalizeRole(role: unknown): AuthRole {
-	const value = clean(role);
-	if (value === "admin") return "admin";
-	return value === "instructor" ? "instructor" : "student";
-}
-
-export function normalizePublicRegisterRole(role: unknown): PublicRegisterRole {
+function normalizePublicRegisterRole(role: unknown): PublicRegisterRole {
 	return clean(role) === "instructor" ? "instructor" : "student";
 }
 
-export function roleLabel(role: string): string {
+function roleLabel(role: string): string {
 	if (role === "admin") return "Admin";
 	return role === "instructor" ? "Giang vien" : "Hoc vien";
 }
@@ -107,12 +101,10 @@ export function roleHomePath(role: string): string {
 
 export async function ensureAuthSchema(db: D1Database): Promise<void> {
 	await db.prepare(createAuthUsersSql).run();
-	for (const sql of createAuthUserIndexesSql) {
-		await db.prepare(sql).run();
-	}
+	await Promise.all(createAuthUserIndexesSql.map((sql) => db.prepare(sql).run()));
 }
 
-export async function hashPassword(password: string): Promise<string> {
+async function hashPassword(password: string): Promise<string> {
 	const salt = crypto.getRandomValues(new Uint8Array(16));
 	const key = await crypto.subtle.importKey(
 		"raw",
@@ -161,7 +153,7 @@ export async function verifyPassword(password: string, stored: string): Promise<
 	return timingSafeEqual(toBase64(new Uint8Array(bits)), hashText);
 }
 
-export function validateRegisterPayload(payload: RegisterPayload):
+function validateRegisterPayload(payload: RegisterPayload):
 	| { ok: true; value: Required<Pick<RegisterPayload, "fullName" | "email" | "password">> & RegisterPayload }
 	| { ok: false; message: string } {
 	const fullName = clean(payload.fullName);
@@ -282,7 +274,7 @@ export function clearSessionCookie(request: Request): string {
 	return `${sessionCookieName}=; Path=/; HttpOnly;${secure} SameSite=Lax; Max-Age=0`;
 }
 
-export function getSessionToken(request: Request): string | null {
+function getSessionToken(request: Request): string | null {
 	const cookie = request.headers.get("Cookie") || "";
 	const parts = cookie.split(";").map((part) => part.trim());
 	const session = parts.find((part) => part.startsWith(`${sessionCookieName}=`));

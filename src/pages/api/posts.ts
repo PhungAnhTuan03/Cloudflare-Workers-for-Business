@@ -58,16 +58,17 @@ export const GET: APIRoute = async ({ request }) => {
 			throw error;
 		}
 
-		const allPosts = articles
-			.filter((article) => !tag || article.category.toLowerCase().replace(/\s+/g, "-") === tag)
-			.map((article, index) => ({
+		const allPosts = articles.flatMap((article, index) => {
+			if (tag && article.category.toLowerCase().replace(/\s+/g, "-") !== tag) return [];
+			return [{
 				id: article.slug || String(index + 1),
 				title: article.title,
 				slug: article.slug,
 				excerpt: article.description,
 				published_at: article.date,
 				tags: JSON.stringify([article.category]),
-			}));
+			}];
+		});
 		const results = allPosts.slice(offset, offset + limit);
 		const payload = JSON.stringify({
 			data: results,
